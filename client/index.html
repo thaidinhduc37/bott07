@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Áp lựa chọn sáng/tối đã lưu TRƯỚC khi CSS tải, để không nháy sai màu
+         một khắc rồi mới đổi lại. Không có gì để áp thì bỏ qua — mặc định
+         theo hệ điều hành qua `prefers-color-scheme` trong globals.css. -->
+    <script>
+      (function () {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      })();
+    </script>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Chữ chính của hệ thiết kế mới — Plus Jakarta Sans, thay Be Vietnam Pro
+         làm giọng chủ đạo (biến --font-be-vietnam trỏ sang nó ở globals.css,
+         tên biến giữ nguyên để không phải sửa mọi nơi đã dùng var()). -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Bộ icon webfont Material Symbols — xem lý do đổi từ SVG nội tuyến ở
+         đầu tệp `components/shared/Icon.tsx`. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <title>Trợ lý ảo hỗ trợ học viên</title>
+  </head>
+  <body>
+    <a href="#noi-dung" class="skip-link">Bỏ qua điều hướng</a>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

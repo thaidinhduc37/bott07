@@ -1,0 +1,283 @@
+﻿Lop,TT,HocPhan,MaHP,KH,TC,Tiet,DV,DotHoc,GhiChu
+VB2K3,1,"Kỹ thuật thu thập, phục hồi và phân tích dữ liệu điện tử trên thiết bị di động",Dv4T0K7PD,PD,2,45,K7,1,
+VB2K3,2,"Phòng, chống tội phạm sử dụng công nghệ cao (HP2)",D4T0K7CH,CH,2,45,K7,1,
+VB2K3,3,Điều tra và xử lý sự cố an toàn thông tin,D4T0K7SC,SC,2,45,K7,1,
+VB2K3,4,Lập trình web,D4T0K7LW,LW,2,45,K7,1,
+VB2K3,5,Hệ thống điện tử và hệ thống nhúng chuyên dụng,D4T0K8HN,HN,2,45,K8,1TC,
+B1VB2C1,1,"Những vấn đề cơ bản về bảo vệ an ninh quốc gia, bảo đảm trật tự an toàn xã hội",D4T0K3NV,NV,2,39,K3,1,
+B1VB2C1,2,Luật Tố tụng hình sự,D4T0K2LT,LT,3,59,K2,1,Ghép 58
+B1VB2C1,3,"Luật An ninh quốc gia, Luật Công an nhân dân, Luật Hành chính",D4T0K2LA,LA,2,39,K2,1,38
+B1VB2C1,4,Hệ điều hành,D4T0K7HD,HD,2,42,K7,1,42
+B1VB2C1,5,Hệ thống viễn thông,D4T0K8HT,HT,2,45,K8,1,44
+B1VB2C1,6,Kiến trúc máy tính và hợp ngữ,D4T0K7KH,KH,2,45,K7,1,46
+B1VB2C1,7,Mạng thông tin vô tuyến CAND,D4T0K8MV,MV,2,45,K8,2,46
+B1VB2C1,8,Tội phạm học,D4T0K2TP,TP,2,39,K2,2,Ghép 38
+B1VB2C1,9,Võ thuật Công an nhân dân Ghép125,D4N0K5VT,VT,3,126,K5,2,
+B1VB2C1,10,Quản lý nhà nước về an ninh trật tự,D4N0K3QL,QL,2,39,K3,2,ghép 39
+B1VB2C1,11,Phân tích thiết kế hệ thống thông tin,D4T0K7PT,PT,2,45,K7,2,44
+B1VB2C1,12,Kỹ thuật lập trình,D4T0K7LT,7LT,2,45,K7,2,44
+B2VB2C1,1,"Những vấn đề cơ bản về bảo vệ an ninh quốc gia, bảo đảm trật tự an toàn xã hội",D4N0K3NV,NV,2,39,K3,1,40
+B2VB2C1,2,"Luật An ninh quốc gia, Luật Công an nhân dân, Luật Hành chính",D4N0K2LA,LA,2,39,K2,1,ghép 40
+B2VB2C1,3,Cơ khí đại cương,D4N0K8VC,VC,2,42,K8,1,42
+B2VB2C1,4,Vi xử lý và vi điều khiển,D4N0K8VX,VX,2,45,K8,1,46
+B2VB2C1,5,Mạng máy tính,D4N0K7KT,KT,3,63,K7,1,64
+B2VB2C1,6,Luật Tố tụng hình sự,D4N0K2LT,LT,3,59,K2,1,Ghép 58
+B2VB2C1,7,Tội phạm học,D4N0K2TP,TP,2,39,K2,2,Ghép 38
+B2VB2C1,8,Võ thuật Công an nhân dân,D4N0K5VT,VT,3,126,K5,2,Ghép125
+B2VB2C1,9,Quản lý nhà nước về an ninh trật tự,D4N0K3QL,QL,2,39,K3,2,ghép 39
+B2VB2C1,10,Kỹ thuật thông tin vô tuyến,D4N0K8VT,8VT,2,45,K8,2,46
+B2VB2C1,11,"Kỹ thuật thu thập, phục hồi và phân tích dữ liệu điện tử",D4N0K7PH,PH,2,45,K7,2,46
+B2VB2C1,12,Lý luận chung về hoạt động trinh sát,D4N0K3TS,TS,2,45,K3,2,44
+"B1,2VB2K4",1,Luật Tố tụng hình sự,D4T0K2LT,LT,3,59,K2,1,60
+"B1,2VB2K4",2,Mạng máy tính,D4T0K7MT,MT,3,63,K7,1,64
+"B1,2VB2K4",3,"Quản lý nhà nước về an ninh, trật tự",D4A0K3QL,QL,2,39,K3,1,40
+"B1,2VB2K4",4,Kỹ thuật lập trình,D4T0K7LT,7LT,2,45,K7,1,46
+"B1,2VB2K4",5,Kiến trúc máy tính và hợp ngữ,D4T0K7KH,KH,2,45,K7,1,44
+"B1,2VB2K4",6,Hệ thống viễn thông,D4T0K8HT,HT,2,45,K8,1,44
+"B1,2VB2K4",7,Mạng thông tin vô tuyến CAND,D4T0K8MV,MV,2,45,K8,2,44
+"B1,2VB2K4",8,Tiếng Anh chuyên ngành,D4T0K4AC,AC,2,51,K4,2,52
+"B1,2VB2K4",9,Tội phạm học,D4T0K2TP,TP,2,39,K2,2,40
+"B1,2VB2K4",10,Võ thuật Công an nhân dân,D4T0K5VT,VT,3,126,K5,2,126
+"B1,2VB2K4",11,Nghiệp vụ cơ bản,D4T0K3CB,CB,2,39,K3,2,40
+"B1,2VB2K4",12,Hệ điều hành,D4T0K7HD,HD,2,42,K7,2-TC,42
+B3VB2K4,1,Luật Tố tụng hình sự,D4A0K2LT,LT,3,59,K2,1,60
+B3VB2K4,2,"Quản lý nhà nước về an ninh, trật tự",D4A0K3QL,QL,2,39,K3,1,40
+B3VB2K4,3,Cơ học lý thuyết - kết cấu,D4A0K4LT,4LT,2,42,K4,1,42
+B3VB2K4,4,Kế toán hành chính sự nghiệp,D4A0KXSM,SM,3,63,KX,1,64
+B3VB2K4,5,Những vấn đề cơ bản về công tác hậu cần Công an nhân dân,D4A0KXNV,NV,2,42,KX,1,52
+B3VB2K4,6,Nghiệp vụ cơ bản,D4A0K3CB,CB,2,39,K3,2,40
+B3VB2K4,7,Kỹ thuật điện - nhiệt,D4A0K4ĐN,ĐN,2,42,K4,2,42
+B3VB2K4,8,Võ thuật Công an nhân dân,D4T0K5VT,VT,3,126,K5,2,126
+B3VB2K4,9,Tội phạm học,D4A0K2TP,TP,2,39,K2,2,40
+B3VB2K4,10,Điều tra hình sự,D4A0K3ĐT,ĐT,3,59,K3,2,58
+B3VB2K4,11,"Công tác tham mưu, bảo đảm hậu cần trong Công an nhân dân",D4A0KXBĐ,BĐ,3,63,KX,2,62
+B3VB2K4,12,Lý thuyết thống kê,D4A0KXTK,TK,2,42,KX,1-TC,42
+B1D13,1,Mạng thông tin hữu tuyến CAND,D1T0K8MH,MH,2,45,K8,1,46
+B1D13,2,Mạng thông tin vô tuyến CAND,D1T0K8MV,MV,2,45,K8,2,46
+B1D13,3,"Kỹ thuật thu thập, phục hồi và phân tích dữ liệu điện tử",D1T0K7PM,PM,3,68,K7,1,68
+B1D13,4,"Phòng, chống tội phạm sử dụng công nghệ cao (HP2)",D1T0K7CH,CH,2,45,K7,1,46
+B1D13,5,Điều tra và xử lý sự cố an toàn thông tin,D1T0K7SC,SC,2,45,K7,1,46
+B1D13,6,Trí tuệ nhân tạo và ứng dụng,D1T0K7NT,NT,2,45,K7,2,46
+B1D13,7,Lập trình web,D1T0K7LW,LW,3,68,K7,1,68
+B1D13,8,Hệ thống điện tử và hệ thống nhúng chuyên dụng,D1T0K8HN,HN,2,45,K8,2,46
+B1D13,9,Lập trình ứng dụng trên thiết bị di động,D1T0K7DĐ,DĐ,2,45,K7,2,46
+B2D13,1,Kế toán hành chính sự nghiệp (HP2),D1A0KXSH,SH,3,63,KX,1,64
+B2D13,3,"Lập và thẩm định dự án đầu tư, công tác đấu thầu, mua sắm trong Công an Dnh1âAn0 KdâXnĐT ĐT 3 63 KX 2 62 Cấp thoát nước",D1A0KXCN,CN,2,42,KX,2,43
+B2D13,4,"Những vấn đề cơ bản về vũ khí, vật liệu nổ và công cụ hỗ trợ",D1A0KXVK,VK,2,42,KX,1,42
+B2D13,5,Quản lý trang bị kỹ thuật và trang cấp trong CAND,D1A0KXQB,QB,2,42,KX,2,44
+B2D13,7,Bảo đảm ăn uống và quản lý bếp ăn tập thể trong Công an nhân dânD1A0KXAU AU 2 42 KX 1 42 Công tác kho vận và xăng dầu CAND,D1A0KXKV,KV,2,42,KX,1,42
+B2D13,9,Ứng dụng công nghệ thông tin trong công tác hậu cần Công an nhân Dd1âAn0KXPM PM 2 51 KX 2 51 Dinh dưỡng và thương phẩm hàng lương thực thực phẩm DD,D1A0KXDD,2,42,KX,1,42,
+B3D13,1,Bảo đảm hậu cần trong Công an nhân dân,D1A0KXBĐ,BĐ,3,63,KX,1,
+B3D13,2,Quản lý ngân sách Công an nhân dân,D1A0KXNS,NS,2,42,KX,2,42
+B3D13,3,Kế toán hành chính sự nghiệp (HP1),D1A0KXSM,SM,2,42,KX,1,42
+B3D13,4,Quản lý tài sản công trong Công an nhân dân,D1A0KXQC,QC,2,42,KX,1,42
+B3D13,6,"Lập và thẩm định dự án đầu tư, công tác đấu thầu, mua sắm tập trung tDro1Ang0K CXôĐnTg anĐ nThân3 dân63 KX 2 64 Kết cấu xây dựng",D1A0KXKC,KC,3,63,KX,2,62
+B3D13,7,"Những vấn đề chung về vũ khí, vật liệu nổ và công cụ hỗ trợ",D1A0KXVK,VK,2,42,KX,2,42
+B3D13,8,Bảo đảm ăn uống và quản lý bếp ăn tập thể trong Công an nhân dân,D1A0KXAU,AU,2,42,KX,1,42
+B4D13,1,Tiếng Anh chuyên ngành,D1N0K4AC,AC,2,51,K4,2,52
+B4D13,2,"Công tác phòng, chống tội phạm xâm phạm an ninh quốc gia",D1N0K3AN,AN,2,42,K3,1,42
+B4D13,3,Các biện pháp Trinh sát kỹ thuật,D1N0K8BP,BP,2,42,K8,2,42
+B4D13,4,Kỹ thuật trinh sát vô tuyến điện,D1N0K8VĐ,VĐ,3,63,K8,2,56
+B4D13,5,Kỹ thuật trinh sát viễn thông,D1N0K8GS,GS,2,45,K8,2,46
+B4D13,6,"Kỹ thuật thu thập, phục hồi và phân tích dữ liệu điện tử",D1N0K7PH,PH,3,63,K7,1,64
+B4D13,7,"Kỹ thuật xâm nhập, giám sát, kiểm soát mạng máy tính và mục tiêu",D1N0K7MT,MT,2,45,K7,1,46
+B4D13,8,Những vấn đề cơ bản về Trinh sát kỹ thuật,D1N0K8NV,NV,2,42,K8,1,36
+"B5,6D13",1,Tội phạm học,D1T0K2TP,TP,2,39,K2,1,40
+"B5,6D13",2,Điều tra hình sự,D1T0K3LT,LT,3,59,K3,1,60
+"B5,6D13",3,"Luật An ninh quốc gia, Luật Công an nhân dân, Luật Hành chính",D1T0K2LA,LA,2,39,K2,2,38
+"B5,6D13",4,Quản lý nhà nước về an ninh trật tự,D1T0K3QL,QL,2,39,K3,2,40
+"B5,6D13",5,Tiếng Anh chuyên ngành,D1T0K4AC,AC,2,51,K4,2,50
+"B5,6D13",6,Mạng thông tin hữu tuyến CAND,D1T0K8MH,MH,2,45,K8,1,# B1D13 44
+"B5,6D13",7,"Kỹ thuật thu thập, phục hồi và phân tích dữ liệu điện tử trên thiết bị di",D1T0K7PD,PD,2,45,K7,2,46
+"B5,6D13",8,Kỹ thuật xâm nhập mạng máy tính,D1T0K7XN,XN,2,45,K7,1,44
+B1D14,1,Lịch sử Đảng Cộng sản Việt Nam,D1T0K1LS,LS,2,39,K1,1,38
+B1D14,2,Xác suất thống kê,D1T0K4XS,XS,2,42,K4,2,42
+B1D14,3,Luật Tố tụng hình sự,D1T0K2LT,LT,2,39,K2,1,38
+B1D14,4,Tội phạm học,D1T0K2TP,TP,2,39,K2,2,40
+B1D14,5,Điều tra hình sự,D1T0K3ĐT,ĐT,3,59,K3,2,58
+B1D14,6,Kỹ thuật viễn thông,D1T0K8VT,VT,2,45,K8,1,46
+B1D14,7,Kỹ thuật thông tin vô tuyến,D1T0K8TV,TV,2,45,K8,2,44
+B1D14,8,An toàn hệ thống mạng máy tính,D1T0K7AM,AM,2,45,K7,2,44
+B1D14,9,"Kỹ thuật thu thập, phục hồi và phân tích dữ liệu điện tử",D1T0K7PM,PM,3,68,K7,1,68
+B2D14,1,Tư tưởng Hồ Chí Minh,D1A0K1TT,TT,2,39,K1,1,38
+B2D14,2,Hóa học đại cương,D1A0K4HH,HH,2,39,K4,2,38
+B2D14,3,Điều tra hình sự,D1A0K3ĐT,ĐT,3,59,K3,1,58
+B2D14,4,Cơ học lý thuyết - kết cấu,D1A0K4LT,LT,2,42,K4,1,42 16t LT+ 24t XD+26t LT + 18 t XD
+B2D14,5,Vật liệu xây dựng và sức bền vật liệu,D1A0K4XD,XD,2,42,K4,1,42
+B2D14,6,Quản lý tài chính công,D1A0KXTC,TC,3,63,KX,1,62
+B2D14,7,Quản lý tài sản công trong Công an nhân dân,D1A0KXQC,QC,2,42,KX,2,42
+B2D14,8,Cung cấp điện,D1A0KXCĐ,CĐ,2,42,KX,2,42
+B3D14,1,Luật Tố tụng hình sự,D1A0K2LT,2LT,3,59,K2,1,"Ghép B3,4D14 60 ghép B3,4D14"
+B3D14,2,Cơ học lý thuyết - kết cấu,D1A0K4LT,LT,2,42,K4,2,42 0 16t LT+ 42t XD+26t LT + 21 t XD
+B3D14,3,Vật liệu xây dựng và sức bền vật liệu,D1A0K4XD,XD,3,63,K4,2,62 0
+B3D14,4,Tiếng Anh (HP3),D1A0K4AB,AB,4,102,K4,1,"68 đợt 1, chiều T2, T4 (4 tiết)"
+B3D14,5,Nghiệp vụ cơ bản,D1A0K3CB,CB,2,39,K3,2,"Ghép B3,5,6D14 38 ghép B3,5,6D14"
+B3D14,6,Quản lý tài chính công,D1A0KXTC,TC,2,42,KX,2,0 42
+B3D14,7,Hóa học đại cương,D1A0K4HH,HH,2,39,K4,2,38 0
+B3D14,8,Công tác tham mưu hậu cần trong Công an nhân dân,D1A0KXTM,TM,2,42,KX,1,"42 đợt 1. # công tác tham mưu, bảo đảm HC trong CAND B2D15, B3Vb2K4"
+B3D14,9,Chủ nghĩa xã hội khoa học,D1A0K1CN,CN,2,39,K1,1,"Ghép B3,4D14 ghép B3-4D14; B789D15 38"
+B4D14,1,Luật Tố tụng hình sự,D1N0K2LT,LT,3,59,K2,1,"Ghép B3,4D14 60 ghép B3,4D14"
+B4D14,2,Chủ nghĩa xã hội khoa học,D1N0K1CN,CN,2,39,K1,1,38 ghép B3-4D14; B789D15
+B4D14,3,"Ghép B3,4D14 Tiếng Anh (HP3)",D1N0K4AB,AB,4,102,K4,2,"đợt 1, chiều T2, T4 (4 tiết) 68"
+B4D14,4,Tội phạm học,D1N0K2TP,TP,2,39,K2,2,38 0
+B4D14,5,Võ thuật Công an nhân dân,D1N0K5VT,VT,3,126,K5,2,108xếp vào tháng 12
+B4D14,6,Cơ khí đại cương,D1N0K8VC,VC,2,42,K8,2,42 0
+B4D14,7,Quản lý nhà nước về an ninh trật tự,D1N0K3QL,QL,2,39,K3,2,38 0
+B4D14,8,Nghiệp vụ cơ bản (HP1),D1N0K3NM,NM,2,42,K3,1,42 0
+B4D14,9,Kỹ thuật viễn thông,D1N0K8KV,KV,2,45,K8,1,"36 đợt 1, 2b/tuần, 2t/b; 1,5 tuần cuối 4t/b"
+B5D14,1,so le Ghép Tư tưởng Hồ Chí Minh,D1T0K1TT,TT,2,39,K1,2,38 giữa ghép B56D14
+B5D14,2,"B5,6D14 cgáhcé p Ghép Nghiệp vụ cơ bản",D1T0K3CB,CB,2,39,K3,2,"38 B3,5,6ghép B56D14"
+B5D14,3,"B3,5,6D14 DB61D41 Tiếng Anh (HP3)",D1T0K4AB,AB,4,102,K4,2,"1024, tách"
+B5D14,4,"cđhợitề 2u, Ghép Kỹ thuật viễn thông ghép B56D14",D1T0K8VT,VT,2,45,K8,2,"44 1,5"
+B5D14,5,"B5,6D14 tuần Ghép Cơ sở dữ liệu và hệ quản trị cơ sở dữ liệu",D1T0K7HQ,HQ,3,68,K7,1,68 0 ghép B56D14
+B5D14,6,"B5,6D14 Ghép Kiến trúc máy tính và hợp ngữ",D1T0K7KH,KH,2,45,K7,2,46 0 ghép B56D14
+B5D14,7,"B5,6D14 Ghép Xác suất thống kê",D1T0K4XS,XS,2,42,K4,1,42 phần ghép B56D14
+B5D14,,"B5,6D14 tự Ghép Giáo dục thể chất",D1T0K5TC,TC,3,126,K5,1260,(chọn XSTK)
+B5D14,9,"1 B5,6D14 sau Ghép Phân tích thiết kế hệ thống thông tin ghép B56D14",D1T0K7PT,PT,2,45,K7,2,46
+B6D14,1,so le Ghép Tư tưởng Hồ Chí Minh 38 ghép B56D14,D1T0K1TT,TT,2,39,K1,2,giữa
+B6D14,2,"B5,6D14 cgáhcé p Ghép Nghiệp vụ cơ bản 38 ghép B56D14",D1T0K3CB,CB,2,39,K3,2,"B3,5,6"
+B6D14,3,"B3,5,6D14 DB61D414 Tiếng Anh (HP3) tách",D1T0K4AB,AB,4,102,K4,2,"68 ,"
+B6D14,4,"cđhợitề 2u, Ghép Kỹ thuật viễn thông ghép B56D14",D1T0K8VT,VT,2,45,K8,2,"44 1,5"
+B6D14,5,"B5,6D14 tuần Ghép Cơ sở dữ liệu và hệ quản trị cơ sở dữ liệu ghép B56D14",D1T0K7HQ,HQ,3,68,K7,1,68 0
+B6D14,6,"B5,6D14 Ghép Kiến trúc máy tính và hợp ngữ ghép B56D14",D1T0K7KH,KH,2,45,K7,2,46 0
+B6D14,7,"B5,6D14 Ghép Xác suất thống kê ghép B56D14",D1T0K4XS,XS,2,42,K4,1,42 phần
+B6D14,8,"B5,6D14 tự Ghép Giáo dục thể chất",D1T0K5TC,TC,3,126,K5,1,1260 (chọn XSTK)
+B6D14,9,"B5,6D14 sau Ghép Phân tích thiết kế hệ thống thông tin ghép B56D14",D1T0K7PT,PT,2,45,K7,2,46
+B1D15,1,ghép Tiếng Việt nâng cao (HP2),D1T0K4TH,TH,4,102,K4,2,"Ghép B1,2D15 68"
+B1D15,2,"B1,2 Những vấn đề cơ bản về công tác kỹ thuật",D1T0K7KT,KT,2,42,K7,1,40 0
+B1D15,4,"Những vấn đề cơ bản về bảo vệ an ninh quốc gia, bảo đảm trật tự an toD1T0K3NV NV 2 39 K3 1 26 0 ghép Luật Hình sự",D1T0K2LH,LH,2,39,K2,2,"Ghép B1,2D15 38"
+B1D15,5,"B1,2D1 ghép Quản lý nhà nước về an ninh, trật tự",D1T0K3QL,QL,2,39,K3,2,"Ghép B1,2D15 38"
+B1D15,6,"B1,2D1 đợt 1, Kỹ thuật điện tử",D1T0K8ĐT,ĐT,3,63,K8,1,54
+B1D15,7,"1,5 Cơ sở an toàn thông tin",D1T0K7CS,CS,2,42,K7,1,40 0
+B1D15,8,Mạng máy tính,D1T0K7MT,MT,3,63,K7,2,0 64
+B1D15,9,Phân tích thiết kế hệ thống thông tin,D1T0K7PT,PT,2,45,K7,2,44 0
+B1D15,10,Kỹ thuật lập trình,D1T0K7LT,LT,3,72,K7,1,72 0
+B2D15,1,Ghi chú ghép Tiếng Việt nâng cao (HP2),D1A0K4TH,TH,4,102,K4,1,"Ghép B1,2D15 68 B1,2"
+B2D15,2,"Dgh1é5p, Luật Hình sự",D1A0K2LH,LH,2,39,K2,2,"38 B1,2D1"
+B2D15,3,"Ghép B1,2D15 5ghép Quản lý nhà nước về an ninh, trật tự",D1A0K3QL,QL,2,39,K3,2,"Ghép B1,2D15 38 B1,2D1"
+B2D15,4,#B3VB Lý thuyết thống kê,D1A0KXTK,TK,2,42,KX,1,40
+B2D15,5,2K4 # Những vấn đề cơ bản về công tác hậu cần Công an nhân dân,D1A0KXNV,NV,2,42,KX,1,40 B3Vb2
+B2D15,6,"K4 Công tác tham mưu, bảo đảm hậu cần trong Công an nhân dân",D1A0KXBĐ,BĐ,3,63,KX,2,64 0
+B2D15,7,"đợt 1, Nguyên lý kế toán",D1A0KXNL,NL,3,63,KX,1,64 #
+B2D15,8,B3Vb2 Lý thuyết tài chính tiền tệ,D1A0KXTT,TT,2,42,KX,2,42 0
+B2D15,9,Kỹ thuật điện - nhiệt,D1A0K4ĐN,ĐN,2,42,K4,1,42 đợt 2
+B3D15,1,Tin học,D1T0K7TH,TH,3,77,K7,1,"Ghép B3,4D15 76 0"
+B3D15,2,ghép Đại số,D1T0K4ĐS,ĐS,2,39,K4,1,"Ghép B3,4D15 B3,4D 26"
+B3D15,3,"1g5hé, p Giải tích",D1T0K4GT,GT,2,39,K4,2,"Ghép B3,4D15 38 B3,4D"
+B3D15,4,"15, Những vấn đề cơ bản về kỹ thuật CAND",D1T0K7KT,KT,2,42,K7,2,"Ghép B3,4D15 38 0"
+B3D15,5,ghép Ghép Lịch sử truyền thống và xây dựng lực lượng CAND,D1T0K3LS,LS,2,39,K3,1,32
+B3D15,6,"B3,4,5 B3,4,5D15 Dgh1é5p, Ghép Những vấn đề cơ bản về bảo vệ an ninh quốc gia, bảo đảm trật tự an to",D1T0K3NV,NV,2,39,K3,2,"26 B3,4,5"
+B3D15,7,"B3,4,5D15 Dgh1é5p Lý luận Nhà nước và pháp luật",D1T0K2NP,NP,2,39,K2,2,"Ghép B3,4D15 38 B3,4"
+B3D15,8,Dgh1é5p Lý thuyết mật mã và ứng dụng,D1T0K6MM,MM,2,42,K6,2,"40 B3,4D ghép B3,4D15"
+B3D15,9,"Ghép B3,4D15 15, # Cấu trúc dữ liệu và giải thuật",D1T0K7CT,CT,2,42,K7,2,"Ghép B3,4D15 40 0"
+B3D15,10,Tiếng Anh (HP2),D1T0K4AH,AH,3,77,K4,1,"78 đợt 1, sáng T2,4T (Á4 CtiếHt) B3,B4 D15"
+B4D15,1,Tin học,D1T0K7TH,TH,3,77,K7,1,76 0
+B4D15,2,"Ghép B3,4D15 ghép Đại số",D1T0K4ĐS,ĐS,2,39,K4,1,"Ghép B3,4D15 26"
+B4D15,3,"B3,4D ghép Giải tích",D1T0K4GT,GT,2,39,K4,2,"Ghép B3,4D15 38"
+B4D15,4,"B3,4D Những vấn đề cơ bản về kỹ thuật CAND",D1T0K7KT,KT,2,42,K7,2,38 0
+B4D15,5,"Ghép B3,4D15 ghép Ghép Lịch sử truyền thống và xây dựng lực lượng CAND",D1T0K3LS,LS,2,39,K3,1,32
+B4D15,7,"B3,4,5D15 B3,4,5 ghép Ghép Những vấn đề cơ bản về bảo vệ an ninh quốc gia, bảo đảm trật tự an toàn Dx1ãT h0K3NV NV 2 39 K3 2 26 B3,4,5D15 B3,4,5 ghép Lý luận Nhà nước và pháp luật",D1T0K2NP,NP,2,39,K2,2,38
+B4D15,8,"Ghép B3,4D15 B3,4 ghép Lý thuyết mật mã và ứng dụng",D1T0K6MM,MM,2,42,K6,2,"Ghép B3,4D15 40"
+B4D15,9,"B3,4D Cấu trúc dữ liệu và giải thuật",D1T0K7CT,CT,2,42,K7,2,"Ghép B3,4D15 0 40"
+B4D15,10,Tiếng Anh (HP2),D1T0K4AH,AH,3,77,K4,1,"78 đợt 1, sáng T2,4 T(4Á tCiếHt) B3,B4 D15"
+B5D15,1,Tin học,D1N0K7TH,TH,3,77,K7,1,76 0
+B5D15,2,"đợt 1, Đại số",D1N0K4ĐS,ĐS,2,39,K4,1,"26 #B10,"
+B5D15,3,"1đ1ợDt 21,5 Giải tích",D1N0K4GT,GT,2,39,K4,2,38 #Toán
+B5D15,4,"đcợato , Kỹ thuật điện tử",D1N0K8ĐT,ĐT,3,63,K8,2,64 các
+B5D15,5,tguhầénp Ghép Lịch sử truyền thống và xây dựng lực lượng Công an nhân dân,D1N0K3LS,LS,2,39,K3,1,"32 B3,4,5"
+B5D15,7,"B3,4,5D15 Dgh1é5p Ghép Những vấn đề cơ bản về bảo vệ an ninh quốc gia, bảo đảm trật tự an toàn Dxã1 Nh0K3NV NV 2 39 K3 2 26 B3,4,5 B3,4,5D15 Dđợ1t5 1, Tiếng Anh (HP2)",D1N0K4AH,AH,3,77,K4,1,76 sáng
+B5D15,8,"T3, Kỹ thuật lập trình",D1N0K7LT,LT,3,77,K7,2,76 0
+B6D15,1,Đại số,D1A0K4ĐS,ĐS,2,39,K4,2,2 32 đợt 2
+B6D15,2,"đợt 1, Giải tích",D1A0K4GT,GT,2,39,K4,1,1 32 từ
+B6D15,3,tháng Vật lý đại cương,D1A0K4VL,VL,3,63,K4,1,1 64 đợt 1
+B6D15,4,Tin học,D1A0K7TH,TH,3,68,K7,2,2 68 0
+B6D15,5,ghép Ghép Lịch sử truyền thống và xây dựng lực lượng Công an nhân dân,D1A0K3LS,LS,2,39,K3,1,"1 32 B6,7,8"
+B6D15,7,"B6,7,8D15 Dgh1é5p, Ghép Những vấn đề cơ bản về bảo vệ an ninh quốc gia, bảo đảm trật tự an toàn xãD h1A0K3NV NV 2 39 K3 2 2 26 B6,9,1 B6,9,10D15 0đDợt1 15, Tiếng Anh (HP2)",D1A0K4AH,AH,3,77,K4,1,1 76 sáng
+B6D15,8,"T3, Kinh tế học",D1A0KXKT,KT,2,42,KX,2,2 42 đợt 2
+B6D15,9,thay Hóa học đại cương,D1A0K4HH,HH,2,39,K4,2,2 38 Hình
+B7D15,1,"đợt 1, G h ép Kinh tế chính trị Mác - Lênin",D1C1K1KT,KT,2,39,K1,1,1 40
+B7D15,2,"ghép 03 B7 ,8 ,9 D 15 lớp sau KT; G h ép Chủ nghĩa xã hội khoa học",D1C1K1CN,CN,2,39,K1,2,2
+B7D15,3,"ghép B3- B7 ,8 ,9 D 15 4D14; ghép G h ép Đại số",D1C1K4ĐS,ĐS,2,39,K4,1,"1 38 B7,8,9D15,"
+B7D15,4,"B7 ,8 ,9 D 15 đợt 1 g h é p # T 4, G h ép Giải tích",D1C1K4GT,GT,3,63,K4,2,"2 62 B 7 , 8 ,9D15,"
+B7D15,5,"B7 ,8 ,9 D 15 T 6 đợt 2, # Nhập môn Công nghệ số và ứng dụng trí tuệ nhân tạo",D1C1K7NM,NM,3,63,K7,2,2 62 0
+B7D15,6,"đợt 1, sáng Tiếng Anh (HP2)",D1C1K4AH,AH,3,77,K4,1,"1 76 T3, T5 (4"
+B7D15,7,tiết) ghép Ghép Lý luận Nhà nước và pháp luật,D1C1K2NP,NP,2,39,K2,1,1 38
+B7D15,8,"B7,8D15 B7,8D15 ghép Ghép Lịch sử truyền thống và xây dựng lực lượng CAND",D1C1K3LS,LS,2,39,K3,1,1 32
+B8D15,1,"đợt 1, G h ép Kinh tế chính trị Mác - Lênin",D1C3K1KT,KT,2,39,K1,1,1 40 ghép 03
+B8D15,2,"B7 ,8 ,9 D 15 lsớapu KT; G h ép Chủ nghĩa xã hội khoa học",D1C3K1CN,CN,2,39,K1,2,2 40
+B8D15,3,"ghép B3- B7 ,8 ,9 D 15 4ghDé1p4 ; G h ép Đại số",D1C3K4ĐS,ĐS,2,39,K4,1,"1 40 B7,8,9D"
+B8D15,4,"B7 ,8 ,9 D 15 1g h5 é, đ ợ t 1 p # T 4, G h ép Giải tích",D1C3K4GT,GT,3,63,K4,2,"2 62 B 7 , 8 , 9 D"
+B8D15,5,"B7 ,8 ,9 D 15 T 6 1đợ5,t đ1ợ, t Tiếng Anh (HP2)",D1C3K4AH,AH,3,77,K4,1,"1 76 T3,5"
+B8D15,6,"sáng T4, T6 (4 ghép Ghép Lý luận nhà nước và pháp luật",D1C3K2NP,NP,2,39,K2,1,1 38
+B8D15,7,"B7,8D15 B7,8D15 ghép Ghép Lịch sử truyền thống và xây dựng lực lượng Công an nhân dân",D1C3K3LS,LS,2,39,K3,1,"1 32 B6,7,8D"
+B8D15,8,"B6,7,8D15 Nhập môn công nghệ phần mềm",D1C3K7CM,CM,3,63,K7,2,2 48 0
+B8D15,9,Mạng máy tính,D1C3K7MM,MM,3,63,K7,2,2 0 62
+B9D15,1,Ghép Kinh tế chính trị Mác - Lênin,D1C4K1KT,KT,2,39,K1,1,1 40
+B9D15,2,"đợt 2, ghép thành 03 lớp B78911D15 B7,8,9D15 Ghép Chủ nghĩa xã hội khoa học",D1C4K1CN,CN,2,39,K1,2,2 40 ghép B3-4D14; B789D15
+B9D15,3,"B7,8,9D15 Ghép Đại số",D1C4K4ĐS,ĐS,2,39,K4,1,1 38
+B9D15,4,"ghép B7,8,9D15, đợt 1 B7,8,9D15 #T4, Ghép Giải tích",D1C4K4GT,GT,3,63,K4,2,"2 62 ghép B7,8,9D15, đ"
+B9D15,5,"B7,8,9D15 T6 Mạng máy tính",D1C4K7MM,MM,3,63,K7,1,"1 thay Nhập mônT c3ô,n5g nghệ số v 64"
+B9D15,6,Tiếng Anh (HP2),D1C4K4AH,AH,3,77,K4,2,"2 64 sáng T4, T6 nối tiếp B8D15"
+B9D15,7,Ghép Lý luận Nhà nước và pháp luật,D1C4K2NP,NP,2,39,K2,2,"2 40 ghép B9,10,11D15"
+B9D15,8,"B9,10,11D15 Ghép Lịch sử truyền thống và xây dựng lực lượng Công an nhân dân",D1C4K3LS,LS,2,39,K3,1,1 40
+B10D15,1,Tin học,D1D1K7TH,TH,3,63,K7,2,2 62 0
+B10D15,2,"sáng T3, Tiếng Anh (HP2)",D1D1K4AH,AH,3,77,K4,2,2 70 T5 nối
+B10D15,3,tgihếépp Ghép Đại số,D1D1K4ĐS,ĐS,2,39,K4,1,"1 40 B10,"
+B10D15,4,"B10,11D15 Bgh1é1pD 15 Ghép Giải tích (HP1)",D1D1K4GM,GM,2,39,K4,1,"1 38 B10,"
+B10D15,5,"B10,11D15 1đợ1Dt 21,5 Ghép Vật lý đại cương",D1D1K4VL,VL,2,42,K4,2,2 42
+B10D15,6,"ghép B10,11D15 Bgh1é0p, 11 Ghép Lý luận nhà nước và pháp luật",D1D1K2NP,NP,2,39,K2,2,2 40
+B10D15,7,"B9,10,11 B9,10,11D15 Dgh1é5p Ghép Lịch sử truyền thống và xây dựng lực lượng Công an nhân dân",D1D1K3LS,LS,2,39,K3,1,1 40
+B10D15,8,"B9,10,11 B9,10,11D15 Dgh1é5p Ghép Những vấn đề cơ bản về bảo vệ an ninh quốc gia, bảo đảm trật tự an to",D1D1K3NV,NV,2,39,K3,2,"2 B6,9,10 26"
+B10D15,9,"B9,10,11D15 D15 Cấu kiện và đo lường điện tử",D1D1K8CK,CK,2,42,K8,1,"1 42 đợt 1, .."
+B10D15,10,Giáo dục thể chất,D1D1K5TC,TC,3,126,K5,2,1260
+B11D15,1,Kinh tế chính trị Mác - Lênin,D1D3K1KT,KT,2,39,K1,2,2 38 đợt 2
+B11D15,2,Tin học,D1D3K7TH,TH,3,63,K7,1,1 62
+B11D15,3,"sáng T3, Tiếng Anh (HP2)",D1D3K4AH,AH,3,77,K4,2,2 78
+B11D15,4,T5 nối tiếp ghép Ghép Đại số,D1D3K4ĐS,ĐS,2,39,K4,1,1 40
+B11D15,5,"B10, B10,11D15 B11D15 ghép Ghép Giải tích (HP1)",D1D3K4GM,GM,2,39,K4,1,"1 38 B10,"
+B11D15,6,"B10,11D15 11D15 đợt 2, Ghép Vật lý đại cương",D1D3K4VL,VL,2,42,K4,2,2 42 ghép
+B11D15,7,"B10,11D15 B10, 11 ghép Ghép Lý luận nhà nước và pháp luật",D1D3K2NP,NP,2,39,K2,2,"2 40 B9,10,11"
+B11D15,8,"B9,10,11D15 D15 ghép Ghép Lịch sử truyền thống và xây dựng lực lượng Công an nhân dân",D1D3K3LS,LS,2,39,K3,1,"1 40 B9,10,11"
+B1LT8,1,đợt 2 Hệ thống viễn thông,D3T0K8HT,HT,2,45,K8,2,2 46 #B12VB2
+B1LT8,2,"K4, học tách các Tâm lý nghiệp vụ",D3T0K1TL,TL,2,42,K1,1,2 lớp 42
+B1LT8,3,"B1,2LT9, Kỹ thuật xâm nhập mạng máy tính",D3T0K7XN,XN,2,45,K7,1,1 0 44
+B1LT8,4,Điều tra số,D3T0K7ĐT,ĐT,2,45,K7,2,1 46
+B1LT8,5,Kỹ thuật thông tin vô tuyến,D3T0K8TT,TT,2,45,K8,1,2 46
+B1LT8,6,đợt 1 Trí tuệ nhân tạo và ứng dụng trong công tác Công an,D3T0K7NT,NT,2,45,K7,2,1 46 X
+B1LT8,7,Kỹ thuật phát hiện và phân tích mã độc,D3T0K7MD,MD,3,68,K7,1,2 68
+B1LT8,8,"Phòng, chống tội phạm sử dụng công nghệ cao (HP1)",D3T0K7CM,CM,2,45,K7,2,1 44
+B2LT8,1,tách Tâm lý nghiệp vụ,D3N0K1TL,TL,2,42,K1,1,1 42
+B2LT8,2,"các lớp Công tác phòng, chống tội phạm xâm phạm an ninh quốc gia",D3N0K3AN,AN,2,42,K3,1,1 42 0
+B2LT8,3,"Công tác phòng, chống tội phạm xâm phạm trật tự, an toàn xã hội",D3N0K3XH,XH,2,42,K3,2,2 42
+B2LT8,4,"đợt 2, Kỹ thuật trinh sát vô tuyến điện",D3N0K8VĐ,VĐ,3,63,K8,2,2 62 4t/2b/t
+B2LT8,5,"uần, đợt 1, Kỹ thuật trinh sát viễn thông",D3N0K8GS,GS,2,45,K8,1,1 46
+B2LT8,6,4t/2b/t uần 6 Kỹ thuật đa phương tiện trong hoạt động trinh sát,D3N0K8NN,NN,2,45,K8,2,2 44
+B2LT8,7,"Kỹ thuật xâm nhập, giám sát, kiểm soát mạng máy tính và mục tiêu",D3N0K7MT,MT,2,45,K7,1,1 46
+B1LT9,1,Đại số,D3T0K4ĐS,ĐS,2,39,K4,1,1 40 0
+B1LT9,2,"đợt 1, Giải tích",D3T0K4GT,GT,2,39,K4,1,1 38 ko xếp
+B1LT9,3,"thứ 2, Những vấn đề cơ bản về kỹ thuật Công an nhân dân",D3T0K7KT,KT,2,42,K7,1,1 42 0
+B1LT9,4,Xác suất thống kê,D3T0K4XS,XS,2,42,K4,2,2 42
+B1LT9,5,Nghiệp vụ cơ bản x,D3T0K3CB,CB,2,39,K3,1,1 38 0
+B1LT9,6,Điều tra hình sự,D3T0K3ĐT,ĐT,2,39,K3,2,2 38 0
+B1LT9,7,Mạng máy tính,D3T0K7MT,MT,3,63,K7,1,1 62 0
+B1LT9,8,Hệ điều hành,D3T0K7HD,HD,2,42,K7,2,2 42
+B1LT9,9,thay = Kỹ thuật thông tin vô tuyến,D3T0K8TT,TT,2,45,K8,2,2
+B1LT9,10,Kỹ tthácuhậ t Tâm lý nghiệp vụ,D3T0K1TL,TL,2,42,K1,2,2 42 các lớp
+B1LT9,11,"Bkh1ô,2nLg T Lý thuyết mật mã và ứng dụng",D3T0K6MM,MM,2,42,K6,1,1 43 trùng
+B2LT9,1,Toán cao cấp,D3N0K4CC,CC,3,63,K4,1,1 62 0
+B2LT9,2,"đợt 2, 5 Cơ khí đại cương",D3N0K8VC,VC,2,42,K8,2,2 42 tuần đầu
+B2LT9,3,4t/2b/tuần Kỹ thuật lập trình,D3N0K7LT,LT,3,77,K7,1,1 78
+B2LT9,4,Nghiệp vụ cơ bản (HP1),D3N0K3NM,NM,2,39,K3,2,2 38 0
+B2LT9,5,Lý luận chung về hoạt động trinh sát,D3N0K3TS,TS,2,42,K3,1,1 42 0
+B2LT9,6,"đợt 2, 6 Vi xử lý và vi điều khiển",D3N0K8VX,VX,2,45,K8,2,2 46
+B2LT9,7,"tuần đầu 4kht/ôbn, g Lý thuyết mật mã và an toàn thông tin",D3N0K6MM,MM,2,42,K6,2,2 42
+B2LT9,8,"trùng với mđợôtn , 8 Kỹ thuật thông tin vô tuyến",D3N0K8VT,VT,2,45,K8,1,1 46 tuần đầu
+B2LT9,9,4t/2b/tuần Mạng máy tính,D3N0K7KT,KT,2,45,K7,1,1 44 0
+B2LT9,10,"Kỹ thuật thu thập, phục hồi và phân tích dữ liệu điện tử",D3N0K7PH,PH,2,45,K7,2,2 44 0
+B2LT9,11,Những vấn đề cơ bản về Trinh sát kỹ thuật,D3N0K8NV,NV,2,42,K8,2,2 42
+VLVH1,1,so le giữa Tư tưởng Hồ Chí Minh,D1T0K1TT,TT,2,39,K1,2,1 40
+VLVH1,2,"các lớp B2D14, đợt 1, Tiếng Anh (HP3)",D1T0K4AB,AB,4,102,K4,2,"2 102 chiều T3,"
+VLVH1,3,T5 (4 tiết) Giáo dục quốc phòng,D1T0K5QP,QP,2,90,K5,2,1 89 0
+VLVH1,4,Xác suất Xác suất thống kê,D1T0K4XS,XS,2,42,K4,2,2 32
+VLVH1,5,thống kê Kiến trúc máy tính và hợp ngữ,D1T0K7KH,KH,2,45,K7,2,2 46 0
+VLVH1,6,Mạng máy tính nâng cao,D1T0K7MN,MN,2,45,K7,2,2 46 0

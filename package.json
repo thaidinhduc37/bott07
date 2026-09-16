@@ -1,0 +1,20 @@
+{
+  "name": "student-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Trợ lý ảo hỗ trợ sinh viên — MVP tích hợp RAG có trích dẫn, lịch học/thi, biểu mẫu hành chính và trình ký",
+  "scripts": {
+    "infra:up": "docker compose --env-file server/.env -f docker-compose.dev.yml up -d postgres chroma",
+    "infra:down": "docker compose --env-file server/.env -f docker-compose.dev.yml down",
+    "infra:ps": "docker compose --env-file server/.env -f docker-compose.dev.yml ps",
+    "infra:logs": "docker compose --env-file server/.env -f docker-compose.dev.yml logs -f --tail=100",
+    "dev:server": "cd server && .venv/Scripts/python main.py",
+    "dev:web": "npm --prefix client run dev",
+    "build:web": "npm --prefix client run build",
+    "db:migrate": "cd server && .venv/Scripts/python -m alembic upgrade head",
+    "db:seed": "cd server && .venv/Scripts/python seed_phase1.py"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  }
+}

@@ -1,0 +1,194 @@
+# =============================================================================
+#  Trợ lý ảo hỗ trợ sinh viên — môi trường PHÁT TRIỂN (hot-reload)
+#
+#  Toàn bộ hệ thống chạy trong container, source bind-mount từ host — sửa code
+#  là container tự nạp lại (Vite HMR / Nest watch / uvicorn --reload), không
+#  cần build lại image.
+#
+#      npm run docker:dev          # = docker compose -f docker-compose.dev.yml up -d --build
+#      npm run docker:dev:down
+#
+#  Đây là một lựa chọn CỘNG THÊM, không thay `scripts/chay.ps1` (chạy trực
+#  tiếp trên host, không cần Docker Desktop mở, vòng lặp sửa–chạy nhanh hơn).
+#  Dùng file này khi cần môi trường nhất quán bất kể máy, hoặc không muốn cài
+#  Node/Python trên host.
+#
+#  postgres-data/chroma-data KHÔNG dùng chung với production (xem
+#  docker-compose.prod.yml) — trộn dữ liệu dev vào production là lỗi âm thầm.
+#  models dùng chung vì đó là cache trọng số mô hình, không phải trạng thái.
+# =============================================================================
+
+name: student-assistant-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sa-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-student_assistant}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_in_production}
+      POSTGRES_DB: ${POSTGRES_DB:-student_assistant}
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+      PGTZ: ${TZ:-Asia/Ho_Chi_Minh}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data-dev:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-student_assistant} -d ${POSTGRES_DB:-student_assistant}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    command:
+      - postgres
+      - -c
+      - max_connections=60
+      - -c
+      - shared_buffers=192MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - timezone=Asia/Ho_Chi_Minh
+
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: sa-chroma-dev
+    restart: unless-stopped
+    environment:
+      ANONYMIZED_TELEMETRY: "FALSE"
+    ports:
+      # Cổng mặc định bên trong container Chroma là 8000, trùng với rag-service
+      # chạy native trên host — map ra host qua CHROMA_PORT (mặc định 8001) để
+      # tránh đụng cổng.
+      - "${CHROMA_PORT:-8001}:8000"
+    volumes:
+      - chroma-data-dev:/data
+    # No healthcheck: the official chromadb/chroma image ships only its own
+    # Rust binary — no curl/wget/python/nc inside to probe with (confirmed by
+    # `docker exec`). Verified externally instead: `curl http://localhost:8001/api/v2/heartbeat`
+    # from the host, or the app's own /api/health/detail once it's running.
+    deploy:
+      resources:
+        limits:
+          memory: 1500m
+
+  rag-service:
+    build:
+      context: .
+      dockerfile: server/rag-service/Dockerfile
+      target: dev
+    container_name: sa-rag-dev
+    restart: unless-stopped
+    environment:
+      CHROMA_HOST: chroma
+      CHROMA_PORT: 8000
+      LLM_PROVIDER: ${LLM_PROVIDER:-chain}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-latest}
+      HF_API_KEY: ${HF_API_KEY:-}
+      HF_MODEL: ${HF_MODEL:-Qwen/Qwen2.5-72B-Instruct}
+      HF_BASE_URL: ${HF_BASE_URL:-https://router.huggingface.co/v1}
+      RAG_INTERNAL_TOKEN: ${RAG_INTERNAL_TOKEN:-change_me_internal_token}
+      ANSWER_THRESHOLD: ${ANSWER_THRESHOLD:-0.050}
+      CANDIDATES_K: ${CANDIDATES_K:-12}
+      QUANTIZE_RERANKER: ${QUANTIZE_RERANKER:-1}
+    volumes:
+      - models:/models
+      # Bind-mount mã nguồn thật — sửa file trên host, uvicorn --reload nạp
+      # lại ngay bên trong container.
+      - ./server/rag-service/app:/app/app
+      - ./server/rag-service/var:/app/var
+      - ./server/data:/server/data:ro
+      - ./server/storage:/server/storage:ro
+    depends_on:
+      - chroma
+    ports:
+      - "${RAG_PORT:-8000}:8000"
+    deploy:
+      resources:
+        limits:
+          memory: 3g
+
+  api:
+    build:
+      context: .
+      dockerfile: server/api/Dockerfile
+      target: dev
+    container_name: sa-api-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-student_assistant}:${POSTGRES_PASSWORD:-change_me_in_production}@postgres:5432/${POSTGRES_DB:-student_assistant}?schema=public
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?bat buoc phai dat JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?bat buoc phai dat JWT_REFRESH_SECRET}
+      JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-15m}
+      JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-7d}
+      RAG_SERVICE_URL: http://rag-service:8000
+      RAG_INTERNAL_TOKEN: ${RAG_INTERNAL_TOKEN:-change_me_internal_token}
+      # "*" mac dinh o dev: SSH-forward tu may khac hay dung origin localhost
+      # khac 3000 la chuyen thuong, gio cho phep tat (ma van giu duoc cookie
+      # nho reflect Origin thay vi CORS wildcard that). Sieu chat trong prod
+      # xem docker-compose.prod.yml.
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+    volumes:
+      # Bind-mount mã nguồn thật. Hai dòng node_modules là volume NẶC DANH:
+      # giữ nguyên node_modules đã cài trong image, không để bind-mount ở
+      # trên đè mất (và node_modules cài trên Windows host có addon native
+      # như argon2 không chạy được trong container Linux).
+      - ./server/api:/app/server/api
+      - /app/server/api/node_modules
+      - /app/node_modules
+      - ./server/storage:/app/server/storage
+      - ./server/data:/app/server/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${API_PORT:-4000}:4000"
+    deploy:
+      resources:
+        limits:
+          memory: 1536m
+
+  web:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+      target: dev
+    container_name: sa-web-dev
+    restart: unless-stopped
+    environment:
+      # Vite dev đọc trực tiếp từ biến môi trường lúc chạy — không cần build-arg
+      # như production (không có bước build tách riêng ở dev).
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:4000/api}
+      # Bật polling cho Vite watcher — xem client/vite.config.ts.
+      VITE_USE_POLLING: "1"
+    volumes:
+      - ./client:/app/client
+      - /app/client/node_modules
+      - /app/node_modules
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+volumes:
+  postgres-data-dev:
+    name: sa-postgres-data-dev
+  chroma-data-dev:
+    name: sa-chroma-data-dev
+  models:
+    name: sa-models

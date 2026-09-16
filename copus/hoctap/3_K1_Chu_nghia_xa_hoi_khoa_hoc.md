@@ -1,0 +1,338 @@
+| BỘ CÔNG AN<br>HỌC VIỆN KỸ THUẬT<br>VÀ CÔNG NGHỆ AN NINH | CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br>Độc lập - Tự do - Hạnh phúc |
+|---|---|
+
+# ĐỀ CƯƠNG CHI TIẾT HỌC PHẦN
+
+*(Ban hành kèm theo Quyết định số …../QĐ-T07-P3, ngày....tháng…năm 202 của Giám đốc Học viện Kỹ thuật và Công nghệ an ninh)*
+
+## 1. Thông tin chung về học phần
+
+- Tên học phần: Chủ nghĩa xã hội khoa học
+- Mã học phần: DSATK1CN
+- Áp dụng cho ngành/chuyên ngành: Công nghệ thông tin/An toàn hệ thống thông tin, Khoa học dữ liệu và Trí tuệ nhân tạo, Công nghệ phần mềm
+- Trình độ đào tạo: Trình độ đại học, hình thức chính quy
+- Học phần thuộc khối kiến thức:
+
+| Kiến thức giáo dục<br>đại cương ☒ |  | Kiến thức giáo dục chuyên nghiệp ☐ |  |  |  |  |  |
+|---|---|---|---|---|---|---|---|
+| Bắt buộc<br>☒ | Tự chọn<br>☐ | Cơ sở ☐ |  | Ngành ☐ |  | Chuyên ngành ☐ |  |
+|  |  | Bắt buộc<br>☐ | Tự chọn<br>☐ | Bắt buộc<br>☐ | Tự chọn<br>☐ | Bắt buộc<br>☐ | Tự chọn<br>☐ |
+
+- Số tín chỉ: 2 TC
+- Học phần tiên quyết: Kinh tế chính trị Mác - Lênin
+- Phân bổ thời gian: 39 tiết, trong đó:
+  - Lý thuyết: 21 tiết.
+  - Thảo luận: 18 tiết.
+  - Tự học, tự nghiên cứu: 51 giờ.
+
+## 2. Thông tin về đơn vị giảng dạy và giảng viên
+
+### 2.1. Đơn vị phụ trách giảng dạy: Khoa Lý luận chính trị và Khoa học xã hội nhân văn
+
+### 2.2. Giảng viên
+
+| TT | Họ tên | Học vị | Cấp bậc | Chức vụ | Đơn vị | Điện thoại | Email |
+|---|---|---|---|---|---|---|---|
+| 1 | Đỗ Đăng Quý | Tiến sĩ | Thiếu tá | TK | K1 | 0977808778 | nhungquy1983@gmail.com |
+| 2 | Vũ Thị Quyên | Tiến sĩ | Thiếu tá | PTK | K1 | 0987229809 | vuquyen298@gmail.com |
+| 3 | Mai Vũ Dũng | Tiến sĩ | Thiếu tá |  | K1 | 0968312258 | maidungnn77@gmail.<br>com |
+| 4 | Vũ Linh | Tiến sĩ | Đại uý |  | K1 | 0982136366 | Vulinh0512@gmail.com |
+| 5 | Nguyễn Thị Mai Phương | Tiến sĩ | Thiếu tá |  | K1 | 0969627293 | Maiphuongkt27@gmail.com |
+| 6 | Khuất Thị Vang | Thạc sĩ | Đại úy |  | K1 | 0977147328 | vangk52@gmail.com |
+| 7 | Khúc Thị Hoàn | Thạc sĩ | Đại úy |  | K1 | 0974938833 | hoankhuc2611@gmail.<br>com |
+| 8 | Đỗ Thu Hương | Thạc sĩ | Đại úy |  | K1 | 0987516796 | dothuhuong1987@gmail.<br>com |
+| 9 | Nguyễn Thị Yến | Thạc sĩ | Đại úy |  | K1 | 0975954818 | yennguyensp51@gmail.<br>com |
+
+## 3. Mô tả học phần
+
+Chủ nghĩa xã hội khoa học là học phần bắt buộc thuộc khối kiến thức giáo dục đại cương trong chương trình đào tạo dùng chung cho các ngành đào tạo trình độ đại học của Học viện Kỹ thuật và Công nghệ An ninh.
+
+Nội dung học phần: Nhập môn Chủ nghĩa xã hội khoa học; sứ mệnh lịch sử của giai cấp công nhân; chủ nghĩa xã hội và thời kỳ quá độ lên chủ nghĩa xã hội; dân chủ xã hội chủ nghĩa và nhà nước xã hội chủ nghĩa; cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội; vấn đề dân tộc và tôn giáo trong thời kỳ quá độ lên chủ nghĩa xã hội; vấn đề gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội.
+
+## 4. Mục tiêu học phần
+
+### 4.1. Về kiến thức
+
+- Trình bày: sự ra đời, các giai đoạn, đối tượng, phương pháp, ý nghĩa học tập chủ nghĩa xã hội khoa học; quan điểm của chủ nghĩa Mác - Lênin về giai cấp công nhân và sứ mệnh của nó; về phương hướng, giải pháp xây dựng giai cấp công nhân Việt Nam; điều kiện ra đời và đặc trưng của chủ nghĩa xã hội; về dân chủ, sự ra đời, bản chất dân chủ; sự ra đời và chức năng của nhà nước xã hội chủ nghĩa; cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội; khái niệm, đặc trưng cơ bản của dân tộc và đặc điểm dân tộc ở Việt Nam; nguồn gốc, bản chất, tính chất của tôn giáo và đặc điểm tôn giáo ở Việt Nam, đặc điểm quan hệ dân tộc và tôn giáo ở Việt Nam; khái niệm, vị trí, chức năng của gia đình.
+- Phân tích được: vai trò của C.Mác, Ph.Ăngghen, V.I.Lênin và sự phát triển chủ nghĩa xã hội khoa học; điều kiện quy định sứ mệnh của giai cấp công nhân, đặc điểm, sứ mệnh của giai cấp công nhân Việt Nam; những ổn định, biến đổi và khác biệt của giai cấp công nhân hiện nay; thời kỳ quá độ và quá độ lên chủ nghĩa xã hội ở Việt Nam; sự ra đời, bản chất nền dân chủ xã hội chủ nghĩa, của nhà nước xã hội chủ nghĩa; dân chủ xã hội chủ nghĩa và nhà nước pháp quyền xã hội chủ nghĩa ở Việt Nam; cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam; quan điểm của chủ nghĩa Mác - Lênin về dân tộc và nguyên tắc giải quyết vấn đề tôn giáo; quan điểm, chính sách của Đảng, Nhà nước Việt Nam trong giải quyết vấn đề dân tộc, tôn giáo và mối quan hệ giữa dân tộc tôn giáo; cơ sở xây dựng gia đình, những biến đổi của gia đình và phương hướng xây dựng, phát triển gia đình Việt Nam.
+- Vận dụng để liên hệ trách nhiệm của bản thân trong nhận thức và giải quyết các nội dung liên quan đến vấn đề giai cấp công nhân, chủ nghĩa xã hội và thời kỳ quá độ lên chủ nghĩa xã hội, dân chủ xã hội chủ nghĩa và nhà nước xã hội chủ nghĩa, cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội, dân tộc và tôn giáo trong thời kỳ quá độ lên chủ nghĩa xã hội, gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội.
+
+### 4.2. Về kỹ năng
+
+- Hình thành kỹ năng quan sát, nhận diện, đánh giá một số vấn đề chính trị - xã hội ở Việt Nam và thế giới trên nền tảng tư tưởng của chủ nghĩa Mác - Lênin.
+- Hình thành kỹ năng thuyết trình, thảo luận, phát vấn, phản biện, làm việc độc lập, tư duy lôgic, … phục vụ giải quyết các nhiệm vụ chính trị của học viên.
+
+### 4.3. Năng lực tự chủ và trách nhiệm
+
+- Rèn luyện năng lực, ý thức tự chủ, độc lập, khách quan, khoa học, trách nhiệm với việc học tập và nghiên cứu khoa học.
+- Xây dựng lý tưởng, niềm tin vào con đường đi lên chủ nghĩa xã hội, vào sự lãnh đạo của Đảng Cộng sản Việt Nam.
+- Xây dựng và rèn luyện ý thức trách nhiệm cho học viên đối với sự phát triển của Ngành, tương lai và sự phát triển của đất nước.
+
+## 5. Chuẩn đầu ra của học phần
+
+- Tóm tắt được quá trình hình thành, phát triển của chủ nghĩa xã hội khoa học và những quan điểm cơ bản của chủ nghĩa Mác - Lênin và quan điểm của Đảng Cộng sản Việt Nam về: sứ mệnh lịch sử của giai cấp công nhân; chủ nghĩa xã hội và thời kỳ quá độ lên chủ nghĩa xã hội; dân chủ xã hội chủ nghĩa và nhà nước xã hội chủ nghĩa; cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội; vấn đề dân tộc và tôn giáo trong thời kỳ quá độ lên chủ nghĩa xã hội; vấn đề gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội.
+- Hình thành và rèn luyện kỹ năng thuyết trình, thảo luận, làm việc nhóm, quan sát, nhận diện, đánh giá một số vấn đề chính trị - xã hội ở Việt Nam và thế giới trên nền tảng tư tưởng của chủ nghĩa Mác - Lênin.
+- Xác lập lập trường, ý thức hệ giai cấp, niềm tin và trách nhiệm của bản thân đối với gia đình, với Ngành và với Tổ quốc Việt Nam xã hội chủ nghĩa.
+
+## 6. Nội dung chi tiết học phần
+
+### Chương 1: NHẬP MÔN CHỦ NGHĨA XÃ HỘI KHOA HỌC
+
+#### 1.1. Sự ra đời của chủ nghĩa xã hội khoa học
+
+##### 1.1.1. Hoàn cảnh lịch sử ra đời chủ nghĩa xã hội khoa học
+
+##### 1.1.2. Vai trò của C.Mác và Ph.Ăngghen
+
+#### 1.2. Các giai đoạn phát triển cơ bản của chủ nghĩa xã hội khoa học
+
+##### 1.2.1. C.Mác và Ph.Ăngghen phát triển chủ nghĩa xã hội khoa học
+
+##### 1.2.2. V.I.Lênin vận dụng và phát triển chủ nghĩa xã hội khoa học trong điều kiện mới
+
+##### 1.2.3. Sự vận dụng và phát triển sáng tạo chủ nghĩa xã hội khoa học từ sau khi V.I.Lênin qua đời đến nay
+
+#### 1.3. Đối tượng, phương pháp và ý nghĩa của việc nghiên cứu chủ nghĩa xã hội khoa học
+
+##### 1.3.1. Đối tượng nghiên cứu của chủ nghĩa xã hội khoa học
+
+##### 1.3.2. Phương pháp nghiên cứu của chủ nghĩa xã hội khoa học
+
+##### 1.3.3. Ý nghĩa của việc nghiên cứu chủ nghĩa xã hội khoa học
+
+### Chương 2: SỨ MỆNH LỊCH SỬ CỦA GIAI CẤP CÔNG NHÂN
+
+#### 2.1. Quan điểm cơ bản của chủ nghĩa Mác - Lênin về giai cấp công nhân và sứ mệnh lịch sử của giai cấp công nhân
+
+##### 2.1.1. Khái niệm và đặc điểm của giai cấp công nhân
+
+##### 2.1.2. Nội dung sứ mệnh lịch sử của giai cấp công nhân
+
+##### 2.1.3. Những điều kiện quy định và thực hiện sứ mệnh lịch sử của giai cấp công nhân
+
+#### 2.2. Giai cấp công nhân và việc thực hiện sứ mệnh lịch sử của giai cấp công nhân hiện nay
+
+##### 2.2.1. Giai cấp công nhân hiện nay
+
+##### 2.2.2. Thực hiện sứ mệnh lịch sử của giai cấp công nhân trên thế giới hiện nay
+
+#### 2.3. Sứ mệnh lịch sử của giai cấp công nhân Việt Nam
+
+##### 2.3.1. Đặc điểm của giai cấp công nhân Việt Nam
+
+##### 2.3.2. Nội dung sứ mệnh lịch sử của giai cấp công nhân Việt Nam hiện nay
+
+##### 2.3.3. Phương hướng và một số giải pháp chủ yếu để xây dựng giai cấp công nhân Việt Nam hiện nay.
+
+### Chương 3: CHỦ NGHĨA XÃ HỘI VÀ THỜI KỲ QUÁ ĐỘ LÊN CHỦ NGHĨA XÃ HỘI
+
+#### 3.1. Chủ nghĩa xã hội
+
+##### 3.1.1. Chủ nghĩa xã hội, giai đoạn đầu của hình thái kinh tế - xã hội cộng sản chủ nghĩa
+
+##### 3.1.2. Điều kiện ra đời chủ nghĩa xã hội
+
+##### 3.1.3. Những đặc trưng bản chất của chủ nghĩa xã hội
+
+#### 3.2. Thời kỳ quá độ lên chủ nghĩa xã hội
+
+##### 3.2.1. Tính tất yếu khách quan của thời kỳ quá độ lên chủ nghĩa xã hội
+
+##### 3.2.2. Đặc điểm của thời kỳ quá độ lên chủ nghĩa xã hội
+
+#### 3.3. Quá độ lên chủ nghĩa xã hội ở Việt Nam
+
+##### 3.3.1. Đặc điểm quá độ lên chủ nghĩa xã hội ở Việt Nam là bỏ qua chế độ tư bản chủ nghĩa
+
+##### 3.3.2. Những đặc trưng của chủ nghĩa xã hội và phương hướng xây dựng chủ nghĩa xã hội ở Việt Nam hiện nay
+
+### Chương 4: DÂN CHỦ XÃ HỘI CHỦ NGHĨA VÀ NHÀ NƯỚC XÃ HỘI CHỦ NGHĨA
+
+#### 4.1. Dân chủ và dân chủ xã hội chủ nghĩa
+
+##### 4.1.1. Dân chủ và sự ra đời, phát triển của dân chủ
+
+##### 4.1.2. Dân chủ xã hội chủ nghĩa
+
+#### 4.2. Nhà nước xã hội chủ nghĩa
+
+##### 4.2.1. Sự ra đời, bản chất, chức năng của nhà nước xã hội chủ nghĩa
+
+##### 4.2.2. Mối quan hệ giữa dân chủ xã hội chủ nghĩa và nhà nước xã hội chủ nghĩa
+
+#### 4.3. Dân chủ xã hội chủ nghĩa và nhà nước pháp quyền xã hội chủ nghĩa ở Việt Nam
+
+##### 4.3.1. Dân chủ xã hội chủ nghĩa ở Việt Nam
+
+##### 4.3.2. Nhà nước pháp quyền xã hội chủ nghĩa ở Việt Nam
+
+##### 4.3.3. Phát huy dân chủ xã hội chủ nghĩa, xây dựng Nhà nước pháp quyền xã hội chủ nghĩa ở Việt Nam hiện nay
+
+### Chương 5: CƠ CẤU XÃ HỘI - GIAI CẤP VÀ LIÊN MINH GIAI CẤP, TẦNG LỚP TRONG THỜI KỲ QUÁ ĐỘ LÊN CHỦ NGHĨA XÃ HỘI
+
+#### 5.1. Cơ cấu xã hội - giai cấp trong thời kỳ quá độ lên chủ nghĩa xã hội
+
+##### 5.1.1. Khái niệm và vị trí của cơ cấu xã hội - giai cấp trong cơ cấu xã hội
+
+##### 5.1.2. Sự biến đổi có tính quy luật của cơ cấu xã hội - giai cấp trong thời kỳ quá độ lên chủ nghĩa xã hội
+
+#### 5.2. Liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội
+
+#### 5.3. Cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam
+
+##### 5.3.1. Cơ cấu xã hội - giai cấp trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam
+
+##### 5.3.2. Liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam
+
+### Chương 6: VẤN ĐỀ DÂN TỘC VÀ TÔN GIÁO TRONG THỜI KỲ QUÁ ĐỘ LÊN CHỦ NGHĨA XÃ HỘI
+
+#### 6.1. Dân tộc trong thời kỳ quá độ lên chủ nghĩa xã hội
+
+##### 6.1.1. Khái niệm, đặc trưng cơ bản của dân tộc
+
+##### 6.1.2. Chủ nghĩa Mác - Lênin về vấn đề dân tộc
+
+##### 6.1.3. Dân tộc và quan hệ dân tộc ở Việt Nam
+
+#### 6.2. Tôn giáo trong thời kỳ quá độ lên chủ nghĩa xã hội
+
+##### 6.2.1. Quan điểm của chủ nghĩa Mác - Lênin về tôn giáo
+
+##### 6.2.2. Tôn giáo ở Việt Nam và chính sách tôn giáo của Đảng, Nhà nước ta hiện nay
+
+#### 6.3. Quan hệ dân tộc và tôn giáo ở Việt Nam
+
+##### 6.3.1. Đặc điểm quan hệ dân tộc và tôn giáo ở Việt Nam
+
+##### 6.3.2. Định hướng giải quyết mối quan hệ dân tộc và tôn giáo ở Việt Nam hiện nay
+
+### Chương 7: VẤN ĐỀ GIA ĐÌNH TRONG THỜI KỲ QUÁ ĐỘ LÊN CHỦ NGHĨA XÃ HỘI
+
+#### 7.1. Khái niệm, vị trí và chức năng của gia đình
+
+##### 7.1.1. Khái niệm gia đình
+
+##### 7.1.2. Vị trí của gia đình trong xã hội
+
+##### 7.1.3. Chức năng cơ bản của gia đình
+
+#### 7.2. Cơ sở xây dựng gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội
+
+##### 7.2.1. Cơ sở kinh tế - xã hội
+
+##### 7.2.2. Cơ sở chính trị - xã hội
+
+##### 7.2.3. Cơ sở văn hóa
+
+##### 7.2.4. Chế độ hôn nhân tiến bộ
+
+#### 7.3. Xây dựng gia đình Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội
+
+##### 7.3.1. Sự biến đổi của gia đình Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội
+
+##### 7.3.2. Phương hướng cơ bản xây dựng và phát triển gia đình Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội
+
+## 7. Tài liệu, trang thiết bị phục vụ dạy học
+
+### 7.1. Tài liệu bắt buộc
+
+[1] Bộ Giáo dục và Đào tạo (2021), *Giáo trình Chủ nghĩa xã hội khoa học (Dành cho bậc Đại học hệ không chuyên lý luận chính trị)*, Nxb Chính trị Quốc gia Sự thật, Hà Nội.
+
+### 7.2. Tài liệu tham khảo
+
+[2] Bộ Giáo dục và Đào tạo (2021), *Giáo trình Chủ nghĩa xã hội khoa học (Dành cho bậc Đại học hệ chuyên lý luận chính trị)*, Nxb Chính trị Quốc gia Sự thật, Hà Nội.
+
+[3] Bộ Giáo dục và Đào tạo (2004), *Giáo trình Chủ nghĩa xã hội khoa học*, Nxb Chính trị Quốc gia, Hà Nội.
+
+[4] Đảng Cộng sản Việt Nam (1996), *Văn kiện Đại hội Đại biểu toàn quốc lần thứ VIII,* Nxb Chính trị Quốc gia, Hà Nội.
+
+[5] Đảng Cộng sản Việt Nam (2001), *Văn kiện Đại hội Đại biểu toàn quốc lần thứ IX*, Nxb Chính trị Quốc gia, Hà Nội.
+
+[6] Đảng Cộng sản Việt Nam (2006), *Văn kiện Đại hội Đại biểu toàn quốc lần thứ X*, Nxb Chính trị Quốc gia, Hà Nội.
+
+[7] Đảng Cộng sản Việt Nam (2011), *Văn kiện Đại hội Đại biểu toàn quốc lần thứ XI*, Nxb Chính trị Quốc gia, Hà Nội.
+
+[8] Đảng Cộng sản Việt Nam (2016), *Văn kiện Đại hội Đại biểu toàn quốc lần thứ XII*, Nxb Chính trị Quốc gia, Hà Nội.
+
+[9] Đảng Cộng sản Việt Nam (2021), *Văn kiện Đại hội Đại biểu toàn quốc lần thứ XIII tập I*, Nxb Chính trị Quốc gia Sự thật, Hà Nội.
+
+[10] Đảng Cộng sản Việt Nam (2021), *Văn kiện Đại hội Đại biểu toàn quốc lần thứ XIII tập II*, Nxb Chính trị Quốc gia Sự thật, Hà Nội.
+
+[11] Hội đồng Trung ương chỉ đạo biên soạn giáo trình quốc gia các bộ môn khoa học Mác - Lênin, tư tưởng Hồ Chí Minh (2018), *Giáo trình Chủ nghĩa xã hội khoa học,* Nxb Chính trị Quốc gia, Hà Nội.
+
+[12] Khuất Thị Vang (2020), *Chuyên đề chuyên sâu Tính đặc thù trong xây dựng Nhà nước pháp quyền xã hội chủ nghĩa Việt Nam hiện nay*, Nxb Công an nhân dân, Hà Nội.
+
+[13] Khuất Thị Vang (2021), *Chuyên đề chuyên sâu Quan điểm của chủ nghĩa Mác - Lênin về dân tộc và sự vận dụng trong giải quyết vấn đề dân tộc ở Việt Nam hiện nay*, Trường Đại học Kỹ thuật - Hậu Cần CAND, Bắc Ninh.
+
+[14] Khuất Thị Vang (2021), *Chuyên đề chuyên sâu Quan điểm của Hồ Chí Minh về tín ngưỡng, tôn giáo và sự vận dụng của Đảng trong giải quyết vấn đề tín ngưỡng, tôn giáo ở Việt Nam hiện nay*, Trường Đại học Kỹ thuật - Hậu Cần CAND, Bắc Ninh.
+
+### 7.3 Trang thiết bị phục vụ dạy học
+
+- Phấn, bảng, máy tính, máy chiếu và các phương tiện hỗ trợ khác.
+
+## 8. Tổ chức dạy học
+
+### 8.1. Phân bổ thời gian
+
+| Nội dung | Hình thức tổ chức dạy học (tiết) |  |  | Giờ tự học |
+|---|---|---|---|---|
+|  | Tổng số tiết | Giảng lý thuyết | Thảo luận |  |
+| CHƯƠNG 1 | 2 | 2 | 0 | 4 |
+| CHƯƠNG 2 | 7 | 4 | 3 | 9,5 |
+| CHƯƠNG 3 | 6 | 3 | 3 | 7,5 |
+| CHƯƠNG 4 | 7 | 3 | 4 | 8 |
+| CHƯƠNG 5 | 4 | 2 | 2 | 5 |
+| CHƯƠNG 6 | 7 | 4 | 3 | 9,5 |
+| CHƯƠNG 7 | 6 | 3 | 3 | 7,5 |
+| Tổng | 39 | 21 | 18 | 51 |
+
+### 8.2. Lịch trình dạy học cụ thể
+
+| Nội dung chính | HTTCDH | Mục tiêu | Phương pháp dạy học | Yêu cầu đối với học viên |
+|---|---|---|---|---|
+| CHƯƠNG 1: NHẬP MÔN CHỦ NGHĨA XÃ HỘI KHOA HỌC |  |  |  |  |
+| 1.1. Sự ra đời của chủ nghĩa xã hội khoa khọc<br>1.2. Các giai đoạn phát triển cơ bản của chủ nghĩa xã hội khoa học<br>1.3. Đối tượng, phương pháp và ý nghĩa của việc nghiên cứu chủ nghĩa xã hội khoa học | Lý thuyết | - Trình bày được:<br>+ Sự ra đời và các giai đoạn đoạn phát triển cơ bản của chủ nghĩa xã hội khoa học.<br>+ Đối tượng, phương pháp, ý nghĩa học tập chủ nghĩa xã hội khoa học.<br>- Phân tích được vai trò của C.Mác, Ph.Ăngghen, V.I.Lênin và sự phát triển của chủ nghĩa xã hội khoa học. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, diễn giải, quy nạp, đàm thoại, vấn đáp, xemina | 1. Đọc và bút ký trước các tài liệu sau:<br>- Đọc và bút ký tài liệu số [1] tr.7-26.<br>- Đọc và bút ký tài liệu số [3] tr.7-55.<br>- Đọc và bút ký tài liệu số [5] tr.13-91.<br>2. Trong giờ học yêu cầu:<br>- Lắng nghe, theo dõi<br>bài giảng<br>- Bút ký nội dung<br>- Trao đổi, thảo luận, trả lời các câu hỏi của giáo viên. |
+|  | Tự học | - Chuẩn bị các nội dung lý thuyết theo tiến trình lên lớp.<br>- Hình thành kỹ năng tự học, tự nghiên cứu | - Giao nội dung và yêu cầu của hoạt động tự học cho học viên.<br>- Hướng dẫn học viên tìm kiếm nguồn tài liệu và tự học<br>- Nêu vấn đề<br>- Kiểm tra, đánh giá | - Chuẩn bị các nhiệm vị theo hướng dẫn của giáo viên.<br>- Nghiên cứu tài liệu |
+|  | Giải đáp | - Giải đáp những thắc mắc của học viên liên quan đến nội dung bài học. | - Sử dụng kết hợp các phương pháp thuyết trình, đàm thoại | - Trao đổi các nội dung chưa hiểu rõ |
+| CHƯƠNG 2: SỨ MỆNH LỊCH SỬ CỦA GIAI CẤP CÔNG NHÂN |  |  |  |  |
+| 2.1. Quan điểm cơ bản của chủ nghĩa Mác - Lênin về giai cấp công nhân và sứ mệnh lịch sử của giai cấp công nhân<br>2.2. Giai cấp công nhân và việc thực hiện sứ mệnh lịch sử của giai cấp công nhân hiện nay<br>2.3. Sứ mệnh lịch sử của giai cấp công nhân Việt Nam | Lý thuyết | - Trình bày được:<br>+ Quan điểm của chủ nghĩa Mác - Lênin về giai cấp công nhân và sứ mệnh của nó.<br>+ Phương hướng, giải pháp xây dựng giai cấp công nhân Việt Nam.<br>- Phân tích được:<br>+ Điều kiện quy định sứ mệnh lịch sử của giai cấp công nhân.<br>+ Những điểm ổn định, biến đổi và khác biệt của giai cấp công nhân hiện nay.<br>+ Đặc điểm, sứ mệnh lịch sử của giai cấp công nhân Việt Nam.<br>- Vận dụng để liên hệ trách nhiệm của bản thân trong nhận thức và giải quyết các nội dung liên quan đến vấn đề giai cấp công nhân. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, diễn giải, quy nạp, đàm thoại, vấn đáp, xemina | 1. Đọc và bút ký trước các tài liệu sau:<br>- Đọc và bút ký tài liệu số [1] tr.185-217.<br>- Đọc và bút ký tài liệu số [3] tr.78-96.<br>- Đọc và bút ký tài liệu số [5] tr.92-123.<br>2. Trong giờ học yêu cầu:<br>- Lắng nghe, theo dõi bài giảng<br>- Bút ký nội dung<br>- Trao đổi, thảo luận, trả lời các câu hỏi của giáo viên. |
+| - Giai cấp công nhân và sứ mệnh lịch sử của giai cấp công nhân<br>- Giai cấp công nhân, sứ mệnh lịch sử của giai cấp công nhân Việt Nam | Xêmina,<br>thảo luận<br>. | - Củng cố kiến thức bài học<br>- Mở rộng nội dung liên quan đến bài học<br>- Hình thành, phát triển kỹ năng thảo luận nhóm, thuyết trình, phát vấn, phản biện, …. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, quy nạp, đàm thoại, vấn đáp, xemina thảo luận nhóm | - Chuẩn bị đề cương cá nhân hoặc nhóm theo chủ đề được giao<br>- Chuẩn bị các câu hỏi để tranh luận trong quá trình thảo luận.<br>- Trình bày chủ đề thảo luận. |
+|  | Tự học | - Chuẩn bị các nội dung lý thuyết, thảo luận theo tiến trình lên lớp.<br>- Hình thành kỹ năng tự học, tự nghiên cứu | - Giao nội dung và yêu cầu của hoạt động tự học cho học viên.<br>- Hướng dẫn học viên tìm kiếm nguồn tài liệu và tự học<br>- Nêu vấn đề<br>- Kiểm tra,<br>đánh giá | - Chuẩn bị các nhiệm vị theo hướng dẫn của giáo viên.<br>- Nghiên cứu tài liệu |
+|  | Giải đáp | - Giải đáp những thắc mắc của học viên liên quan đến nội dung bài học. | - Sử dụng kết hợp các phương pháp thuyết trình, đàm thoại | - Trao đổi các nội dung chưa hiểu rõ |
+| CHƯƠNG 3: CHỦ NGHĨA XÃ HỘI VÀ THỜI KỲ QUÁ ĐỘ LÊN CHỦ NGHĨA XÃ HỘI |  |  |  |  |
+| 3.1. Chủ nghĩa xã hội<br>3.2. Thời kỳ quá độ lên chủ nghĩa xã hội<br>3.3. Quá độ lên chủ nghĩa xã hội ở Việt Nam | Lý thuyết | - Trình bày được điều kiện ra đời chủ nghĩa xã hội và những đặc trưng cơ bản của chủ nghĩa xã hội.<br>- Phân tích được những nội dung của thời kỳ quá độ và quá độ lên chủ nghĩa xã hội ở Việt Nam.<br>- Vận dụng để liên hệ trách nhiệm của bản thân trong nhận thức và giải quyết các nội dung liên quan đến vấn đề chủ nghĩa xã hội, thời kỳ quá độ lên chủ nghĩa xã hội và quá độ lên chủ nghĩa xã hội ở Việt Nam. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, diễn giải, quy nạp, đàm thoại, vấn đáp, xemina | 1. Đọc và bút ký trước các tài liệu sau:<br>- Đọc và bút ký tài liệu số [1] tr.218-312.<br>- Đọc và bút ký tài liệu số [3] tr.57-76.<br>- Đọc và bút ký tài liệu số [5] tr.124-235.<br>2. Trong giờ học yêu cầu:<br>- Lắng nghe, theo dõi bài giảng<br>- Bút ký nội dung<br>- Trao đổi, thảo luận, trả lời các câu hỏi của giáo viên. |
+| - Chủ nghĩa xã hội<br>- Thời kỳ quá độ lên chủ nghĩa xã hội và quá độ lên chủ nghĩa xã hội ở Việt Nam. Liên hệ trách nhiệm bản thân. | Xêmina,<br>thảo luận | - Củng cố kiến thức bài học<br>- Mở rộng nội dung liên quan đến bài học<br>- Hình thành, phát triển kỹ năng thảo luận nhóm, thuyết trình, phát vấn, phản biện, …. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, quy nạp, đàm thoại, vấn đáp, xemina thảo luận nhóm | - Chuẩn bị đề cương cá nhân hoặc nhóm theo chủ đề được giao<br>- Chuẩn bị các câu hỏi để tranh luận trong quá trình thảo luận.<br>- Trình bày chủ đề thảo luận. |
+|  | Tự học | - Chuẩn bị các nội dung lý thuyết, thảo luận theo tiến trình lên lớp.<br>- Hình thành kỹ năng tự học, tự nghiên cứu | - Giao nội dung và yêu cầu của hoạt động tự học cho học viên.<br>- Hướng dẫn học viên tìm kiếm nguồn tài liệu và tự học<br>- Nêu vấn đề<br>- Kiểm tra, đánh giá | - Chuẩn bị các nhiệm vị theo hướng dẫn của giáo viên.<br>- Nghiên cứu tài liệu |
+|  | Giải đáp | - Giải đáp những thắc mắc của học viên liên quan đến nội dung bài học. | - Sử dụng kết hợp các phương pháp thuyết trình, đàm thoại | - Trao đổi các nội dung chưa hiểu rõ |
+| CHƯƠNG 4: DÂN CHỦ XÃ HỘI CHỦ NGHĨA VÀ NHÀ NƯỚC XÃ HỘI CHỦ NGHĨA |  |  |  |  |
+| 4.1. Dân chủ và dân chủ xã hội chủ nghĩa<br>4.2. Nhà nước xã hội chủ nghĩa<br>4.3. Dân chủ xã hội chủ nghĩa và nhà nước pháp quyền xã hội chủ nghĩa ở Việt Nam | Lý thuyết | - Trình bày được:<br>+ Quan niệm, sự ra đời, bản chất của dân chủ.<br>+ Sự ra đời, chức năng của nhà nước xã hội chủ nghĩa.<br>- Phân tích được:<br>+ Sự ra đời, bản chất nền dân chủ xã hội chủ nghĩa, của nhà nước xã hội chủ nghĩa.<br>+ Dân chủ xã hội chủ nghĩa và nhà nước pháp quyền xã hội chủ nghĩa ở Việt Nam.<br>- Vận dụng để liên hệ trách nhiệm của bản thân trong nhận thức và giải quyết các nội dung liên quan đến vấn đề dân chủ xã hội chủ nghĩa và nhà nước xã hội chủ nghĩa. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, diễn giải, quy nạp, đàm thoại, vấn đáp, xemina | 1. Đọc và bút ký trước các tài liệu sau:<br>- Đọc và bút ký tài liệu số [1] tr.218-312.<br>- Đọc và bút ký tài liệu số [3] tr.154-172.<br>- Đọc và bút ký tài liệu số [5] tr.236-277.<br>- Đọc và bút ký tài liệu số [6].<br>2. Trong giờ học yêu cầu:<br>- Lắng nghe, theo dõi bài giảng<br>- Bút ký nội dung<br>- Trao đổi, thảo luận, trả lời các câu hỏi của giáo viên. |
+| - Dân chủ, dân chủ xã hội chủ nghĩa ở việt Nam và liên hệ trách nhiệm bản than.<br>- Nhà nước xã hội chủ nghĩa, Nhà nước pháp quyền xã hội chủ nghĩa ở Việt Nam và liên hệ trách nhiệm bản thân. | Xêmina,<br>thảo luận | - Củng cố kiến thức bài học<br>- Mở rộng nội dung liên quan đến bài học<br>- Hình thành, phát triển kỹ năng thảo luận nhóm, thuyết trình, phát vấn, phản biện, …. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, quy nạp, đàm thoại, vấn đáp, xemina thảo luận nhóm | - Chuẩn bị đề cương cá nhân hoặc nhóm theo chủ đề được giao<br>- Chuẩn bị các câu hỏi để tranh luận trong quá trình thảo luận.<br>- Trình bày chủ đề thảo luận. |
+|  | Tự học | - Chuẩn bị các nội dung lý thuyết, thảo luận theo tiến trình lên lớp.<br>- Hình thành kỹ năng tự học, tự nghiên cứu | - Giao nội dung và yêu cầu của hoạt động tự học cho học viên.<br>- Hướng dẫn học viên tìm kiếm nguồn tài liệu và tự học<br>- Nêu vấn đề<br>- Kiểm tra, đánh giá | - Chuẩn bị các nhiệm vị theo hướng dẫn của giáo viên.<br>- Nghiên cứu tài liệu |
+|  | Giải đáp | - Giải đáp những thắc mắc của học viên liên quan đến nội dung bài học. | - Sử dụng kết hợp các phương pháp thuyết trình, đàm thoại | - Trao đổi các nội dung chưa hiểu rõ |
+| CHƯƠNG 5: CƠ CẤU XÃ HỘI - GIAI CẤP VÀ LIÊN MINH GIAI CẤP, TẦNG LỚP TRONG THỜI KỲ QUÁ ĐỘ LÊN CHỦ NGHĨA XÃ HỘI |  |  |  |  |
+| 5.1. Cơ cấu xã hội - giai cấp trong thời kỳ quá độ lên chủ nghĩa xã hội<br>5.2. Liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội<br>5.3. Cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam | Lý thuyết | - Trình bày được cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội.<br>- Phân tích được cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam.<br>- Vận dụng để liên hệ trách nhiệm của bản thân trong nhận thức và giải quyết các nội dung liên quan đến vấn đề cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, diễn giải, quy nạp, đàm thoại, vấn đáp, xemina | 1. Đọc và bút ký trước các tài liệu sau:<br>- Đọc và bút ký tài liệu số [1] tr.218-312.<br>- Đọc và bút ký tài liệu số [2] tr.201-237.<br>- Đọc và bút ký tài liệu số [3] tr.173-193.<br>- Đọc và bút ký tài liệu số [5] tr.278-310.<br>2. Trong giờ học yêu cầu:<br>- Lắng nghe, theo dõi bài giảng<br>- Bút ký nội dung<br>- Trao đổi, thảo luận, trả lời các câu hỏi của giáo viên. |
+| - Cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam. Liên hệ trách nhiệm bản thân. | Xêmina,<br>thảo luận | - Củng cố kiến thức bài học<br>- Mở rộng nội dung liên quan đến bài học.<br>- Hình thành, phát triển kỹ năng thảo luận nhóm, thuyết trình, phát vấn, phản biện, …. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, quy nạp, đàm thoại, vấn đáp, xemina thảo luận nhóm | - Chuẩn bị đề cương cá nhân hoặc nhóm theo chủ đề được giao<br>- Chuẩn bị các câu hỏi để tranh luận trong quá trình thảo luận.<br>- Trình bày chủ đề thảo luận. |
+|  | Tự học | - Chuẩn bị các nội dung lý thuyết, thảo luận theo tiến trình lên lớp.<br>- Hình thành kỹ năng tự học, tự nghiên cứu | - Giao nội dung và yêu cầu của hoạt động tự học cho học viên.<br>- Hướng dẫn học viên tìm kiếm nguồn tài liệu và tự học<br>- Nêu vấn đề<br>- Kiểm tra, đánh giá | - Chuẩn bị các nhiệm vị theo hướng dẫn của giáo viên.<br>- Nghiên cứu tài liệu |
+|  | Giải đáp | - Giải đáp những thắc mắc của học viên liên quan đến nội dung bài học. | - Sử dụng kết hợp các phương pháp thuyết trình, đàm thoại | - Trao đổi các nội dung chưa hiểu rõ |
+| CHƯƠNG 6: VẤN ĐỀ DÂN TỘC VÀ TÔN GIÁO TRONG THỜI KỲ QUÁ ĐỘ LÊN CHỦ NGHĨA XÃ HỘI |  |  |  |  |
+| 6.1. Dân tộc trong thời kỳ quá độ lên chủ nghĩa xã hội<br>6.2. Tôn giáo trong thời kỳ quá độ lên chủ nghĩa xã hội<br>6.3. Quan hệ dân tộc và tôn giáo ở Việt Nam | Lý thuyết | - Trình bày được:<br>+ Khái niệm, đặc trưng cơ bản của dân tộc và đặc điểm dân tộc ở Việt Nam.<br>+ Nguồn gốc, bản chất, tính chất của tôn giáo và đặc điểm tôn giáo ở Việt Nam.<br>+ Đặc điểm quan hệ dân tộc và tôn giáo ở Việt Nam.<br>- Phân tích được:<br>+ Quan điểm của chủ nghĩa Mác - Lênin về dân tộc và nguyên tắc giải quyết vấn đề tôn giáo.<br>+ Quan điểm, chính sách của Đảng, Nhà nước Việt Nam trong giải quyết vấn đề dân tộc, tôn giáo và mối quan hệ giữa dân tộc tôn giáo.<br>- Vận dụng để liên hệ trách nhiệm của bản thân trong nhận thức và giải quyết các nội dung liên quan đến vấn đề dân tộc và tôn giáo trong thời kỳ quá độ lên chủ nghĩa xã hội. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, diễn giải, quy nạp, đàm thoại, vấn đáp, xemina | 1. Đọc và bút ký trước các tài liệu sau:<br>- Đọc và bút ký tài liệu số [1] tr.313-355.<br>- Đọc và bút ký tài liệu số [2] tr.238-320.<br>- Đọc và bút ký tài liệu số [3] tr.194-234.<br>- Đọc và bút ký tài liệu số [5] tr.311-341 và tr.446-474.<br>- Đọc và bút ký tài liệu số [7], [8].<br>2. Trong giờ học yêu cầu:<br>- Lắng nghe, theo dõi bài giảng<br>- Bút ký nội dung<br>- Trao đổi, thảo luận, trả lời các câu hỏi của giáo viên. |
+| - Vấn đề dân tộc trách nhiệm bản thân.<br>- Vấn đề tôn giáo và trách nhiệm bản thân. | Xêmina,<br>thảo luận | - Củng cố kiến thức bài học<br>- Mở rộng nội dung liên quan đến bài học.<br>- Hình thành, phát triển kỹ năng thảo luận nhóm, thuyết trình, phát vấn, phản biện, …. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, quy nạp, đàm thoại, vấn đáp, xemina thảo luận nhóm | - Chuẩn bị đề cương cá nhân hoặc nhóm theo chủ đề được giao<br>- Chuẩn bị các câu hỏi để tranh luận trong quá trình thảo luận.<br>- Trình bày chủ đề thảo luận. |
+|  | Tự học | - Chuẩn bị các nội dung lý thuyết, thảo luận theo tiến trình lên lớp.<br>- Hình thành kỹ năng tự học, tự nghiên cứu | - Giao nội dung và yêu cầu của hoạt động tự học cho học viên.<br>- Hướng dẫn học viên tìm kiếm nguồn tài liệu và tự học<br>- Nêu vấn đề<br>- Kiểm tra, đánh giá | - Chuẩn bị các nhiệm vị theo hướng dẫn của giáo viên.<br>- Nghiên cứu tài liệu |
+|  | Giải đáp | - Giải đáp những thắc mắc của học viên liên quan đến nội dung bài học. | - Sử dụng kết hợp các phương pháp thuyết trình, đàm thoại | - Trao đổi các nội dung chưa hiểu rõ |
+| CHƯƠNG 7: VẤN ĐỀ GIA ĐÌNH TRONG THỜI KỲ QUÁ ĐỘ LÊN CHỦ NGHĨA XÃ HỘI |  |  |  |  |
+| 7.1. Khái niệm, vị trí và chức năng của gia đình<br>7.2. Cơ sở xây dựng gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội<br>7.3. Xây dựng gia đình Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội | Lý thuyết | - Trình bày được khái niệm, vị trí, chức năng của gia đình.<br>- Phân tích được:<br>+ Cơ sở xây dựng gia đình.<br>+ Những biến đổi của gia đình và phương hướng xây dựng, phát triển gia đình Việt Nam.<br>- Vận dụng để liên hệ trách nhiệm của bản thân trong nhận thức và giải quyết các nội dung liên quan đến vấn đề gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, diễn giải, quy nạp, đàm thoại, vấn đáp, xemina | 1. Đọc và bút ký trước các tài liệu sau:<br>- Đọc và bút ký tài liệu số [1] tr.313-355.<br>- Đọc và bút ký tài liệu số [2] tr.321-359.<br>- Đọc và bút ký tài liệu số [2] tr.235-255.<br>- Đọc và bút ký tài liệu số [4] tr.413-445.<br>2. Trong giờ học yêu cầu:<br>- Lắng nghe, theo dõi bài giảng<br>- Bút ký nội dung<br>- Trao đổi, thảo luận, trả lời các câu hỏi của giáo viên. |
+| - Vị trí, chức năng, cơ sở xây dựng gia đình<br>- Vấn đề xây dựng gia đình Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội và trách nhiệm bản thân. | Xêmina,<br>thảo luận | - Củng cố kiến thức bài học<br>- Mở rộng nội dung liên quan đến bài học.<br>- Hình thành, phát triển kỹ năng thảo luận nhóm, thuyết trình, phát vấn, phản biện, …. | - Sử dụng kết hợp các phương pháp: thuyết trình, phân tích, quy nạp, đàm thoại, vấn đáp, xemina thảo luận nhóm | - Chuẩn bị đề cương cá nhân hoặc nhóm theo chủ đề được giao<br>- Chuẩn bị các câu hỏi để tranh luận trong quá trình thảo luận.<br>- Trình bày chủ đề thảo luận. |
+|  | Tự học | - Chuẩn bị các nội dung lý thuyết, thảo luận theo tiến trình lên lớp.<br>- Hình thành kỹ năng tự học, tự nghiên cứu | - Giao nội dung và yêu cầu của hoạt động tự học cho học viên.<br>- Hướng dẫn học viên tìm kiếm nguồn tài liệu và tự học<br>- Nêu vấn đề<br>- Kiểm tra, đánh giá | - Chuẩn bị các nhiệm vị theo hướng dẫn của giáo viên.<br>- Nghiên cứu tài liệu |
+|  | Giải đáp | - Giải đáp những thắc mắc của học viên liên quan đến nội dung bài học. | - Sử dụng kết hợp các phương pháp thuyết trình, đàm thoại | - Trao đổi các nội dung chưa hiểu rõ |
+
+## 9. Đánh giá học phần
+
+Kết quả học tập của học viên được đánh giá qua điểm kiểm tra thường xuyên, điểm thi kết thúc học phần theo quy định của Bộ Giáo dục và Đào tạo, Bộ Công an và Nhà trường. Thời gian thi thực hiện theo các quy định đào tạo hiện hành.
+
+| Phương pháp<br>đánh giá | Số lượng | Trọng số (%) | Hình thức<br>đánh giá | Tiêu chí đánh giá |
+|---|---|---|---|---|
+| Kiểm tra thường xuyên<br>(Nếu lựa chọn hình thức tự luận thì:<br>- Kiểm tra thường xuyên số 1 làm sau khi học hết chương 4.<br>- Kiểm tra thường xuyên số 2 làm sau khi học hết chương 6). | 02 | Theo quy định hiện hành | Lựa chọn một trong các hình thức:<br>- Tự luận;<br>- Bài tập nhóm;<br>- Thuyết trình | - Tự luận:<br>+ Trả lời chính xác, rõ ràng, tường minh câu hỏi.<br>+ Nội dung lôgic, bố cục chặt chẽ, văn phong rõ ràng, có liên hệ thực tiễn.<br>- Bài tập nhóm:<br>+ Xác định đúng vấn đề cần phải giải quyết.<br>+ Hệ thống được nội dung lý luận.<br>+ Vận dụng được vào thực tiễn.<br>+ Bố cục hợp lý, trình bày sạch sẽ, văn phong trong sáng, trích dẫn hợp lý.<br>+ Hoàn thành đúng tiến độ, có kết quả tốt, tinh thần làm việc nghiêm túc, khoa học.<br>- Thuyết trình:<br>+ Phong thái tự tin, đĩnh đạc, trình bày logic, chính xác, rõ ràng.<br>+ Nội dung đảm bảo tường minh, khoa học, có liên hệ, vận dụng.<br>+ Các luận cứ và luận chứng chính xác và có sức thuyết phục, giải quyết được vấn đề, thể hiện năng lực tư duy lý luận tốt. |
+| Điểm thi kết thúc học phần | 01 | Theo quy định hiện hành | Lựa chọn một trong các hình thức:<br>- Trắc nghiệm kết hợp tự luận;<br>- Tự luận;<br>- Vấn đáp;<br>- Làm tiểu luận;<br>- Báo cáo chuyên đề. | - Trắc nghiệm kết hợp tự luận:<br>+ Trả lời đúng các câu hỏi trắc nghiệm.<br>+ Trả lời chính xác, rõ ràng câu hỏi tự luận với nội dung lôgic, bố cục chặt chẽ, văn phong rõ ràng, có liên hệ thực tiễn.<br>- Tự luận:<br>+ Trả lời chính xác, rõ ràng, tường minh câu hỏi.<br>+ Nội dung lôgic, bố cục chặt chẽ, văn phong rõ ràng, có liên hệ thực tiễn.<br>- Vấn đáp:<br>+ Trả lời chính xác, rõ ràng câu hỏi.<br>+ Lập luận lôgic, có liên hệ thực tiễn.<br>+ Ngôn ngữ cơ thể phù hợp, phong thái tự tin.<br>- Làm tiểu luận:<br>+ Yêu cầu từ 15 đến 20 trang khổ A4.<br>+ Bố cục rõ ràng, hợp lý gồm: mở đầu, nội dung, kết luận, danh mục tài liệu tham khảo.<br>+ Mở đầu, kết luận xác định vấn đề rõ ràng, hợp lý, lôgic.<br>+ Nội dung lý thuyết đầy đủ, có phân tích, chứng minh.<br>+ Nội dung vận dụng thiết thực gắn với thực tiễn.<br>+ Tài liệu tham khảo phong phú, đa dạng, ưu tiên cập nhật tài liệu mới. Trích dẫn chính xác, rõ ràng.<br>+ Ngôn từ trong sáng, khoa học, trình bày đẹp.<br>- Báo cáo chuyên đề:<br>+ Yêu cầu từ 15 đến 20 trang khổ A4.<br>+ Bố cục, kết cấu lôgic chặt chẽ, khoa học, phù hợp.<br>+ Mở đầu, kết luận xác định vấn đề rõ ràng, hợp lý, lôgic.<br>+ Nội dung lý thuyết đầy đủ, có phân tích, chứng minh.<br>+ Nội dung vận dụng thiết thực gắn với thực tiễn.<br>+ Tài liệu tham khảo phong phú, đa dạng, ưu tiên cập nhật tài liệu mới. Trích dẫn chính xác, rõ ràng.<br>+ Ngôn từ trong sáng, khoa học, trình bày đẹp.<br>+ Phong thái tự tin, đĩnh đạc, trình bày logic, chính xác, rõ ràng. |
+
+| GIÁM ĐỐC<br>Thiếu tướng Lê Minh Thảo | TRƯỞNG KHOA<br>Trung tá Đỗ Đăng Quý |
+|---|---|

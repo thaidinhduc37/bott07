@@ -1,0 +1,62 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+server/**/node_modules/
+client/node_modules/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# build output
+dist/
+server/api/dist/
+
+# environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# runtime storage (generated at runtime, not source)
+server/storage/uploads/*
+server/storage/generated-forms/*
+server/storage/signatures/*
+!server/storage/**/.gitkeep
+
+# rag artefacts (rebuilt by ingestion)
+server/rag-service/var/
+!server/rag-service/var/.gitkeep
+
+# model cache
+.cache/
+models/
+
+# logs & os
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# backups
+backups/
+
+# playwright mcp artefacts
+.playwright-mcp/
+*.png
+!docs/**/*.png
+
+# process logs
+*.err.log
+
+# local worktrees (SDD scratch)
+.worktrees/
+.superpowers/
+
+# stray Windows reserved-name file from a misdirected command
+/nul

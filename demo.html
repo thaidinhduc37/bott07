@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="_ds/industry-b2bf9773-d584-45cd-872e-ba4b4d4effa5/styles.css"/>
+<link rel="stylesheet" href="https://unpkg.com/lucide-static@0.446.0/font/lucide.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&amp;family=Barlow:wght@300;400;500;600&amp;display=swap"/>
+<style>
+html,body{margin:0;background:var(--color-bg)}
+a{color:var(--color-accent);text-decoration:none}
+a:hover{color:var(--color-accent-700)}
+[class^="icon-"],[class*=" icon-"]{line-height:1;display:inline-block}
+</style>
+</helmet>
+
+<div style="width:1440px;height:900px;overflow:hidden;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);display:grid;grid-template-rows:1fr">
+
+<sc-if value="{{ authed }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-rows:auto 1fr;height:900px;min-height:0">
+
+  <header style="display:flex;align-items:center;gap:20px;padding:12px 24px;border-bottom:1px solid var(--color-divider)">
+    <div class="blueprint" style="width:34px;height:34px;display:grid;place-items:center;background:var(--color-accent);color:var(--color-bg);font-family:var(--font-heading);font-size:14px;letter-spacing:.04em">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>HV
+    </div>
+    <div style="margin-right:auto;display:flex;flex-direction:column">
+      <span style="font-family:var(--font-heading);font-size:17px;line-height:1.1;letter-spacing:.01em">{{ t.brand }}</span>
+      <span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.product }}</span>
+    </div>
+
+    <div class="seg" style="flex:none">
+      <label class="seg-opt"><input type="radio" name="ind-role" checked="{{ isSV }}" onChange="{{ pickSV }}"/>{{ t.roleSV }}</label>
+      <label class="seg-opt"><input type="radio" name="ind-role" checked="{{ isGV }}" onChange="{{ pickGV }}"/>{{ t.roleGV }}</label>
+      <label class="seg-opt"><input type="radio" name="ind-role" checked="{{ isQT }}" onChange="{{ pickQT }}"/>{{ t.roleQT }}</label>
+    </div>
+
+    <div class="seg" style="flex:none">
+      <label class="seg-opt"><input type="radio" name="ind-lang" checked="{{ isVi }}" onChange="{{ pickVi }}"/>VI</label>
+      <label class="seg-opt"><input type="radio" name="ind-lang" checked="{{ isEn }}" onChange="{{ pickEn }}"/>EN</label>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;padding-left:16px;border-left:1px solid var(--color-divider)">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;line-height:1.25">
+        <span style="font-family:var(--font-heading);font-size:14px">{{ t.userName }}</span>
+        <span style="font-size:11px" class="text-muted">{{ t.userMeta }}</span>
+      </div>
+      <div class="blueprint" style="width:32px;height:32px;display:grid;place-items:center;font-family:var(--font-heading);font-size:13px">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>{{ t.userInit }}
+      </div>
+    </div>
+  </header>
+
+  <div style="display:grid;grid-template-columns:252px 1fr;min-height:0">
+
+    <aside style="border-right:1px solid var(--color-divider);padding:18px 14px;display:flex;flex-direction:column;gap:4px;min-height:0">
+      <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-600);padding:0 12px 8px">{{ t.navLabel }}</div>
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+        <a href="#" style="{{ n.style }}" onClick="{{ n.go }}">
+          <i class="{{ n.li }}" style="font-size:16px;width:16px"></i>
+          <span>{{ n.label }}</span>
+        </a>
+      </sc-for>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:12px">
+        <div class="blueprint" style="padding:10px 12px">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.sigLabel }}</div>
+          <div style="font-size:12.5px;margin-top:4px;line-height:1.4">{{ t.sigActive }}</div>
+        </div>
+        <button class="btn btn-secondary" style="justify-content:flex-start;gap:8px" onClick="{{ logout }}"><i class="icon-log-out" style="font-size:15px"></i>{{ t.logout }}</button>
+      </div>
+    </aside>
+
+    <main style="min-height:0;overflow:hidden;display:grid">
+
+      <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
+      <section data-screen-label="01 Hoi dap quy che" style="display:grid;grid-template-rows:auto 1fr auto;min-height:0">
+        <div style="padding:22px 30px 10px">
+          <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.kickerAI }}</div>
+          <h2 style="margin:4px 0 0;font-size:30px">{{ t.navChat }}</h2>
+          <p style="margin:6px 0 0;font-size:13px;max-width:660px;text-wrap:pretty" class="text-muted">{{ t.chatSub }}</p>
+        </div>
+        <div style="overflow:auto;padding:10px 30px 16px">
+          <div style="display:flex;flex-direction:column;gap:18px;max-width:860px">
+            <sc-for list="{{ chat }}" as="m" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column">
+                <sc-if value="{{ m.me }}">
+                  <div style="align-self:flex-end;max-width:66%;background:var(--color-accent-900);color:var(--color-neutral-100);padding:11px 15px;font-size:14px;line-height:1.5">{{ m.text }}</div>
+                </sc-if>
+                <sc-if value="{{ m.ai }}">
+                  <div class="blueprint" style="align-self:flex-start;max-width:90%;padding:15px 17px">
+                    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+                      <span style="width:19px;height:19px;display:grid;place-items:center;background:var(--color-accent);color:var(--color-bg);font-size:10px;font-family:var(--font-heading)">AI</span>
+                      <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase" class="text-muted">{{ t.aiName }}</span>
+                    </div>
+                    <div style="font-size:14.5px;line-height:1.62;text-wrap:pretty">{{ m.text }}</div>
+                    <div style="margin-top:13px;display:flex;flex-direction:column;gap:6px">
+                      <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.citeLabel }}</div>
+                      <sc-for list="{{ m.cites }}" as="c" hint-placeholder-count="1">
+                        <div style="display:grid;grid-template-columns:18px 1fr;gap:10px;padding:9px 11px;background:var(--color-accent-100);border-left:2px solid var(--color-accent)">
+                          <i class="icon-quote" style="font-size:14px;color:var(--color-accent-700)"></i>
+                          <div>
+                            <div style="font-family:var(--font-heading);font-size:14px;color:var(--color-accent-800)">{{ c.ref }}</div>
+                            <div style="font-size:11.5px" class="text-muted">{{ c.meta }}</div>
+                          </div>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding:14px 30px 20px;border-top:1px solid var(--color-divider)">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px">
+            <sc-for list="{{ suggestions }}" as="q" hint-placeholder-count="4">
+              <button class="tag tag-outline" style="cursor:pointer;background:transparent;font-family:var(--font-body)">{{ q }}</button>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;max-width:860px">
+            <input class="input" placeholder="{{ t.askPh }}"/>
+            <button class="btn btn-primary" style="flex:none;gap:8px"><i class="icon-send" style="font-size:15px"></i>{{ t.send }}</button>
+          </div>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isStudy }}">
+      <section data-screen-label="02 Tro ly hoc tap" style="display:grid;grid-template-columns:206px 1fr 292px;min-height:0">
+        <div style="border-right:1px solid var(--color-divider);padding:22px 14px;overflow:auto">
+          <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-600);padding:0 6px 10px">{{ t.subjects }}</div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <sc-for list="{{ subjects }}" as="s" hint-placeholder-count="5">
+              <a href="#" style="{{ s.style }}" onClick="{{ s.go }}">
+                <span style="font-size:10px;color:var(--color-neutral-600);font-family:var(--font-heading)">{{ s.code }}</span>
+                <span style="font-size:13.5px;line-height:1.3">{{ s.name }}</span>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="overflow:auto;padding:22px 26px;display:flex;flex-direction:column;gap:18px">
+          <div>
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.kickerAI }}</div>
+            <h2 style="margin:4px 0 0;font-size:28px">{{ subjTitle }}</h2>
+            <p style="margin:5px 0 0;font-size:13px" class="text-muted">{{ t.studySub }}</p>
+          </div>
+
+          <div class="blueprint" style="padding:16px 18px">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <h4 style="margin:0 0 4px;font-size:19px">{{ t.summaryTitle }}</h4>
+            <div style="font-size:11px;margin-bottom:10px" class="text-muted">{{ t.summaryMeta }}</div>
+            <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;font-size:14px;line-height:1.55">
+              <sc-for list="{{ summary }}" as="b" hint-placeholder-count="4"><li style="text-wrap:pretty">{{ b }}</li></sc-for>
+            </ul>
+          </div>
+
+          <div class="blueprint" style="padding:16px 18px">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px">
+              <h4 style="margin:0;font-size:19px">{{ t.quizTitle }}</h4>
+              <span class="tag tag-accent">{{ t.quizMeta }}</span>
+            </div>
+            <div style="font-size:14.5px;margin-bottom:12px;line-height:1.55">{{ t.quizQ }}</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <sc-for list="{{ quizOpts }}" as="o" hint-placeholder-count="4">
+                <button style="{{ o.style }}" onClick="{{ o.pick }}">
+                  <span style="font-family:var(--font-heading);width:16px">{{ o.key }}</span>
+                  <span>{{ o.text }}</span>
+                </button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ quizAnswered }}">
+              <div style="margin-top:12px;padding:11px 13px;background:var(--color-accent-100);border-left:2px solid var(--color-accent);font-size:13.5px;line-height:1.55">{{ t.quizFeedback }}</div>
+            </sc-if>
+          </div>
+        </div>
+
+        <div style="border-left:1px solid var(--color-divider);padding:22px 18px;overflow:auto;display:flex;flex-direction:column;gap:20px">
+          <div>
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-600);margin-bottom:9px">{{ t.weakTitle }}</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ weak }}" as="w" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center">
+                  <span style="font-size:13px">{{ w.name }}</span>
+                  <span class="tag tag-neutral">{{ w.score }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-600);margin-bottom:9px">{{ t.pathTitle }}</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ path }}" as="p" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:22px 1fr;gap:9px">
+                  <span style="width:20px;height:20px;display:grid;place-items:center;border:1px solid var(--color-accent);color:var(--color-accent-800);font-size:11px;font-family:var(--font-heading)">{{ p.n }}</span>
+                  <span style="font-size:13px;line-height:1.45">{{ p.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-600);margin-bottom:9px">{{ t.matTitle }}</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <sc-for list="{{ materials }}" as="m" hint-placeholder-count="3">
+                <a href="#" style="font-size:13px;display:flex;gap:8px;align-items:center"><i class="icon-file-text" style="font-size:14px"></i>{{ m }}</a>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isForms }}">
+      <section data-screen-label="03 Don hanh chinh" style="display:grid;grid-template-rows:auto 1fr auto;min-height:0">
+        <div style="padding:22px 30px 10px">
+          <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.kickerAI }}</div>
+          <h2 style="margin:4px 0 0;font-size:30px">{{ t.navForms }}</h2>
+          <p style="margin:6px 0 0;font-size:13px;max-width:700px;text-wrap:pretty" class="text-muted">{{ t.formsSub }}</p>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:0">
+          <div style="overflow:auto;padding:12px 26px 20px 30px;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ formChat }}" as="m" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column">
+                <sc-if value="{{ m.me }}">
+                  <div style="align-self:flex-end;max-width:78%;background:var(--color-accent-900);color:var(--color-neutral-100);padding:10px 14px;font-size:13.5px;line-height:1.5">{{ m.text }}</div>
+                </sc-if>
+                <sc-if value="{{ m.ai }}">
+                  <div style="align-self:flex-start;max-width:88%;border:1px solid var(--color-divider);padding:11px 14px;font-size:13.5px;line-height:1.55">{{ m.text }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <input class="input" placeholder="{{ t.replyPh }}"/>
+              <button class="btn btn-primary" style="flex:none"><i class="icon-send" style="font-size:15px"></i></button>
+            </div>
+          </div>
+
+          <div style="border-left:1px solid var(--color-divider);overflow:auto;padding:12px 30px 20px 26px">
+            <div class="blueprint" style="padding:18px 20px">
+              <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+              <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+                <div>
+                  <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.autofill }}</div>
+                  <h4 style="margin:3px 0 0;font-size:20px">{{ t.formTitle }}</h4>
+                </div>
+                <span class="tag tag-accent">{{ t.formCode }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <sc-for list="{{ formFields }}" as="f" hint-placeholder-count="6">
+                  <div class="field" style="{{ f.span }}">
+                    <label>{{ f.label }}</label>
+                    <input class="input" defaultValue="{{ f.value }}"/>
+                  </div>
+                </sc-for>
+                <div class="field" style="grid-column:1 / -1">
+                  <label>{{ t.reason }}</label>
+                  <textarea class="input" defaultValue="{{ t.reasonValue }}"></textarea>
+                </div>
+              </div>
+              <div style="margin-top:14px;display:flex;align-items:center;gap:12px;padding:11px 13px;background:var(--color-accent-100)">
+                <i class="icon-shield-check" style="font-size:18px;color:var(--color-accent-700)"></i>
+                <div style="flex:1">
+                  <div style="font-family:var(--font-heading);font-size:14px;color:var(--color-accent-800)">{{ t.sigAttach }}</div>
+                  <div style="font-size:11.5px" class="text-muted">{{ t.sigSerial }}</div>
+                </div>
+                <span class="tag tag-outline">{{ t.sigReady }}</span>
+              </div>
+              <div style="margin-top:14px;display:flex;gap:8px">
+                <button class="btn btn-primary" style="gap:8px"><i class="icon-check" style="font-size:15px"></i>{{ t.submitForm }}</button>
+                <button class="btn btn-secondary" style="gap:8px"><i class="icon-download" style="font-size:15px"></i>{{ t.exportPdf }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid var(--color-divider);padding:16px 30px 20px">
+          <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-600);margin-bottom:12px">{{ t.flowTitle }}</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0">
+            <sc-for list="{{ flow }}" as="f" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;padding-right:18px;border-right:1px solid var(--color-divider)">
+                <span style="{{ f.dot }}">{{ f.n }}</span>
+                <div>
+                  <div style="font-family:var(--font-heading);font-size:14.5px">{{ f.role }}</div>
+                  <div style="font-size:12px" class="text-muted">{{ f.name }}</div>
+                  <span class="{{ f.tagClass }}" style="margin-top:5px">{{ f.state }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isSchedule }}">
+      <section data-screen-label="04 Lich hoc" style="overflow:auto;padding:22px 30px 28px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.kickerSchedule }}</div>
+            <h2 style="margin:4px 0 0;font-size:30px">{{ t.navSchedule }}</h2>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="btn btn-secondary btn-icon"><i class="icon-chevron-left" style="font-size:16px"></i></button>
+            <span style="font-family:var(--font-heading);font-size:16px;min-width:230px;text-align:center">{{ t.weekLabel }}</span>
+            <button class="btn btn-secondary btn-icon"><i class="icon-chevron-right" style="font-size:16px"></i></button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:96px repeat(6,1fr);border:1px solid var(--color-divider)">
+          <div style="padding:10px;border-bottom:1px solid var(--color-divider);border-right:1px solid var(--color-divider)"></div>
+          <sc-for list="{{ days }}" as="d" hint-placeholder-count="6">
+            <div style="padding:10px;border-bottom:1px solid var(--color-divider);border-right:1px solid var(--color-divider)">
+              <div style="font-family:var(--font-heading);font-size:15px">{{ d.name }}</div>
+              <div style="font-size:11px" class="text-muted">{{ d.date }}</div>
+            </div>
+          </sc-for>
+          <sc-for list="{{ grid }}" as="row" hint-placeholder-count="4">
+            <div style="padding:10px;border-bottom:1px solid var(--color-divider);border-right:1px solid var(--color-divider)">
+              <div style="font-family:var(--font-heading);font-size:13.5px">{{ row.label }}</div>
+              <div style="font-size:11px" class="text-muted">{{ row.time }}</div>
+            </div>
+            <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="6">
+              <div style="{{ c.style }}">
+                <sc-if value="{{ c.has }}">
+                  <div style="display:flex;flex-direction:column;gap:3px">
+                    <span style="font-family:var(--font-heading);font-size:13.5px;line-height:1.2">{{ c.name }}</span>
+                    <span style="font-size:11px" class="text-muted">{{ c.room }}</span>
+                    <span class="{{ c.tagClass }}" style="align-self:flex-start">{{ c.tag }}</span>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:16px;display:flex;gap:20px;align-items:center">
+          <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase" class="text-muted">{{ t.legend }}</span>
+          <span class="tag tag-neutral">{{ t.legendLec }}</span>
+          <span class="tag tag-accent">{{ t.legendLab }}</span>
+          <span class="tag tag-outline">{{ t.legendExam }}</span>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isDocs }}">
+      <section data-screen-label="05 Kho tai lieu" style="overflow:auto;padding:22px 30px 28px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px">
+          <div>
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.kickerLib }}</div>
+            <h2 style="margin:4px 0 0;font-size:30px">{{ t.navDocs }}</h2>
+          </div>
+          <div style="display:flex;gap:8px">
+            <input class="input" style="width:250px" placeholder="{{ t.searchPh }}"/>
+            <button class="btn btn-secondary"><i class="icon-filter" style="font-size:15px"></i>{{ t.filter }}</button>
+          </div>
+        </div>
+        <p style="margin:0 0 16px;font-size:12.5px;max-width:640px" class="text-muted">{{ t.docsNote }}</p>
+        <table class="table">
+          <thead><tr>
+            <th>{{ t.colName }}</th><th>{{ t.colType }}</th><th>{{ t.colSubject }}</th><th>{{ t.colUpdated }}</th><th style="text-align:right">{{ t.colAction }}</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ docs }}" as="d" hint-placeholder-count="7">
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:9px"><i class="icon-file-text" style="font-size:15px;color:var(--color-accent-700)"></i><span style="font-family:var(--font-heading);font-size:15px">{{ d.name }}</span></div></td>
+                <td><span class="{{ d.tagClass }}">{{ d.type }}</span></td>
+                <td style="font-size:13px">{{ d.subject }}</td>
+                <td style="font-size:13px" class="text-muted">{{ d.date }}</td>
+                <td style="text-align:right"><button class="btn btn-ghost">{{ t.open }}</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isInbox }}">
+      <section data-screen-label="06 Hop thu duyet don" style="display:grid;grid-template-columns:340px 1fr;min-height:0">
+        <div style="border-right:1px solid var(--color-divider);overflow:auto;padding:20px 16px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;padding:0 4px">
+            <span style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-600)">{{ t.inboxLabel }}</span>
+            <span class="tag tag-accent">{{ t.inboxCount }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <sc-for list="{{ letters }}" as="l" hint-placeholder-count="4">
+              <a href="#" style="{{ l.style }}" onClick="{{ l.go }}">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                  <span style="font-family:var(--font-heading);font-size:15px">{{ l.type }}</span>
+                  <span style="font-size:11px" class="text-muted">{{ l.date }}</span>
+                </div>
+                <div style="font-size:12.5px;margin-top:2px" class="text-muted">{{ l.student }}</div>
+                <span class="{{ l.tagClass }}" style="margin-top:6px;align-self:flex-start">{{ l.status }}</span>
+              </a>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="overflow:auto;padding:22px 30px 28px;display:flex;flex-direction:column;gap:18px">
+          <div>
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ sel.code }}</div>
+            <h2 style="margin:4px 0 0;font-size:28px">{{ sel.type }}</h2>
+            <div style="font-size:13px;margin-top:4px" class="text-muted">{{ sel.subline }}</div>
+          </div>
+
+          <div class="blueprint" style="padding:16px 18px">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+              <sc-for list="{{ sel.facts }}" as="f" hint-placeholder-count="4">
+                <div>
+                  <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase" class="text-muted">{{ f.k }}</div>
+                  <div style="font-family:var(--font-heading);font-size:15.5px;margin-top:2px">{{ f.v }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--color-divider);font-size:14px;line-height:1.6;text-wrap:pretty">{{ sel.body }}</div>
+          </div>
+
+          <div>
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-600);margin-bottom:12px">{{ t.flowTitle }}</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr)">
+              <sc-for list="{{ flow }}" as="f" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:22px 1fr;gap:10px;padding-right:18px;border-right:1px solid var(--color-divider)">
+                  <span style="{{ f.dot }}">{{ f.n }}</span>
+                  <div>
+                    <div style="font-family:var(--font-heading);font-size:14.5px">{{ f.role }}</div>
+                    <div style="font-size:12px" class="text-muted">{{ f.name }}</div>
+                    <span class="{{ f.tagClass }}" style="margin-top:5px">{{ f.state }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn btn-primary" style="gap:8px"><i class="icon-pen-line" style="font-size:15px"></i>{{ t.signApprove }}</button>
+            <button class="btn btn-secondary">{{ t.returnDoc }}</button>
+            <button class="btn btn-ghost">{{ t.viewPdf }}</button>
+            <span style="margin-left:auto;font-size:11.5px" class="text-muted">{{ t.signHint }}</span>
+          </div>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isManage }}">
+      <section data-screen-label="07 Quan tri noi dung" style="overflow:auto;padding:22px 30px 28px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.kickerAdmin }}</div>
+            <h2 style="margin:4px 0 0;font-size:30px">{{ t.navManage }}</h2>
+          </div>
+          <button class="btn btn-primary" style="gap:8px"><i class="icon-plus" style="font-size:15px"></i>{{ t.addNew }}</button>
+        </div>
+
+        <div class="seg" style="margin-bottom:18px">
+          <label class="seg-opt"><input type="radio" name="ind-tab" checked="{{ tabDocs }}" onChange="{{ pickTabDocs }}"/>{{ t.tabDocs }}</label>
+          <label class="seg-opt"><input type="radio" name="ind-tab" checked="{{ tabSched }}" onChange="{{ pickTabSched }}"/>{{ t.tabSched }}</label>
+          <label class="seg-opt"><input type="radio" name="ind-tab" checked="{{ tabForms }}" onChange="{{ pickTabForms }}"/>{{ t.tabForms }}</label>
+        </div>
+
+        <table class="table">
+          <thead><tr>
+            <th>{{ manageCols.a }}</th><th>{{ manageCols.b }}</th><th>{{ manageCols.c }}</th><th>{{ manageCols.d }}</th><th style="text-align:right">{{ t.colAction }}</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ manageRows }}" as="r" hint-placeholder-count="6">
+              <tr>
+                <td style="font-family:var(--font-heading);font-size:15px">{{ r.a }}</td>
+                <td style="font-size:13px">{{ r.b }}</td>
+                <td style="font-size:13px" class="text-muted">{{ r.c }}</td>
+                <td><span class="{{ r.tagClass }}">{{ r.d }}</span></td>
+                <td style="text-align:right">
+                  <div style="display:flex;gap:6px;justify-content:flex-end">
+                    <button class="btn btn-secondary btn-icon"><i class="icon-pencil" style="font-size:14px"></i></button>
+                    <button class="btn btn-secondary btn-icon"><i class="icon-trash-2" style="font-size:14px"></i></button>
+                  </div>
+                </td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{ isProfile }}">
+      <section data-screen-label="08 Ho so" style="overflow:auto;padding:22px 30px 28px">
+        <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-700)">{{ t.kickerProfile }}</div>
+        <h2 style="margin:4px 0 18px;font-size:30px">{{ t.navProfile }}</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1000px">
+          <div class="blueprint" style="padding:18px 20px">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <h4 style="margin:0 0 14px;font-size:19px">{{ t.profileInfo }}</h4>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ profile }}" as="p" hint-placeholder-count="6">
+                <div style="display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:baseline">
+                  <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase" class="text-muted">{{ p.k }}</span>
+                  <span style="font-size:14.5px;font-family:var(--font-heading)">{{ p.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div class="blueprint" style="padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <h4 style="margin:0;font-size:19px">{{ t.sigCardTitle }}</h4>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--color-accent-100)">
+              <i class="icon-shield-check" style="font-size:22px;color:var(--color-accent-700)"></i>
+              <div>
+                <div style="font-family:var(--font-heading);font-size:15px;color:var(--color-accent-800)">{{ t.sigValid }}</div>
+                <div style="font-size:11.5px" class="text-muted">{{ t.sigSerial }}</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ sigFacts }}" as="p" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:baseline">
+                  <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase" class="text-muted">{{ p.k }}</span>
+                  <span style="font-size:14px">{{ p.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:auto">
+              <button class="btn btn-primary">{{ t.renewSig }}</button>
+              <button class="btn btn-secondary">{{ t.changePw }}</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      </sc-if>
+
+    </main>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ guest }}">
+<div data-screen-label="00 Dang nhap" style="height:900px;display:grid;grid-template-columns:1fr 1fr">
+  <div style="background:var(--color-accent-900);color:var(--color-neutral-100);padding:64px 60px;display:flex;flex-direction:column;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;display:grid;place-items:center;background:var(--color-neutral-100);color:var(--color-accent-900);font-family:var(--font-heading);font-size:15px">HV</div>
+      <span style="font-family:var(--font-heading);font-size:16px;letter-spacing:.02em">{{ t.brand }}</span>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.7">{{ t.product }}</div>
+      <h1 style="margin:10px 0 0;font-size:56px;line-height:1.02;max-width:9ch">{{ t.loginHeadline }}</h1>
+      <p style="margin:16px 0 0;max-width:44ch;font-size:15px;line-height:1.6;opacity:.82;text-wrap:pretty">{{ t.loginSub }}</p>
+    </div>
+    <div style="display:flex;gap:28px">
+      <sc-for list="{{ loginStats }}" as="s" hint-placeholder-count="3">
+        <div>
+          <div style="font-family:var(--font-heading);font-size:30px;line-height:1">{{ s.n }}</div>
+          <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.7">{{ s.k }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display:grid;place-items:center;padding:60px">
+    <div class="blueprint" style="width:400px;padding:28px 30px">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <h3 style="margin:0 0 4px;font-size:26px">{{ t.loginTitle }}</h3>
+      <p style="font-size:13px;margin-bottom:20px" class="text-muted">{{ t.loginHint }}</p>
+      <div class="field" style="margin-bottom:14px"><label>{{ t.loginId }}</label><input class="input" defaultValue="AT19-0342"/></div>
+      <div class="field" style="margin-bottom:18px"><label>{{ t.loginPw }}</label><input class="input" type="password" defaultValue="123456789"/></div>
+      <button class="btn btn-primary btn-block" onClick="{{ login }}">{{ t.loginBtn }}</button>
+      <div style="margin-top:16px;display:flex;justify-content:space-between;font-size:12.5px">
+        <a href="#">{{ t.forgot }}</a>
+        <span class="text-muted">{{ t.loginSso }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;defaultRole&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sv&quot;,&quot;gv&quot;,&quot;qt&quot;],&quot;default&quot;:&quot;sv&quot;,&quot;tsType&quot;:&quot;'sv'|'gv'|'qt'&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;defaultLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vi&quot;,&quot;en&quot;],&quot;default&quot;:&quot;vi&quot;,&quot;tsType&quot;:&quot;'vi'|'en'&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = {
+    lang: p.defaultLang || 'vi', role: p.defaultRole || 'sv',
+    screen: (p.defaultRole === 'gv' ? 'inbox' : p.defaultRole === 'qt' ? 'manage' : 'chat'),
+    subj: 0, quiz: null, tab: 'docs', letter: 0, authed: true
+  }; }
+
+  go(screen){ return (e) => { if (e) e.preventDefault(); this.setState({ screen }); }; }
+  setRole(role){ return () => this.setState({ role, screen: role === 'sv' ? 'chat' : role === 'gv' ? 'inbox' : 'manage' }); }
+
+  renderVals(){
+    const s = this.state, L = (a, b) => s.lang === 'vi' ? a : b;
+
+    const t = {
+      brand: L('HỌC VIỆN KỸ THUẬT VÀ CÔNG NGHỆ AN NINH', 'ACADEMY OF SECURITY ENGINEERING & TECHNOLOGY'),
+      product: L('Cổng học vụ AI', 'AI Academic Portal'),
+      roleSV: L('Sinh viên', 'Student'), roleGV: L('Giáo viên', 'Faculty'), roleQT: L('Quản trị', 'Admin'),
+      userName: L('Nguyễn Minh Đức', 'Nguyen Minh Duc'), userMeta: L('AT19-0342 · Khoa ATTT', 'AT19-0342 · Infosec Dept.'), userInit: 'NĐ',
+      navLabel: L('Điều hướng', 'Navigation'),
+      sigLabel: L('Chữ ký số', 'e-Signature'), sigActive: L('Đang hoạt động · hết hạn 30/06/2027', 'Active · expires 30 Jun 2027'),
+      logout: L('Đăng xuất', 'Sign out'),
+      kickerAI: L('Trợ lý AI · RAG', 'AI assistant · RAG'),
+      kickerSchedule: L('Thời khoá biểu', 'Timetable'), kickerLib: L('Tài nguyên', 'Resources'),
+      kickerAdmin: L('Quản trị', 'Administration'), kickerProfile: L('Tài khoản', 'Account'),
+      navChat: L('Hỏi đáp quy chế', 'Regulation Q&A'), navStudy: L('Trợ lý học tập', 'Study assistant'),
+      navForms: L('Đơn hành chính', 'Administrative forms'), navSchedule: L('Lịch học & lịch thi', 'Timetable & exams'),
+      navDocs: L('Kho tài liệu', 'Document library'), navProfile: L('Hồ sơ & chữ ký số', 'Profile & e-signature'),
+      navInbox: L('Hộp thư duyệt đơn', 'Approval inbox'), navManage: L('Quản trị nội dung', 'Content administration'),
+      chatSub: L('Hỏi bằng tiếng Việt tự nhiên. Mọi câu trả lời đều kèm trích dẫn điều khoản và ngày ban hành để bạn kiểm chứng.', 'Ask in natural language. Every answer cites the exact article and issue date so you can verify it.'),
+      aiName: L('Trợ lý quy chế', 'Regulation assistant'), citeLabel: L('Trích dẫn nguồn', 'Cited sources'),
+      askPh: L('Ví dụ: Điều kiện xét học bổng khuyến khích học tập là gì?', 'e.g. What are the criteria for a merit scholarship?'),
+      send: L('Gửi', 'Send'), replyPh: L('Trả lời trợ lý…', 'Reply to the assistant…'),
+      subjects: L('Học phần', 'Courses'),
+      studySub: L('Ôn tập theo giáo trình và đề cương chi tiết của học phần.', 'Revise from the course textbook and detailed syllabus.'),
+      summaryTitle: L('Tóm tắt Chương 3 — Mật mã khoá công khai', 'Summary — Chapter 3: Public-key cryptography'),
+      summaryMeta: L('Nguồn: Giáo trình Mật mã ứng dụng, tr. 88–121 · tóm tắt 4 ý chính', 'Source: Applied Cryptography textbook, pp. 88–121 · 4 key points'),
+      quizTitle: L('Bài trắc nghiệm củng cố', 'Practice quiz'), quizMeta: L('Câu 3/10', 'Question 3/10'),
+      quizQ: L('Trong hệ RSA, khoá công khai gồm cặp giá trị nào?', 'In RSA, the public key consists of which pair of values?'),
+      quizFeedback: L('Chính xác. Khoá công khai là (n, e); khoá bí mật là (n, d). Bạn còn yếu ở phần tính hàm Euler φ(n) — hãy xem lại mục 3.2.', 'Correct. The public key is (n, e) and the private key is (n, d). Your weak spot is computing Euler\u2019s φ(n) — revisit section 3.2.'),
+      weakTitle: L('Điểm yếu AI ghi nhận', 'Weak spots detected'), pathTitle: L('Lộ trình tự học', 'Study path'),
+      matTitle: L('Tài liệu gợi ý', 'Suggested materials'),
+      formsSub: L('Nói với trợ lý bạn cần loại đơn nào. AI hỏi đủ thông tin, tự điền vào biểu mẫu bên phải và bạn có thể sửa trực tiếp trước khi ký số.', 'Tell the assistant which form you need. It asks for the details, fills the template on the right, and you can edit it before signing.'),
+      autofill: L('AI tự điền · có thể chỉnh sửa', 'AI-filled · editable'),
+      formTitle: L('Đơn xin nghỉ học có phép', 'Leave of absence request'), formCode: 'BM-01/ĐT',
+      reason: L('Lý do', 'Reason'),
+      reasonValue: L('Điều trị y tế theo chỉ định của bác sĩ tại Bệnh viện 198, có giấy hẹn tái khám kèm theo.', 'Medical treatment as prescribed by a doctor at Hospital 198; follow-up appointment slip attached.'),
+      sigAttach: L('Đính kèm chữ ký số của sinh viên', 'Attach student e-signature'),
+      sigSerial: L('Serial 5A:2F:91:C4 · CA Học viện', 'Serial 5A:2F:91:C4 · Academy CA'),
+      sigReady: L('Sẵn sàng', 'Ready'),
+      submitForm: L('Ký số và gửi đơn', 'Sign and submit'), exportPdf: L('Xuất PDF', 'Export PDF'),
+      flowTitle: L('Trình tự ký duyệt', 'Signature routing'),
+      weekLabel: L('Tuần 09 · 20/04 – 25/04/2026', 'Week 09 · 20–25 Apr 2026'),
+      legend: L('Chú giải', 'Legend'), legendLec: L('Lý thuyết', 'Lecture'), legendLab: L('Thực hành', 'Lab'), legendExam: L('Thi', 'Exam'),
+      searchPh: L('Tìm giáo trình, đề cương, biểu mẫu…', 'Search textbooks, syllabi, forms…'), filter: L('Bộ lọc', 'Filter'),
+      docsNote: L('Kho chứa giáo trình, đề cương và biểu mẫu hành chính. Văn bản quy chế không hiển thị tại đây — chỉ được truy xuất khi bạn hỏi trong mục Hỏi đáp quy chế.', 'Textbooks, syllabi and administrative templates. Regulation documents are not listed here — they are retrieved only through Regulation Q&A.'),
+      colName: L('Tên tài liệu', 'Document'), colType: L('Loại', 'Type'), colSubject: L('Học phần', 'Course'),
+      colUpdated: L('Cập nhật', 'Updated'), colAction: L('Thao tác', 'Actions'), open: L('Mở', 'Open'),
+      inboxLabel: L('Đơn chờ xử lý', 'Pending requests'), inboxCount: L('4 đơn', '4 items'),
+      signApprove: L('Ký duyệt', 'Sign & approve'), returnDoc: L('Trả lại', 'Return'), viewPdf: L('Xem bản PDF', 'View PDF'),
+      signHint: L('Ký bằng chữ ký số cấp cho tài khoản giáo viên', 'Signed with the faculty account certificate'),
+      addNew: L('Thêm mới', 'Add new'),
+      tabDocs: L('Tài liệu học tập', 'Learning materials'), tabSched: L('Lịch học & lịch thi', 'Timetable'), tabForms: L('Biểu mẫu hành chính', 'Form templates'),
+      profileInfo: L('Thông tin cá nhân', 'Personal details'), sigCardTitle: L('Chữ ký số', 'Digital signature'),
+      sigValid: L('Chứng thư đang hiệu lực', 'Certificate is valid'),
+      renewSig: L('Gia hạn chứng thư', 'Renew certificate'), changePw: L('Đổi mật khẩu', 'Change password'),
+      loginHeadline: L('Học vụ trả lời trong một câu hỏi', 'Academic answers in one question'),
+      loginSub: L('Tra cứu quy chế có trích dẫn, ôn tập theo giáo trình và nộp đơn hành chính ký số — trong một cổng duy nhất.', 'Cited regulation lookup, textbook-grounded revision and digitally signed paperwork — in a single portal.'),
+      loginTitle: L('Đăng nhập', 'Sign in'), loginHint: L('Dùng tài khoản do Học viện cấp.', 'Use the account issued by the Academy.'),
+      loginId: L('Mã sinh viên / cán bộ', 'Student or staff ID'), loginPw: L('Mật khẩu', 'Password'),
+      loginBtn: L('Đăng nhập', 'Sign in'), forgot: L('Quên mật khẩu?', 'Forgot password?'), loginSso: L('Hỗ trợ: 024 3838 xxxx', 'Support: 024 3838 xxxx')
+    };
+
+    const navDefs = {
+      sv: [['chat', t.navChat, 'icon-messages-square'], ['study', t.navStudy, 'icon-graduation-cap'], ['forms', t.navForms, 'icon-file-signature'], ['schedule', t.navSchedule, 'icon-calendar-days'], ['docs', t.navDocs, 'icon-library'], ['profile', t.navProfile, 'icon-user-round']],
+      gv: [['inbox', t.navInbox, 'icon-inbox'], ['schedule', t.navSchedule, 'icon-calendar-days'], ['docs', t.navDocs, 'icon-library'], ['profile', t.navProfile, 'icon-user-round']],
+      qt: [['manage', t.navManage, 'icon-settings-2'], ['docs', t.navDocs, 'icon-library'], ['profile', t.navProfile, 'icon-user-round']]
+    };
+    const navBase = { display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', fontFamily: 'var(--font-heading)', fontSize: '15px', letterSpacing: '.01em', border: '1px solid transparent', color: 'var(--color-text)' };
+    const nav = navDefs[s.role].map(([k, label, li]) => ({
+      key: k, label, li, go: this.go(k),
+      style: s.screen === k ? Object.assign({}, navBase, { background: 'var(--color-accent-100)', borderColor: 'var(--color-accent-300)', color: 'var(--color-accent-800)' }) : navBase
+    }));
+
+    const cite = (ref, meta) => ({ ref, meta });
+    const chat = [
+      { me: true, text: L('Nghỉ quá bao nhiêu buổi thì bị cấm thi?', 'How many sessions can I miss before I am barred from the exam?'), cites: [] },
+      { ai: true, text: L('Sinh viên vắng mặt quá 20% tổng số tiết của học phần sẽ không đủ điều kiện dự thi kết thúc học phần. Với học phần 45 tiết, ngưỡng là 9 tiết — tương đương 3 buổi học.', 'A student absent for more than 20% of a course\u2019s total periods is not eligible to sit the final exam. For a 45-period course the threshold is 9 periods — about 3 sessions.'), cites: [cite(L('Điều 12, Khoản 3 — Quy chế đào tạo trình độ đại học', 'Article 12.3 — Undergraduate Training Regulation'), L('Ban hành 12/09/2023 · trang 14', 'Issued 12 Sep 2023 · p. 14')), cite(L('Phụ lục 2 — Hướng dẫn quy đổi giờ vắng', 'Annex 2 — Absence conversion guide'), L('Ban hành 05/01/2024 · trang 3', 'Issued 5 Jan 2024 · p. 3'))] },
+      { me: true, text: L('Vắng có phép thì tính thế nào?', 'What about excused absences?'), cites: [] },
+      { ai: true, text: L('Vắng có phép vẫn tính vào ngưỡng 20% nói trên, trừ hai trường hợp: nhập viện điều trị hoặc thực hiện nhiệm vụ do Học viện phân công. Khi đó sinh viên nộp đơn xác nhận kèm minh chứng trong 5 ngày làm việc kể từ ngày trở lại.', 'Excused absences still count toward the 20% threshold, with two exceptions: hospitalisation, or duties assigned by the Academy. In those cases file a confirmation request with evidence within 5 working days of returning.'), cites: [cite(L('Điều 12, Khoản 5 — Quy chế đào tạo trình độ đại học', 'Article 12.5 — Undergraduate Training Regulation'), L('Ban hành 12/09/2023 · trang 15', 'Issued 12 Sep 2023 · p. 15'))] }
+    ];
+    const suggestions = [
+      L('Điều kiện xét học bổng?', 'Scholarship criteria?'),
+      L('Bao giờ được đăng ký học lại?', 'When can I retake a course?'),
+      L('Thủ tục xin bảo lưu kết quả', 'How to defer my studies'),
+      L('Cách tính điểm trung bình tích luỹ', 'How is the cumulative GPA calculated?')
+    ];
+
+    const subjNames = [
+      [L('An toàn mạng máy tính', 'Network security'), 'ATM3021'],
+      [L('Mật mã ứng dụng', 'Applied cryptography'), 'MMA2043'],
+      [L('Kỹ thuật lập trình', 'Programming techniques'), 'KTL1012'],
+      [L('Cơ sở dữ liệu', 'Databases'), 'CSD2011'],
+      [L('Phân tích mã độc', 'Malware analysis'), 'PMD4055']
+    ];
+    const subjBase = { display: 'flex', flexDirection: 'column', gap: '2px', padding: '8px 10px', border: '1px solid transparent', color: 'var(--color-text)' };
+    const subjects = subjNames.map(([name, code], i) => ({
+      name, code, go: (e) => { if (e) e.preventDefault(); this.setState({ subj: i }); },
+      style: s.subj === i ? Object.assign({}, subjBase, { background: 'var(--color-accent-100)', borderColor: 'var(--color-accent-300)' }) : subjBase
+    }));
+
+    const summary = [
+      L('Mật mã khoá công khai dùng hai khoá khác nhau: khoá công khai để mã hoá, khoá bí mật để giải mã.', 'Public-key cryptography uses two different keys: a public key to encrypt and a private key to decrypt.'),
+      L('An toàn của RSA dựa trên độ khó của bài toán phân tích số nguyên lớn thành thừa số nguyên tố.', 'RSA\u2019s security rests on the hardness of factoring large integers into primes.'),
+      L('Trao đổi khoá Diffie–Hellman cho phép hai bên thống nhất khoá chung trên kênh công khai.', 'Diffie–Hellman lets two parties agree on a shared key over a public channel.'),
+      L('Chữ ký số là ứng dụng đảo chiều: ký bằng khoá bí mật, xác minh bằng khoá công khai.', 'A digital signature reverses the flow: sign with the private key, verify with the public key.')
+    ];
+    const optText = [L('(n, d)', '(n, d)'), L('(n, e)', '(n, e)'), L('(p, q)', '(p, q)'), L('(φ(n), d)', '(φ(n), d)')];
+    const optBase = { display: 'flex', alignItems: 'baseline', gap: '10px', textAlign: 'left', padding: '10px 12px', fontSize: '14px', fontFamily: 'var(--font-body)', background: 'transparent', border: '1px solid var(--color-divider)', color: 'var(--color-text)', cursor: 'pointer' };
+    const quizOpts = optText.map((text, i) => ({
+      text, key: ['A', 'B', 'C', 'D'][i], pick: () => this.setState({ quiz: i }),
+      style: s.quiz === null ? optBase : (i === 1 ? Object.assign({}, optBase, { borderColor: 'var(--color-accent)', background: 'var(--color-accent-100)', color: 'var(--color-accent-800)' }) : (s.quiz === i ? Object.assign({}, optBase, { borderColor: 'var(--color-neutral-500)', opacity: .7 }) : Object.assign({}, optBase, { opacity: .55 })))
+    }));
+
+    const weak = [
+      { name: L('Tính hàm Euler φ(n)', 'Computing Euler\u2019s φ(n)'), score: '42%' },
+      { name: L('Chế độ mã khối CBC/GCM', 'Block modes CBC/GCM'), score: '58%' },
+      { name: L('Hạ tầng khoá công khai PKI', 'PKI fundamentals'), score: '63%' }
+    ];
+    const path = [
+      { n: '1', text: L('Đọc lại mục 3.2 giáo trình, 25 phút', 'Re-read section 3.2, 25 minutes') },
+      { n: '2', text: L('Làm 10 bài tập số học modulo', 'Complete 10 modular-arithmetic exercises') },
+      { n: '3', text: L('Thi thử 20 câu trước buổi seminar', 'Take a 20-question mock test before the seminar') }
+    ];
+    const materials = [
+      L('Giáo trình Mật mã ứng dụng — Chương 3', 'Applied Cryptography — Chapter 3'),
+      L('Đề cương chi tiết MMA2043', 'Detailed syllabus MMA2043'),
+      L('Slide bài giảng tuần 7', 'Lecture slides, week 7')
+    ];
+
+    const formChat = [
+      { ai: true, text: L('Chào Đức. Bạn cần loại đơn nào?', 'Hello Duc. Which form do you need?') },
+      { me: true, text: L('Mình xin nghỉ học 3 ngày', 'I need three days of leave') },
+      { ai: true, text: L('Bạn nghỉ từ ngày nào đến ngày nào, và lý do là gì?', 'From which date to which date, and for what reason?') },
+      { me: true, text: L('Từ 22/04 đến 24/04, điều trị y tế theo chỉ định bác sĩ', 'From 22 to 24 April, medical treatment prescribed by a doctor') },
+      { ai: true, text: L('Đã điền xong biểu mẫu BM-01/ĐT bên phải: họ tên, mã sinh viên, lớp và khoa lấy từ hồ sơ của bạn. Kiểm tra lại rồi ký số để gửi — đơn cần 3 chữ ký, hệ thống sẽ trình lần lượt từ giáo viên chủ nhiệm lên Phòng Đào tạo.', 'Form BM-01/ĐT on the right is filled in: name, student ID, class and department come from your record. Check it, then sign — three signatures are required and the system routes it from your class tutor up to the Training Office.') }
+    ];
+    const formFields = [
+      { label: L('Họ và tên', 'Full name'), value: L('Nguyễn Minh Đức', 'Nguyen Minh Duc'), span: {} },
+      { label: L('Mã sinh viên', 'Student ID'), value: 'AT19-0342', span: {} },
+      { label: L('Lớp', 'Class'), value: 'AT19A', span: {} },
+      { label: L('Khoa', 'Department'), value: L('An toàn thông tin', 'Information Security'), span: {} },
+      { label: L('Từ ngày', 'From'), value: '22/04/2026', span: {} },
+      { label: L('Đến ngày', 'To'), value: '24/04/2026', span: {} }
+    ];
+    const dotBase = { width: '20px', height: '20px', display: 'grid', placeItems: 'center', fontSize: '11px', fontFamily: 'var(--font-heading)' };
+    const flow = [
+      { n: '1', role: L('Sinh viên', 'Student'), name: L('Nguyễn Minh Đức', 'Nguyen Minh Duc'), state: L('Đã ký 20/04', 'Signed 20 Apr'), tagClass: 'tag tag-accent', dot: Object.assign({}, dotBase, { background: 'var(--color-accent)', color: 'var(--color-bg)' }) },
+      { n: '2', role: L('GV chủ nhiệm', 'Class tutor'), name: L('Trần Thị Lan', 'Tran Thi Lan'), state: L('Đang chờ ký', 'Awaiting signature'), tagClass: 'tag tag-outline', dot: Object.assign({}, dotBase, { border: '1px solid var(--color-accent)', color: 'var(--color-accent-800)' }) },
+      { n: '3', role: L('Khoa ATTT', 'Infosec Dept.'), name: L('Phạm Quốc Huy', 'Pham Quoc Huy'), state: L('Chưa đến lượt', 'Not yet due'), tagClass: 'tag tag-neutral', dot: Object.assign({}, dotBase, { border: '1px solid var(--color-neutral-400)', color: 'var(--color-neutral-600)' }) },
+      { n: '4', role: L('Phòng Đào tạo', 'Training Office'), name: L('Lê Văn Sơn', 'Le Van Son'), state: L('Chưa đến lượt', 'Not yet due'), tagClass: 'tag tag-neutral', dot: Object.assign({}, dotBase, { border: '1px solid var(--color-neutral-400)', color: 'var(--color-neutral-600)' }) }
+    ];
+
+    const days = [
+      { name: L('Thứ 2', 'Mon'), date: '20/04' }, { name: L('Thứ 3', 'Tue'), date: '21/04' }, { name: L('Thứ 4', 'Wed'), date: '22/04' },
+      { name: L('Thứ 5', 'Thu'), date: '23/04' }, { name: L('Thứ 6', 'Fri'), date: '24/04' }, { name: L('Thứ 7', 'Sat'), date: '25/04' }
+    ];
+    const cellBase = { padding: '9px', borderBottom: '1px solid var(--color-divider)', borderRight: '1px solid var(--color-divider)', minHeight: '92px' };
+    const cell = (name, room, tag, kind) => ({ has: true, name, room, tag, tagClass: kind === 'lab' ? 'tag tag-accent' : kind === 'exam' ? 'tag tag-outline' : 'tag tag-neutral', style: kind === 'exam' ? Object.assign({}, cellBase, { background: 'var(--color-accent-100)' }) : cellBase });
+    const empty = { has: false, style: cellBase };
+    const LEC = L('Lý thuyết', 'Lecture'), LAB = L('Thực hành', 'Lab'), EXAM = L('Thi', 'Exam');
+    const grid = [
+      { label: L('Tiết 1–3', 'Period 1–3'), time: '07:00', cells: [cell(subjNames[0][0], 'A2-301', LEC), empty, cell(subjNames[1][0], 'A1-205', LEC), empty, cell(subjNames[3][0], 'B3-102', LEC), empty] },
+      { label: L('Tiết 4–6', 'Period 4–6'), time: '09:35', cells: [empty, cell(subjNames[2][0], L('Phòng máy 4', 'Lab 4'), LAB, 'lab'), empty, cell(subjNames[4][0], L('Phòng máy 2', 'Lab 2'), LAB, 'lab'), empty, empty] },
+      { label: L('Tiết 7–9', 'Period 7–9'), time: '13:00', cells: [cell(subjNames[3][0], 'B3-102', LEC), empty, cell(subjNames[0][0], 'A2-301', LEC), empty, cell(subjNames[1][0], 'A1-205', LEC), empty] },
+      { label: L('Tiết 10–12', 'Period 10–12'), time: '15:35', cells: [empty, empty, empty, empty, empty, cell(subjNames[2][0], L('Hội trường C', 'Hall C'), EXAM, 'exam')] }
+    ];
+
+    const docs = [
+      { name: L('Giáo trình Mật mã ứng dụng', 'Applied Cryptography textbook'), type: L('Giáo trình', 'Textbook'), subject: 'MMA2043', date: '12/03/2026', tagClass: 'tag tag-accent' },
+      { name: L('Đề cương chi tiết MMA2043', 'Detailed syllabus MMA2043'), type: L('Đề cương', 'Syllabus'), subject: 'MMA2043', date: '02/02/2026', tagClass: 'tag tag-neutral' },
+      { name: L('Giáo trình An toàn mạng máy tính', 'Network Security textbook'), type: L('Giáo trình', 'Textbook'), subject: 'ATM3021', date: '28/01/2026', tagClass: 'tag tag-accent' },
+      { name: L('Slide bài giảng Phân tích mã độc', 'Malware Analysis lecture slides'), type: L('Bài giảng', 'Slides'), subject: 'PMD4055', date: '18/04/2026', tagClass: 'tag tag-neutral' },
+      { name: L('Mẫu đơn xin nghỉ học (BM-01/ĐT)', 'Leave request template (BM-01/ĐT)'), type: L('Biểu mẫu', 'Template'), subject: '—', date: '10/09/2025', tagClass: 'tag tag-outline' },
+      { name: L('Mẫu đơn phúc khảo điểm (BM-07/ĐT)', 'Grade appeal template (BM-07/ĐT)'), type: L('Biểu mẫu', 'Template'), subject: '—', date: '10/09/2025', tagClass: 'tag tag-outline' },
+      { name: L('Mẫu đơn xin bảo lưu (BM-12/ĐT)', 'Deferral template (BM-12/ĐT)'), type: L('Biểu mẫu', 'Template'), subject: '—', date: '15/11/2025', tagClass: 'tag tag-outline' }
+    ];
+
+    const letterDefs = [
+      { code: 'BM-01/ĐT · #4821', type: L('Đơn xin nghỉ học có phép', 'Leave of absence request'), student: L('Nguyễn Minh Đức · AT19-0342', 'Nguyen Minh Duc · AT19-0342'), date: '20/04', status: L('Chờ chữ ký của bạn', 'Awaiting your signature'), tagClass: 'tag tag-accent' },
+      { code: 'BM-07/ĐT · #4818', type: L('Đơn phúc khảo điểm', 'Grade appeal'), student: L('Vũ Hải Anh · AT19-0311', 'Vu Hai Anh · AT19-0311'), date: '19/04', status: L('Chờ chữ ký của bạn', 'Awaiting your signature'), tagClass: 'tag tag-accent' },
+      { code: 'BM-12/ĐT · #4802', type: L('Đơn xin bảo lưu kết quả', 'Deferral request'), student: L('Đặng Thu Trang · AT20-0157', 'Dang Thu Trang · AT20-0157'), date: '17/04', status: L('Đã chuyển lên Khoa', 'Forwarded to department'), tagClass: 'tag tag-neutral' },
+      { code: 'BM-03/ĐT · #4795', type: L('Đơn xin học lại', 'Course retake request'), student: L('Bùi Nam Khánh · AT19-0288', 'Bui Nam Khanh · AT19-0288'), date: '16/04', status: L('Đã hoàn tất', 'Completed'), tagClass: 'tag tag-neutral' }
+    ];
+    const lBase = { display: 'flex', flexDirection: 'column', padding: '11px 12px', border: '1px solid transparent', color: 'var(--color-text)' };
+    const letters = letterDefs.map((l, i) => Object.assign({}, l, {
+      go: (e) => { if (e) e.preventDefault(); this.setState({ letter: i }); },
+      style: s.letter === i ? Object.assign({}, lBase, { background: 'var(--color-accent-100)', borderColor: 'var(--color-accent-300)' }) : lBase
+    }));
+    const cur = letterDefs[s.letter];
+    const sel = {
+      code: cur.code, type: cur.type,
+      subline: L('Gửi lúc ' + cur.date + '/2026 · cần 3 chữ ký · bạn là cấp ký thứ 2', 'Submitted ' + cur.date + '/2026 · 3 signatures required · you are signer 2'),
+      facts: [
+        { k: L('Sinh viên', 'Student'), v: cur.student.split(' · ')[0] },
+        { k: L('Mã sinh viên', 'Student ID'), v: cur.student.split(' · ')[1] },
+        { k: L('Lớp', 'Class'), v: 'AT19A' },
+        { k: L('Thời gian', 'Period'), v: '22/04 – 24/04/2026' }
+      ],
+      body: L('Kính gửi Ban Giám đốc Học viện và Phòng Đào tạo. Em làm đơn này xin phép được nghỉ học từ ngày 22/04/2026 đến ngày 24/04/2026 vì lý do điều trị y tế theo chỉ định của bác sĩ, có giấy hẹn tái khám kèm theo. Em xin cam kết tự học bù và hoàn thành đầy đủ nội dung học phần.', 'To the Board of Directors and the Training Office. I request leave from 22 to 24 April 2026 for medical treatment prescribed by my doctor; the follow-up appointment slip is attached. I undertake to catch up on all coursework.')
+    };
+
+    const manageSets = {
+      docs: { cols: { a: L('Tên tài liệu', 'Document'), b: L('Học phần', 'Course'), c: L('Người đăng', 'Uploaded by'), d: L('Trạng thái', 'Status') }, rows: [
+        { a: L('Giáo trình Mật mã ứng dụng', 'Applied Cryptography textbook'), b: 'MMA2043', c: L('P. Đào tạo', 'Training Office'), d: L('Đã xuất bản', 'Published'), tagClass: 'tag tag-accent' },
+        { a: L('Đề cương chi tiết ATM3021', 'Detailed syllabus ATM3021'), b: 'ATM3021', c: L('Khoa ATTT', 'Infosec Dept.'), d: L('Đã xuất bản', 'Published'), tagClass: 'tag tag-accent' },
+        { a: L('Slide Phân tích mã độc — tuần 8', 'Malware Analysis slides — week 8'), b: 'PMD4055', c: L('Trần Thị Lan', 'Tran Thi Lan'), d: L('Bản nháp', 'Draft'), tagClass: 'tag tag-neutral' },
+        { a: L('Giáo trình Cơ sở dữ liệu (bản 2026)', 'Databases textbook (2026 ed.)'), b: 'CSD2011', c: L('P. Đào tạo', 'Training Office'), d: L('Chờ duyệt', 'In review'), tagClass: 'tag tag-outline' }
+      ] },
+      sched: { cols: { a: L('Học phần', 'Course'), b: L('Lớp', 'Class'), c: L('Phòng · thời gian', 'Room · time'), d: L('Trạng thái', 'Status') }, rows: [
+        { a: L('An toàn mạng máy tính', 'Network security'), b: 'AT19A', c: 'A2-301 · T2 ' + L('tiết 1–3', 'p. 1–3'), d: L('Đang áp dụng', 'Active'), tagClass: 'tag tag-accent' },
+        { a: L('Kỹ thuật lập trình', 'Programming techniques'), b: 'AT19A', c: L('Phòng máy 4 · T3 tiết 4–6', 'Lab 4 · Tue p. 4–6'), d: L('Đang áp dụng', 'Active'), tagClass: 'tag tag-accent' },
+        { a: L('Thi kết thúc học phần KTL1012', 'Final exam KTL1012'), b: 'AT19A, AT19B', c: L('Hội trường C · T7 tiết 10–12', 'Hall C · Sat p. 10–12'), d: L('Mới cập nhật', 'Just updated'), tagClass: 'tag tag-outline' },
+        { a: L('Mật mã ứng dụng', 'Applied cryptography'), b: 'AT19A', c: 'A1-205 · T4 ' + L('tiết 1–3', 'p. 1–3'), d: L('Đang áp dụng', 'Active'), tagClass: 'tag tag-accent' }
+      ] },
+      forms: { cols: { a: L('Biểu mẫu', 'Template'), b: L('Mã', 'Code'), c: L('Số chữ ký', 'Signatures'), d: L('Trạng thái', 'Status') }, rows: [
+        { a: L('Đơn xin nghỉ học có phép', 'Leave of absence request'), b: 'BM-01/ĐT', c: '3', d: L('Đang dùng', 'In use'), tagClass: 'tag tag-accent' },
+        { a: L('Đơn phúc khảo điểm', 'Grade appeal'), b: 'BM-07/ĐT', c: '2', d: L('Đang dùng', 'In use'), tagClass: 'tag tag-accent' },
+        { a: L('Đơn xin bảo lưu kết quả', 'Deferral request'), b: 'BM-12/ĐT', c: '4', d: L('Đang dùng', 'In use'), tagClass: 'tag tag-accent' },
+        { a: L('Đơn xin cấp bảng điểm', 'Transcript request'), b: 'BM-15/ĐT', c: '2', d: L('Bản nháp', 'Draft'), tagClass: 'tag tag-neutral' }
+      ] }
+    };
+    const mset = manageSets[s.tab];
+
+    const profile = [
+      { k: L('Họ và tên', 'Full name'), v: L('Nguyễn Minh Đức', 'Nguyen Minh Duc') },
+      { k: L('Mã sinh viên', 'Student ID'), v: 'AT19-0342' },
+      { k: L('Lớp · Khoa', 'Class · Dept.'), v: L('AT19A · An toàn thông tin', 'AT19A · Information Security') },
+      { k: L('Khoá học', 'Cohort'), v: '2019 – 2026' },
+      { k: L('Email', 'Email'), v: 'duc.nm.at190342@hvktcnan.edu.vn' },
+      { k: L('Điện thoại', 'Phone'), v: '09xx xxx 482' }
+    ];
+    const sigFacts = [
+      { k: L('Số serial', 'Serial'), v: '5A:2F:91:C4:0D:77' },
+      { k: L('Đơn vị cấp', 'Issued by'), v: L('CA nội bộ Học viện', 'Academy internal CA') },
+      { k: L('Hiệu lực', 'Valid until'), v: '30/06/2027' }
+    ];
+    const loginStats = [
+      { n: '2.847', k: L('Sinh viên', 'Students') },
+      { n: '61', k: L('Biểu mẫu số hoá', 'Digital forms') },
+      { n: '4', k: L('Giây / câu trả lời', 'Sec / answer') }
+    ];
+
+    return {
+      t, nav, chat, suggestions, subjects, summary, quizOpts, weak, path, materials,
+      formChat, formFields, flow, days, grid, docs, letters, sel, profile, sigFacts, loginStats,
+      manageCols: mset.cols, manageRows: mset.rows,
+      subjTitle: subjNames[s.subj][0],
+      quizAnswered: s.quiz !== null,
+      authed: s.authed, guest: !s.authed,
+      isSV: s.role === 'sv', isGV: s.role === 'gv', isQT: s.role === 'qt',
+      isVi: s.lang === 'vi', isEn: s.lang === 'en',
+      tabDocs: s.tab === 'docs', tabSched: s.tab === 'sched', tabForms: s.tab === 'forms',
+      pickTabDocs: () => this.setState({ tab: 'docs' }), pickTabSched: () => this.setState({ tab: 'sched' }), pickTabForms: () => this.setState({ tab: 'forms' }),
+      pickSV: this.setRole('sv'), pickGV: this.setRole('gv'), pickQT: this.setRole('qt'),
+      pickVi: () => this.setState({ lang: 'vi' }), pickEn: () => this.setState({ lang: 'en' }),
+      login: () => this.setState({ authed: true }), logout: () => this.setState({ authed: false }),
+      isChat: s.screen === 'chat', isStudy: s.screen === 'study', isForms: s.screen === 'forms',
+      isSchedule: s.screen === 'schedule', isDocs: s.screen === 'docs', isProfile: s.screen === 'profile',
+      isInbox: s.screen === 'inbox', isManage: s.screen === 'manage'
+    };
+  }
+}
+
+</script>
+</body>
+</html>

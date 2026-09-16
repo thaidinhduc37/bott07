@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker exec *)",
+      "Bash(get-childitem *)",
+      "Bash(select-object *)",
+      "Bash(select *)",
+      "Bash(write-output *)",
+      "Bash(get-command *)",
+      "Bash(.source)",
+      "Bash(python *)",
+      "Bash($p *)",
+      "Bash(write-output)",
+      "Bash($_.length/1mb,1)",
+      "Bash(}})",
+      "Bash($s *)",
+      "Bash(measure-object *)",
+      "Bash(Windows_NT=get-ciminstance *)",
+      "Bash(cd *)",
+      "Monitor(start-sleep *)",
+      "Bash($f='d:\\projects\\bott07\\scripts\\ingest_giaotrinh_full.log')",
+      "Bash($c)",
+      "Bash(select-string *)"
+    ]
+  },
+  "$version": 4
+}

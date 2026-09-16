@@ -1,0 +1,47 @@
+# ---------------------------------------------------------------------------
+#  server/ — unified Python app (api-py + rag-service merged into one process)
+#
+#  Combines the dependencies of the former server/api-py/requirements.txt
+#  (FastAPI web layer: auth, users, chat/documents routers, SQLAlchemy/
+#  Postgres) and server/rag-service/requirements.txt (RAG pipeline: hybrid
+#  retrieval, rerank, LLM readers, ChromaDB) into one venv, so the whole app
+#  runs as a single `python main.py` process instead of two services talking
+#  over HTTP.
+#
+#  Install torch CPU-only FIRST to avoid pulling the ~2.5 GB CUDA wheel:
+#      pip install torch --index-url https://download.pytorch.org/whl/cpu
+#      pip install -r requirements.txt
+# ---------------------------------------------------------------------------
+
+# --- web ---
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+pydantic==2.10.5
+pydantic-settings==2.7.1
+email-validator==2.2.0
+httpx==0.28.1
+python-dotenv==1.0.1
+
+# --- database (api-py) ---
+SQLAlchemy==2.0.36
+asyncpg==0.30.0
+alembic==1.14.0
+argon2-cffi==23.1.0
+PyJWT==2.10.1
+
+# --- ingestion (§3) ---
+pymupdf==1.25.2          # PDF: một record mỗi trang, giữ provenance
+python-docx==1.1.2       # .docx
+pandas==2.2.3            # .csv
+
+# --- chunking / retrieval (§5, §7, §10) ---
+sentence-transformers==3.3.1   # BGE-M3 + CrossEncoder
+transformers==4.48.0
+numpy==1.26.4
+
+# --- vector store (§7) ---
+chromadb==1.5.9
+
+# --- reader LLM (§2, §16) ---
+google-genai==0.8.0
