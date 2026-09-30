@@ -34,7 +34,7 @@ mọi trang.
 ## Kiến trúc
 
 ```text
-React/Vite (3000) ──► NestJS API (4000) ──┬──► PostgreSQL (5433)
+React/Vite (5173) ──► NestJS API (5000) ──┬──► PostgreSQL (5433)
                                           ├──► storage/ trên đĩa
                                           └──► FastAPI RAG (8000) ──┬──► Qdrant (6333)
                                                                     └──► LLM (chuỗi dự phòng)
@@ -114,7 +114,7 @@ giây rồi hy vọng. Thứ tự này quan trọng vì khởi động sai thứ
 Lần chạy đầu, rag-service mất khoảng một phút vì phải nạp hai mô hình lên RAM.
 
 **Vào bằng `localhost`, không phải `127.0.0.1`** — CORS của API chỉ nhận
-`localhost:3000`, vào bằng IP sẽ không đăng nhập được.
+`localhost:5173`, vào bằng IP sẽ không đăng nhập được.
 
 <details>
 <summary>Chạy tay từng dịch vụ</summary>
@@ -123,8 +123,8 @@ Lần chạy đầu, rag-service mất khoảng một phút vì phải nạp hai
 |---|---|---:|
 | Hạ tầng | `npm run infra:up` | 5433 / 6333 |
 | RAG service | `cd server/rag-service && .venv/Scripts/python -m uvicorn app.main:app --port 8000` | 8000 |
-| API | `npm run dev:api` | 4000 |
-| Web | `npm run dev:web` | 3000 |
+| API | `npm run dev:api` | 5000 |
+| Web | `npm run dev:web` | 5173 |
 
 </details>
 

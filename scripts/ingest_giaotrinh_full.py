@@ -42,7 +42,9 @@ from pathlib import Path
 
 # Thêm server vào path để import được app (đúng như ingest_giaotrinh.py).
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "server"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from doc_titles import display_title  # noqa: E402
 from app.config import get_settings  # noqa: E402
 from app.db import AsyncSessionLocal  # noqa: E402
 from app.models.academic import Course  # noqa: E402
@@ -76,7 +78,6 @@ FILE_TO_COURSE: dict[str, str] = {
     # --- Trí tuệ nhân tạo (CS301) ---
     "29_Nhap_mon_cong_nghe_so_va_ung_dung_AI.md": "CS301",
     "39_Hoc_may.md": "CS301",
-    "45_Xu_ly_ngon_ngu_tu_nhien_va_thi_giac.md": "CS301",
     "48_Cong_nghe_dien_toan_dam_may.md": "CS301",
     "53_Phat_trien_giai_phap_an_ninh_mang_dua_tren_AI.md": "CS301",
     "60_Bao_mat_IoT.md": "CS301",
@@ -117,11 +118,9 @@ FILE_TO_COURSE: dict[str, str] = {
 
 
 def _clean_title(filename: str) -> str:
-    """'33_Co_so_du_lieu.md' -> 'Co so du lieu'."""
-    stem = Path(filename).stem
-    if "_" in stem:
-        stem = stem.split("_", 1)[1]
-    return stem.replace("_", " ").strip()
+    """Tên hiển thị có dấu, lấy từ dòng "Tên học phần" trong đề cương (xem doc_titles.py).
+    Trước đây suy từ tên tệp nên '33_Co_so_du_lieu.md' thành 'Co so du lieu'."""
+    return display_title(filename, corpus_dir=CORPUS_DIR)
 
 
 async def _find_manager_id(db) -> str:

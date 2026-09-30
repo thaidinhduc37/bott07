@@ -14,7 +14,9 @@ from pathlib import Path
 
 # Add server to path so we can import from app
 sys.path.insert(0, str(Path(__file__).parent.parent / "server"))
+sys.path.insert(0, str(Path(__file__).parent))
 
+from doc_titles import display_title  # noqa: E402
 from app.rag_container import get_rag_container
 
 
@@ -51,7 +53,8 @@ async def main():
         # Remove leading numbers like "1.", "2.", etc
         if "." in title and title.split(".")[0].isdigit():
             title = ".".join(title.split(".")[1:]).strip()
-        title = title.replace("_", " ").title()
+        # Tên có dấu lấy từ đề cương (doc_titles.py); không có thì dùng tên suy từ tên tệp.
+        title = display_title(file_path.name, corpus_dir=file_path.parent)
 
         # Generate a deterministic UUID based on filename
         doc_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"giaotrinh:{file_path.name}"))

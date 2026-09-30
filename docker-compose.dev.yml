@@ -126,7 +126,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: development
-      PORT: 4000
+      PORT: 5000
       DATABASE_URL: postgresql://${POSTGRES_USER:-student_assistant}:${POSTGRES_PASSWORD:-change_me_in_production}@postgres:5432/${POSTGRES_DB:-student_assistant}?schema=public
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?bat buoc phai dat JWT_ACCESS_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?bat buoc phai dat JWT_REFRESH_SECRET}
@@ -135,7 +135,7 @@ services:
       RAG_SERVICE_URL: http://rag-service:8000
       RAG_INTERNAL_TOKEN: ${RAG_INTERNAL_TOKEN:-change_me_internal_token}
       # "*" mac dinh o dev: SSH-forward tu may khac hay dung origin localhost
-      # khac 3000 la chuyen thuong, gio cho phep tat (ma van giu duoc cookie
+      # khac 5173 la chuyen thuong, gio cho phep tat (ma van giu duoc cookie
       # nho reflect Origin thay vi CORS wildcard that). Sieu chat trong prod
       # xem docker-compose.prod.yml.
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
@@ -153,7 +153,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "${API_PORT:-4000}:4000"
+      - "${API_PORT:-5000}:5000"
     deploy:
       resources:
         limits:
@@ -169,7 +169,7 @@ services:
     environment:
       # Vite dev đọc trực tiếp từ biến môi trường lúc chạy — không cần build-arg
       # như production (không có bước build tách riêng ở dev).
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:4000/api}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/api}
       # Bật polling cho Vite watcher — xem client/vite.config.ts.
       VITE_USE_POLLING: "1"
     volumes:
@@ -179,7 +179,7 @@ services:
     depends_on:
       - api
     ports:
-      - "${WEB_PORT:-3000}:3000"
+      - "${WEB_PORT:-5173}:5173"
     deploy:
       resources:
         limits:

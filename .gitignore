@@ -33,9 +33,14 @@ server/storage/signatures/*
 server/rag-service/var/
 !server/rag-service/var/.gitkeep
 
-# model cache
+# model cache — trọng số mô hình (BGE-M3, reranker, bản int8), hàng GB.
+# Neo đường dẫn cụ thể: mẫu trần `models/` khớp MỌI thư mục tên models, kể cả
+# `server/app/models/` (model dữ liệu SQLAlchemy) — làm nó chưa từng được commit.
 .cache/
-models/
+/models/
+server/models/
+server/models_int8/
+server/rag-service/models/
 
 # logs & os
 *.log

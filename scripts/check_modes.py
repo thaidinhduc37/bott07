@@ -2,7 +2,7 @@
 import json
 import urllib.request
 
-API = "http://localhost:4000/api"
+API = "http://localhost:5000/api"
 creds = json.load(open(r"D:\projects\bott07\test_login.json"))
 
 

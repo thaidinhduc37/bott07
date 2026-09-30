@@ -7,7 +7,7 @@ e-signatures and a two-tier approval flow.
 ## Stack & layout
 
 ```
-React/Vite (3000) ──► NestJS API (4000) ──┬──► PostgreSQL (5433)
+React/Vite (5173) ──► NestJS API (5000) ──┬──► PostgreSQL (5433)
                                           ├──► storage/ on disk
                                           └──► FastAPI RAG (8000) ──┬──► Qdrant (6333)
                                                                     └──► LLM fallback chain
@@ -80,7 +80,7 @@ starts hallucinating.
 
 ## Conventions to know before editing
 
-- Enter the app via `localhost`, not `127.0.0.1` — API CORS only allows `localhost:3000`.
+- Enter the app via `localhost`, not `127.0.0.1` — API CORS only allows `localhost:5173`.
 - Node >= 22.19 (see `engines` in `package.json`); keep Dockerfile/README/scripts in sync if
   changing this — a prior review caught them drifting.
 - Only `QUYCHE` and `GIAOTRINH` document types are indexed into RAG; `KHAC` is lecturer material,
