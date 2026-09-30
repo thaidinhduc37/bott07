@@ -14,7 +14,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import AuthenticatedUser, get_current_user, get_db, require_roles
 from app.models.enums import RoleCode
-from app.schemas.schedules import CreateScheduleDto, ImportScheduleDto, UpdateScheduleDto
+from app.schemas.schedules import (
+    CreateExamDto,
+    CreateScheduleDto,
+    ImportScheduleDto,
+    LecturerNoteDto,
+    UpdateExamDto,
+    UpdateScheduleDto,
+)
 from app.services.schedules_service import SchedulesService
 
 router = APIRouter(prefix="/schedules", tags=["schedules"])
@@ -61,6 +68,38 @@ async def my_exams(
     return await SchedulesService(db).exams_in_range(user.id, from_=from_, to=to)
 
 
+@router.get("/teaching", dependencies=[Depends(require_roles(*_STAFF_ROLES))])
+async def teaching_timetable(
+    from_: str | None = Query(default=None, alias="from"),
+    to: str | None = Query(default=None),
+    class_id: str | None = Query(default=None, alias="classId"),
+    user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Lịch giảng dạy: buổi học + ca thi mà người gọi được ghi yêu cầu."""
+    return await SchedulesService(db).teaching(user, from_=from_, to=to, class_id=class_id)
+
+
+@router.put("/sessions/{id}/lecturer-note", dependencies=[Depends(require_roles(*_STAFF_ROLES))])
+async def set_session_note(
+    id: str, dto: LecturerNoteDto, request: Request,
+    user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db),
+):
+    return await SchedulesService(db).set_lecturer_note(
+        "SESSION", id, dto.note, notify=dto.notify, user=user, request=request,
+    )
+
+
+@router.put("/exams/{id}/lecturer-note", dependencies=[Depends(require_roles(*_STAFF_ROLES))])
+async def set_exam_note(
+    id: str, dto: LecturerNoteDto, request: Request,
+    user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db),
+):
+    return await SchedulesService(db).set_lecturer_note(
+        "EXAM", id, dto.note, notify=dto.notify, user=user, request=request,
+    )
+
+
 @router.get("", dependencies=[Depends(require_roles(*_STAFF_ROLES))])
 async def list_schedules(
     class_id: str | None = Query(default=None, alias="classId"),
@@ -105,6 +144,47 @@ async def import_schedules(
         file_bytes=data, filename=file.filename, class_id=class_id, dry_run=dry_run, allow_partial=allow_partial,
         user=user, request=request,
     )
+
+
+@router.get("/availability", dependencies=[Depends(require_roles(*_MANAGER_ROLES))])
+async def availability(
+    day: str = Query(..., alias="date"),
+    start_time: str = Query(..., alias="startTime"),
+    end_time: str = Query(..., alias="endTime"),
+    exclude_id: str | None = Query(default=None, alias="excludeId"),
+    user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Phòng / giảng viên nào đang bận trong khoảng giờ của một ngày (VN)."""
+    return await SchedulesService(db).availability(
+        day=day, start_time=start_time, end_time=end_time, exclude_id=exclude_id,
+    )
+
+
+@router.post("/exams", dependencies=[Depends(require_roles(*_MANAGER_ROLES))])
+async def create_exam(
+    dto: CreateExamDto, request: Request,
+    user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db),
+):
+    return await SchedulesService(db).create_exam(dto, user, request)
+
+
+@router.patch("/exams/{id}", dependencies=[Depends(require_roles(*_MANAGER_ROLES))])
+async def update_exam(
+    id: str, dto: UpdateExamDto, request: Request,
+    user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db),
+):
+    id = _parse_uuid4(id)
+    return await SchedulesService(db).update_exam(id, dto, user, request)
+
+
+@router.delete("/exams/{id}", dependencies=[Depends(require_roles(*_MANAGER_ROLES))])
+async def delete_exam(
+    id: str, request: Request,
+    user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db),
+):
+    id = _parse_uuid4(id)
+    return await SchedulesService(db).delete_exam(id, user, request)
 
 
 @router.patch("/{id}", dependencies=[Depends(require_roles(*_STAFF_ROLES))])

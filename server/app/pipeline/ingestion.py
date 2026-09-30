@@ -164,9 +164,16 @@ def load_and_report(path: str | Path) -> tuple[list[Page], IngestionReport]:
 # Ở đây "Điều 2" nằm đầu dòng nhưng là một tham chiếu, không phải chỗ bắt đầu
 # Điều 2. Nhận nhầm nó làm hỏng nhãn của mọi chunk phía sau.
 ARTICLE_RE = re.compile(
-    r"^[ \t]*(?:ĐIỀU|Điều|Ðiều)[ \t]+(\d+)[ \t]*[\.\:][ \t]*(?=[^\n]{3,})",
+    # Cho phép tiền tố tiêu đề Markdown ("## Điều 27.") và chữ đậm ("**Điều 27.**"):
+    # tài liệu nạp dạng .md viết tiêu đề điều như vậy; trước đây chúng không bao
+    # giờ khớp và cả văn bản mất nhãn điều.
+    r"^[ \t]*(?:#{1,6}[ \t]+)?(?:\*\*|__)?[ \t]*(?:ĐIỀU|Điều|Ðiều)[ \t]+(\d+)[ \t]*[\.\:][ \t]*(?=[^\n]{3,})",
     re.MULTILINE,
 )
+
+# Dòng mục lục: "Điều 27. Chuyển chương trình, ngành đào tạo … 22" — kết thúc bằng
+# số trang và không phải tiêu đề Markdown.
+TOC_LINE_END = re.compile(r"[ \t\.…]+\d{1,4}[ \t]*$")
 
 # Cụm mở đầu một tham chiếu chéo. "Điều 12 của Quy chế này", "Điều 2 nêu trên".
 CROSS_REFERENCE_TAIL = re.compile(r"^\s*(?:của|nêu|này|trên|tại|và|,)", re.IGNORECASE)
@@ -188,13 +195,29 @@ def find_articles(text: str) -> list[tuple[int, str]]:
     2. **Số điều phải tăng dần.** Văn bản quy phạm đánh số điều tuần tự. "Điều 2"
        xuất hiện sau "Điều 16" chắc chắn là tham chiếu chéo. Ràng buộc này bắt
        được cả những trường hợp mà bộ lọc đuôi bỏ lọt.
+
+    3. **Mục lục.** Văn bản có mục lục liệt kê "Điều 1 … Điều 41" ở đầu. Không bỏ
+       thì bộ lọc (2) nhận mục lục làm tiêu đề, đẩy mốc lên 41 và loại MỌI tiêu
+       đề thật phía sau như tham chiếu chéo — cả văn bản mang nhãn "Điều 41".
+       Chỉ bỏ dòng giống mục lục (kết thúc bằng số trang) khi cùng số điều còn
+       xuất hiện lại phía sau: tiêu đề thật tình cờ kết thúc bằng con số, như
+       "Điều 5. Thang điểm 10", không bị bỏ nhầm.
     """
-    raw: list[tuple[int, int]] = []
+    candidates: list[tuple[int, int, bool]] = []
     for m in ARTICLE_RE.finditer(text):
         tail = text[m.end() : m.end() + 12]
         if CROSS_REFERENCE_TAIL.match(tail):
             continue
-        raw.append((m.start(), int(m.group(1))))
+        line_end = text.find("\n", m.start())
+        line = text[m.start() : line_end if line_end != -1 else len(text)]
+        looks_toc = not line.lstrip().startswith("#") and bool(TOC_LINE_END.search(line))
+        candidates.append((m.start(), int(m.group(1)), looks_toc))
+
+    raw: list[tuple[int, int]] = []
+    for i, (pos, number, looks_toc) in enumerate(candidates):
+        if looks_toc and any(n == number for _, n, _ in candidates[i + 1 :]):
+            continue
+        raw.append((pos, number))
 
     articles: list[tuple[int, str]] = []
     highest = 0

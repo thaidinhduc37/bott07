@@ -41,10 +41,10 @@ class Settings(BaseSettings):
     )
 
     # ------------------------------------------------------------------ api
-    api_port: int = 4000
+    api_port: int = 5000
     api_prefix: str = "api"
     cors_origin: str | None = None
-    web_port: int = 3000
+    web_port: int = 5173
 
     jwt_access_secret: str = "change_me_access_secret_at_least_32_chars_long"
     jwt_refresh_secret: str = "change_me_refresh_secret_at_least_32_chars_long"

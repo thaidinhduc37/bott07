@@ -23,6 +23,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.deps import get_db, require_roles
 from app.models.documents import DocumentVersion
 from app.models.enums import IndexStatus, RoleCode
+from app.models.forms import FormSubmission
 from app.models.users import User
 from app.services.rag_client import get_rag_client
 
@@ -68,6 +69,7 @@ async def health_detail(db: AsyncSession = Depends(get_db)):
         rag_detail = str(e)
 
     users_count = (await db.execute(select(func.count()).select_from(User))).scalar_one()
+    submissions_count = (await db.execute(select(func.count()).select_from(FormSubmission))).scalar_one()
     indexed_docs = (
         await db.execute(
             select(func.count()).select_from(DocumentVersion).where(DocumentVersion.index_status == IndexStatus.INDEXED)
@@ -92,6 +94,7 @@ async def health_detail(db: AsyncSession = Depends(get_db)):
         "counters": {
             "users": users_count,
             "indexedDocumentVersions": indexed_docs,
+            "submissions": submissions_count,
         },
         "uptimeSeconds": round(time.monotonic() - _start_time),
         "memoryMb": memory_mb,
@@ -101,25 +104,30 @@ async def health_detail(db: AsyncSession = Depends(get_db)):
 def _windows_rss_mb() -> int:
     try:
         import ctypes
+        from ctypes import wintypes
 
         class PROCESS_MEMORY_COUNTERS(ctypes.Structure):
-            _fields_ = [
-                ("cb", ctypes.c_uint32),
-                ("PageFaultCount", ctypes.c_uint32),
-                ("PeakWorkingSetSize", ctypes.c_size_t),
-                ("WorkingSetSize", ctypes.c_size_t),
-                ("QuotaPeakPagedPoolUsage", ctypes.c_size_t),
-                ("QuotaPagedPoolUsage", ctypes.c_size_t),
-                ("QuotaPeakNonPagedPoolUsage", ctypes.c_size_t),
-                ("QuotaNonPagedPoolUsage", ctypes.c_size_t),
-                ("PagefileUsage", ctypes.c_size_t),
-                ("PeakPagefileUsage", ctypes.c_size_t),
+            _fields_ = [("cb", wintypes.DWORD), ("PageFaultCount", wintypes.DWORD)] + [
+                (name, ctypes.c_size_t)
+                for name in (
+                    "PeakWorkingSetSize", "WorkingSetSize", "QuotaPeakPagedPoolUsage", "QuotaPagedPoolUsage",
+                    "QuotaPeakNonPagedPoolUsage", "QuotaNonPagedPoolUsage", "PagefileUsage", "PeakPagefileUsage",
+                )
             ]
 
+        kernel32 = ctypes.WinDLL("kernel32")
+        psapi = ctypes.WinDLL("psapi")
+        # Khai báo kiểu HANDLE tường minh: mặc định ctypes coi giá trị trả về là int
+        # 32-bit, pseudo-handle -1 trên Windows 64-bit bị cắt và lời gọi thất bại
+        # âm thầm — trước đây hàm này vì thế luôn trả 0.
+        kernel32.GetCurrentProcess.restype = wintypes.HANDLE
+        psapi.GetProcessMemoryInfo.argtypes = [
+            wintypes.HANDLE, ctypes.POINTER(PROCESS_MEMORY_COUNTERS), wintypes.DWORD,
+        ]
         counters = PROCESS_MEMORY_COUNTERS()
         counters.cb = ctypes.sizeof(PROCESS_MEMORY_COUNTERS)
-        handle = ctypes.windll.kernel32.GetCurrentProcess()
-        ctypes.windll.psapi.GetProcessMemoryInfo(handle, ctypes.byref(counters), counters.cb)
+        if not psapi.GetProcessMemoryInfo(kernel32.GetCurrentProcess(), ctypes.byref(counters), counters.cb):
+            return 0
         return round(counters.WorkingSetSize / 1024 / 1024)
     except Exception:
         return 0

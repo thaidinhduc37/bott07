@@ -26,7 +26,7 @@ from app.pipeline.ingestion import Page, articles_in_span, find_articles
 # Khối bắt đầu ngay bằng tiêu đề một điều. Dùng để cắt chunk ở ranh giới điều,
 # không dùng để dò danh sách điều (việc đó ở ingestion.find_articles, nơi có
 # thêm bộ lọc tham chiếu chéo và ràng buộc số tăng dần).
-ARTICLE_HEADING_START = re.compile(r"^[ \t]*(?:ĐIỀU|Điều|Ðiều)[ \t]+\d+[ \t]*[\.\:]")
+ARTICLE_HEADING_START = re.compile(r"^[ \t]*(?:#{1,6}[ \t]+)?(?:\*\*|__)?[ \t]*(?:ĐIỀU|Điều|Ðiều)[ \t]+\d+[ \t]*[\.\:]")
 
 HEADING_RE = re.compile(
     r"^\s*(?:(?:CHƯƠNG|CHUONG|PHẦN|PHAN|MỤC|MUC|CHAPTER|PART|SECTION)\b.*"

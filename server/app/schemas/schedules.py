@@ -85,6 +85,65 @@ class ImportScheduleDto(CamelModel):
     allow_partial: bool = False
 
 
+class CreateExamDto(CamelModel):
+    class_id: str
+    course_id: str
+    academic_year: str = Field(..., max_length=20)
+    semester: str = Field(..., max_length=20)
+    exam_date: str
+    start_time: str
+    duration_minutes: int = Field(..., ge=15, le=480)
+    room: str = Field(..., max_length=50)
+    building: str | None = Field(default=None, max_length=100)
+    exam_format: ExamFormat | None = None
+    allowed_materials: str | None = Field(default=None, max_length=300)
+    candidate_count: int | None = Field(default=None, ge=0)
+    chief_proctor: str | None = Field(default=None, max_length=150)
+    second_proctor: str | None = Field(default=None, max_length=150)
+    note: str | None = Field(default=None, max_length=500)
+
+    @field_validator("start_time")
+    @classmethod
+    def _valid_time(cls, v: str) -> str:
+        if not _TIME_RE.match(v):
+            raise ValueError("phải theo định dạng HH:mm")
+        return v
+
+
+class UpdateExamDto(CamelModel):
+    """Mọi trường tùy chọn; lớp không đổi (không có `class_id` ở đây)."""
+
+    course_id: str | None = None
+    academic_year: str | None = Field(default=None, max_length=20)
+    semester: str | None = Field(default=None, max_length=20)
+    exam_date: str | None = None
+    start_time: str | None = None
+    duration_minutes: int | None = Field(default=None, ge=15, le=480)
+    room: str | None = Field(default=None, max_length=50)
+    building: str | None = Field(default=None, max_length=100)
+    exam_format: ExamFormat | None = None
+    allowed_materials: str | None = Field(default=None, max_length=300)
+    candidate_count: int | None = Field(default=None, ge=0)
+    chief_proctor: str | None = Field(default=None, max_length=150)
+    second_proctor: str | None = Field(default=None, max_length=150)
+    note: str | None = Field(default=None, max_length=500)
+
+    @field_validator("start_time")
+    @classmethod
+    def _valid_time(cls, v: str | None) -> str | None:
+        if v is not None and not _TIME_RE.match(v):
+            raise ValueError("phải theo định dạng HH:mm")
+        return v
+
+
 class ExamRangeDto(CamelModel):
     from_: str | None = Field(default=None, alias="from")
     to: str | None = None
+
+
+class LecturerNoteDto(CamelModel):
+    """Yêu cầu của giảng viên cho một buổi học / ca thi. Rỗng hoặc null = xóa."""
+
+    note: str | None = Field(default=None, max_length=4000)
+    # Gửi thông báo cho học viên của lớp. Tắt khi chỉ sửa lỗi chính tả.
+    notify: bool = True

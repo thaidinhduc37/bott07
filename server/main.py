@@ -3,7 +3,7 @@
 Starts the merged FastAPI app (`app.main:app` — api-py's web layer + the
 rag-service pipeline running in-process, see `app/rag_container.py` and
 `app/services/rag_client.py`) with uvicorn, listening on API_PORT (.env,
-default 4000 — matches the client's VITE_API_URL=http://localhost:4000/api).
+default 5000 — matches the client's VITE_API_URL=http://localhost:5000/api).
 
 Requires (started separately, both via Docker — see repo root
 docker-compose.dev.yml):

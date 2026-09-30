@@ -32,7 +32,7 @@ from __future__ import annotations
 import hashlib
 import re
 import uuid
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from fastapi import HTTPException
 from sqlalchemy import func, select
@@ -764,60 +764,99 @@ class FormsService:
     # ------------------------------------------------------- admin stats
 
     async def get_admin_stats(self) -> dict:
+        """Số liệu đơn cho trang chủ quản trị — đúng kiểu `FormsAdminStats` phía client
+        (mảng thay vì dict, thời gian xử lý tính theo NGÀY, kèm chuỗi xu hướng 14 ngày)."""
+        now = datetime.now(timezone.utc)
         by_status_rows = (
             await self.db.execute(select(FormSubmission.status, func.count()).group_by(FormSubmission.status))
         ).all()
         by_template_rows = (
             await self.db.execute(
-                select(FormTemplate.code, func.count())
+                select(FormTemplate.name, func.count())
                 .join(FormSubmission, FormSubmission.template_id == FormTemplate.id)
-                .group_by(FormTemplate.code)
+                .group_by(FormTemplate.name)
+                .order_by(func.count().desc())
             )
         ).all()
 
-        completed_stmt = select(FormSubmission.submitted_at, FormSubmission.completed_at).where(
-            FormSubmission.status == SubmissionStatus.COMPLETED,
-            FormSubmission.completed_at.is_not(None),
-            FormSubmission.submitted_at.is_not(None),
+        completed_rows = (
+            await self.db.execute(
+                select(FormSubmission.submitted_at, FormSubmission.completed_at).where(
+                    FormSubmission.status == SubmissionStatus.COMPLETED,
+                    FormSubmission.completed_at.is_not(None),
+                    FormSubmission.submitted_at.is_not(None),
+                )
+            )
+        ).all()
+        avg_turnaround_days = (
+            sum((c - s).total_seconds() for s, c in completed_rows) / len(completed_rows) / 86400
+            if completed_rows else None
         )
-        completed_rows = (await self.db.execute(completed_stmt)).all()
-        if completed_rows:
-            total_hours = sum((c - s).total_seconds() / 3600 for s, c in completed_rows)
-            avg_turnaround = total_hours / len(completed_rows)
-        else:
-            avg_turnaround = None
 
-        backlog_stmt = (
-            select(FormSubmission)
-            .options(selectinload(FormSubmission.template))
-            .where(FormSubmission.status.in_([
-                SubmissionStatus.SUBMITTED, SubmissionStatus.UNDER_REVIEW, SubmissionStatus.NEEDS_REVISION,
-            ]))
-            .order_by(FormSubmission.submitted_at.asc())
-            .limit(10)
-        )
-        backlog_rows = (await self.db.execute(backlog_stmt)).scalars().all()
+        # Xu hướng 14 ngày gần nhất: ngày không có dữ liệu để `None` (biểu đồ bỏ trống điểm đó).
+        days = [(now - timedelta(days=13 - i)).date() for i in range(14)]
+        turnaround_by_day: dict[date, list[float]] = {}
+        for s_at, c_at in completed_rows:
+            turnaround_by_day.setdefault(c_at.date(), []).append((c_at - s_at).total_seconds() / 86400)
+        avg_turnaround_trend = [
+            {"day": d.isoformat(),
+             "value": (sum(turnaround_by_day[d]) / len(turnaround_by_day[d])) if d in turnaround_by_day else None}
+            for d in days
+        ]
 
-        thirty_days_ago = datetime.now(timezone.utc).timestamp() - 30 * 86400
-        recent_stmt = select(FormSubmission.status).where(
-            FormSubmission.updated_at >= datetime.fromtimestamp(thirty_days_ago, tz=timezone.utc)
-        )
-        recent_statuses = [r[0] for r in (await self.db.execute(recent_stmt)).all()]
-        decided = [s for s in recent_statuses if s in (SubmissionStatus.REJECTED, SubmissionStatus.APPROVED, SubmissionStatus.COMPLETED)]
+        decided_statuses = (SubmissionStatus.REJECTED, SubmissionStatus.APPROVED, SubmissionStatus.COMPLETED)
+        recent = (
+            await self.db.execute(
+                select(FormSubmission.status, FormSubmission.updated_at).where(
+                    FormSubmission.updated_at >= now - timedelta(days=30),
+                    FormSubmission.status.in_(decided_statuses),
+                )
+            )
+        ).all()
         rejection_rate = (
-            len([s for s in decided if s == SubmissionStatus.REJECTED]) / len(decided) if decided else None
+            sum(1 for st, _ in recent if st == SubmissionStatus.REJECTED) / len(recent) if recent else None
         )
+        decided_by_day: dict[date, list[SubmissionStatus]] = {}
+        for st, upd in recent:
+            decided_by_day.setdefault(upd.date(), []).append(st)
+        rejection_trend = [
+            {"day": d.isoformat(),
+             "value": (sum(1 for st in decided_by_day[d] if st == SubmissionStatus.REJECTED) / len(decided_by_day[d]))
+             if d in decided_by_day else None}
+            for d in days
+        ]
+
+        backlog_rows = (
+            await self.db.execute(
+                select(FormSubmission)
+                .options(selectinload(FormSubmission.template))
+                .where(FormSubmission.status.in_([
+                    SubmissionStatus.SUBMITTED, SubmissionStatus.UNDER_REVIEW, SubmissionStatus.NEEDS_REVISION,
+                ]))
+                .order_by(FormSubmission.submitted_at.asc())
+                .limit(10)
+            )
+        ).scalars().all()
 
         return {
-            "byStatus": {status.value: count for status, count in by_status_rows},
-            "byTemplate": {code: count for code, count in by_template_rows},
-            "avgTurnaroundHours": avg_turnaround,
+            "byStatus": [{"status": st.value, "count": n} for st, n in by_status_rows],
+            "byTemplate": [{"templateName": name, "count": n} for name, n in by_template_rows],
+            "avgTurnaroundDays": avg_turnaround_days,
+            "avgTurnaroundTrend": avg_turnaround_trend,
             "backlog": [
-                {"id": str(b.id), "code": b.code, "templateName": b.template.name, "status": b.status,
-                 "submittedAt": b.submitted_at}
+                {
+                    "id": str(b.id),
+                    "code": b.code,
+                    "templateName": b.template.name,
+                    "status": b.status.value,
+                    "currentStepOrder": b.current_step_order,
+                    "daysWaiting": (now - b.submitted_at).days if b.submitted_at else 0,
+                    "submittedAt": b.submitted_at,
+                }
                 for b in backlog_rows
             ],
             "rejectionRate30d": rejection_rate,
+            "rejectionRateTrend": rejection_trend,
         }
 
 

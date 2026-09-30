@@ -88,7 +88,9 @@ class AdminDashboardService:
         return {
             "activeUsers7d": active_7d,
             "activeUsers30d": active_30d,
-            "usersByRole": {code.value: count for code, count in by_role_rows},
+            # Mảng {role, count} — đúng kiểu `ActivityAdminStats` phía client (dict làm
+            # `usersByRole.map` văng lỗi và sập cả trang chủ quản trị).
+            "usersByRole": [{"role": code.value, "count": count} for code, count in by_role_rows],
             "failedLogins7d": failed_logins_7d,
             "scheduleThisWeek": schedule_this_week,
             "examsNext14d": exams_next_14d,

@@ -29,14 +29,19 @@ from app.rag_container import get_rag_container
 from app.routers.approvals import router as approvals_router
 from app.routers.auth import router as auth_router
 from app.routers.chat import router as chat_router
+from app.routers.catalog import router as catalog_router
+from app.routers.faculties import router as faculties_router
+from app.routers.rooms import router as rooms_router
 from app.routers.courses import classes_router, router as courses_router
 from app.routers.documents import router as documents_router
 from app.routers.chat import admin_dashboard_router as chat_admin_dashboard_router
 from app.routers.forms import router as forms_router
 from app.routers.health import router as health_router
+from app.routers.learning import router as learning_router
 from app.routers.notifications import router as notifications_router
 from app.routers.schedules import router as schedules_router
 from app.routers.users import admin_audit_router, admin_users_router, users_router
+from app.services import study_reminders
 from app.services.rag_client import get_rag_client
 
 logging.basicConfig(level=logging.INFO)
@@ -99,9 +104,13 @@ app.include_router(admin_users_router, prefix=api_prefix)
 app.include_router(admin_audit_router, prefix=api_prefix)
 app.include_router(chat_router, prefix=api_prefix)
 app.include_router(chat_admin_dashboard_router, prefix=api_prefix)
+app.include_router(learning_router, prefix=api_prefix)
 app.include_router(documents_router, prefix=api_prefix)
 app.include_router(courses_router, prefix=api_prefix)
 app.include_router(classes_router, prefix=api_prefix)
+app.include_router(catalog_router, prefix=api_prefix)
+app.include_router(faculties_router, prefix=api_prefix)
+app.include_router(rooms_router, prefix=api_prefix)
 app.include_router(forms_router, prefix=api_prefix)
 app.include_router(approvals_router, prefix=api_prefix)
 app.include_router(schedules_router, prefix=api_prefix)
@@ -137,9 +146,12 @@ async def on_startup() -> None:
     else:
         logger.info("Model sẽ được nạp ở request đầu tiên (PRELOAD_MODELS=0)")
 
+    study_reminders.start()
+
 
 @app.on_event("shutdown")
 async def on_shutdown() -> None:
+    await study_reminders.stop()
     await get_rag_client().aclose()
     from app.pipeline import blocking
 
