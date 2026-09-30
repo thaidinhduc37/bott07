@@ -31,6 +31,8 @@ class CreateUserRequest(CamelModel):
     class_code: str | None = None
     cohort: str | None = None
     training_system: str | None = None
+    # Khoa của giảng viên / lãnh đạo khoa (học viên thuộc khoa qua lớp nên bỏ qua trường này).
+    faculty_id: str | None = None
 
     @field_validator("email", mode="before")
     @classmethod

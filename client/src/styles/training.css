@@ -301,3 +301,10 @@
 .train-detail__name + .train-detail__sub {
   margin-left: var(--gap-3);
 }
+
+/* Hộp thoại căn giữa màn hình (không dính góc trên trái) và luôn chừa lề 1rem hai bên. */
+.train-dlg {
+  margin: auto;
+  width: min(28rem, calc(100% - 2rem));
+  max-height: min(90dvh, 52rem);
+}

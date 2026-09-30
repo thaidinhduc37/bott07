@@ -6,6 +6,7 @@ import './styles/globals.css';
 import './styles/training.css';
 import './styles/schedule-edit.css';
 import './styles/rooms.css';
+import './styles/admin-create.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

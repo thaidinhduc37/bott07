@@ -118,6 +118,8 @@ export const NAV: Record<Workspace, NavItem[]> = {
     { href: '/quan-tri', label: 'Trang chủ', icon: 'home' },
     { href: '/quan-tri/tai-khoan', label: 'Tài khoản', icon: 'users' },
     { href: '/quan-tri/tai-lieu', label: 'Tài liệu', icon: 'folder' },
+    { href: '/quan-tri/dao-tao', label: 'Quản lý đào tạo', icon: 'book' },
+    { href: '/quan-tri/lich', label: 'Lịch học & lịch thi', icon: 'calendar' },
     { href: '/quan-tri/nhat-ky', label: 'Nhật ký thao tác', icon: 'log' },
     { href: '/quan-tri/dich-vu', label: 'Trạng thái dịch vụ', icon: 'pulse' },
     { href: '/thong-bao', label: 'Thông báo', icon: 'bell' },

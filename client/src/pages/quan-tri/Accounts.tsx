@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from '@/components/shared/SessionProvider';
 import {
   USER_STATUS_LABEL,
@@ -10,6 +10,8 @@ import {
 import { ROLE_LABEL, type RoleCode } from '@/utils/roles';
 import { viDateTime } from '@/services/forms-api';
 import { PageHeader } from '@/components/shared/PageHeader';
+import { Icon } from '@/components/shared/Icon';
+import { CreateUserDialog } from '@/components/admin/CreateUserDialog';
 
 const ALL_ROLES: RoleCode[] = ['ADMIN', 'ACADEMIC_MANAGER', 'LECTURER', 'APPROVER', 'STUDENT'];
 
@@ -22,6 +24,8 @@ export default function AccountsPage() {
   const [error, setError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const createBtnRef = useRef<HTMLButtonElement>(null);
 
   const load = useCallback(async () => {
     try {
@@ -154,7 +158,18 @@ export default function AccountsPage() {
 
         <aside className="page-grid__aside">
           <section className="sheet sheet--pad">
-            <h2 className="aside-h">Lọc</h2>
+            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 'var(--gap-4)' }}>
+              <h2 className="aside-h" style={{ margin: 0 }}>Lọc</h2>
+              <button
+                ref={createBtnRef}
+                type="button"
+                className="btn btn--primary btn--sm"
+                onClick={() => setCreating(true)}
+              >
+                <Icon name="plus" size={16} />
+                Tạo tài khoản
+              </button>
+            </div>
             <div className="acct-filters">
               <label>
                 <span className="field__label">Tìm theo tên, email hoặc mã học viên</span>
@@ -206,6 +221,19 @@ export default function AccountsPage() {
           </section>
         </aside>
       </div>
+
+      {creating && (
+        <CreateUserDialog
+          openRef={createBtnRef}
+          onClose={() => setCreating(false)}
+          onCreated={(email) => {
+            setCreating(false);
+            setError(null);
+            setFlash(`Đã tạo tài khoản ${email}`);
+            void load();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -61,6 +61,34 @@ export interface ServiceStatus {
   memoryMb: number;
 }
 
+/** Thân `POST /admin/users` — tạo tài khoản mới (chỉ ADMIN). */
+export interface CreateUserPayload {
+  email: string;
+  fullName: string;
+  password: string;
+  phone?: string;
+  roles: RoleCode[];
+  /** Chỉ gửi khi có vai trò STUDENT. */
+  studentCode?: string;
+  /** Mã lớp (không phải id) — `catalogApi.classes()` trả `code`. */
+  classCode?: string;
+  cohort?: string;
+  trainingSystem?: string;
+  /** Chỉ gửi khi có vai trò LECTURER hoặc DEPARTMENT_HEAD (và không có STUDENT). */
+  facultyId?: string;
+}
+
+export interface CreatedUser {
+  id: string;
+  email: string;
+  fullName: string;
+  phone: string | null;
+  status: UserStatus;
+  lastLoginAt: string | null;
+  createdAt: string;
+  roles: RoleCode[];
+}
+
 export const adminApi = {
   users: (params: { search?: string; role?: string; status?: string } = {}) => {
     const qs = new URLSearchParams(
@@ -76,6 +104,8 @@ export const adminApi = {
 
   setRoles: (id: string, roles: RoleCode[]) =>
     api<AdminUser>(`/admin/users/${id}/roles`, { method: 'PUT', body: { roles } }),
+
+  createUser: (body: CreateUserPayload) => api<CreatedUser>('/admin/users', { method: 'POST', body }),
 
   auditLogs: (params: { page?: number; action?: string; userId?: string } = {}) => {
     const qs = new URLSearchParams(

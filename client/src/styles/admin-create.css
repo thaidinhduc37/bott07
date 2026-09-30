@@ -1,0 +1,148 @@
+/* Hộp thoại "Tạo tài khoản" trong trang Tài khoản (quản trị) — do agent Qwen I viết.
+   Tiền tố class: `acct-new-`. Chỉ dùng biến có sẵn trong globals.css. */
+
+/* ------------------------------------------------------------------ khung hộp thoại */
+.acct-new-dlg {
+  width: min(30rem, 100%);
+  max-width: 100%;
+  max-height: 100dvh;
+  margin: 0;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--sheet);
+  color: var(--ink);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.acct-new-dlg::backdrop {
+  background: color-mix(in oklab, var(--ink) 32%, transparent);
+}
+
+.acct-new-dlg__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--rule-faint);
+  flex: none;
+}
+
+.acct-new-dlg__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.acct-new-dlg__body {
+  padding: 1rem;
+  overflow-y: auto;
+  display: grid;
+  gap: var(--gap-4);
+  align-content: start;
+}
+
+/* Form trong hộp thoại: mỗi khối `.field` / `fieldset` cách nhau một khoảng. */
+.acct-new-dlg__body form {
+  display: grid;
+  gap: var(--gap-5);
+}
+
+/* Gỡ lề dọc mặc định của `.field + .field` vì form đã tự đặt khoảng cách. */
+.acct-new-dlg__body form .field + .field {
+  margin-top: 0;
+}
+
+/* ------------------------------------------------------------------ mật khẩu tạm */
+/* Ô nhập và nút "Tạo ngẫu nhiên" nằm cùng hàng; ở màn hẹp nút tự xuống hàng. */
+.acct-new-pass {
+  display: flex;
+  align-items: stretch;
+  gap: var(--gap-2);
+  flex-wrap: wrap;
+}
+
+.acct-new-pass .field__input {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.acct-new-pass .btn {
+  flex: 0 0 auto;
+}
+
+/* ------------------------------------------------------------------ nhóm vai trò */
+.acct-new-roles {
+  margin: 0;
+  padding: var(--gap-3) var(--gap-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  display: grid;
+  gap: var(--gap-2);
+  align-content: start;
+}
+
+.acct-new-roles__legend {
+  padding: 0 var(--gap-1);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.acct-new-roles__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-2);
+}
+
+.acct-new-roles__item {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-2);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.acct-new-roles__item:has(input:disabled) {
+  color: var(--ink-faint);
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------------------ hàng nút */
+.acct-new-dlg__actions {
+  display: flex;
+  gap: var(--gap-3);
+  margin-top: var(--gap-2);
+}
+
+/* ------------------------------------------------------------------ hẹp (400px)
+   Nhóm vai trò xuống một cột để nhãn không bị cắt; mật khẩu và nút xếp dọc. */
+@media (max-width: 480px) {
+  .acct-new-roles__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .acct-new-pass {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .acct-new-pass .field__input {
+    flex-basis: auto;
+  }
+
+  .acct-new-dlg__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Hộp thoại căn giữa màn hình (không dính góc trên trái) và luôn chừa lề 1rem hai bên. */
+.acct-new-dlg {
+  margin: auto;
+  width: min(30rem, calc(100% - 2rem));
+  max-height: min(90dvh, 52rem);
+}

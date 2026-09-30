@@ -86,6 +86,8 @@ export function App() {
         <Route path="nhat-ky" element={<AuditLogPage />} />
         <Route path="dich-vu" element={<ServicesPage />} />
         <Route path="tai-lieu" element={<AdminDocumentsPage />} />
+        <Route path="dao-tao" element={<TrainingManagementPage />} />
+        <Route path="lich" element={<StaffSchedulePage />} />
       </Route>
     </Routes>
   );

@@ -1,96 +1,100 @@
 # AGENTS.md
 
 Student assistant MVP for a security academy: RAG chat over regulations/curricula with
-verifiable citations, class/exam schedules, auto-filled administrative forms with internal
-e-signatures and a two-tier approval flow.
+verifiable citations, class/exam schedules, quiz-based review from curricula, auto-filled
+administrative forms with internal e-signatures and a two-tier approval flow, and academic
+administration (faculties, classes, courses, rooms, timetable editing).
 
 ## Stack & layout
 
 ```
-React/Vite (5173) ──► NestJS API (5000) ──┬──► PostgreSQL (5433)
-                                          ├──► storage/ on disk
-                                          └──► FastAPI RAG (8000) ──┬──► Qdrant (6333)
-                                                                    └──► LLM fallback chain
-                                                                         Gemini → Hugging Face
+React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► PostgreSQL (5433, Docker)
+                       RAG pipeline runs in-process  ├──► ChromaDB (8001, Docker)
+                                                     ├──► storage/ on disk
+                                                     └──► LLM fallback chain: Gemini → Hugging Face
 ```
 
-- `client/` — React + Vite + TypeScript SPA. Workspace-role-based layouts (STUDENT / APPROVER /
-  ACADEMIC_MANAGER / LECTURER / ADMIN).
-- `server/api/` — NestJS + Prisma + PostgreSQL. Owns auth, RBAC, forms/approval engine, documents,
-  chat history, schedules, notifications, audit log. Calls `server/rag-service` over HTTP for
-  anything RAG-related.
-- `server/rag-service/` — Python FastAPI. Hybrid retrieval (BGE-M3 dense ∥ BM25+pyvi → RRF) →
-  int8 cross-encoder rerank → calibrated abstention gate → retrieve-grade-rewrite loop →
-  cited generation → groundedness verification. LLM fallback chain: Gemini → Hugging Face.
-- `notebooks/rag-pipeline-2026.ipynb` — the original research notebook the RAG service is a
-  CPU-only port of.
-- `scripts/` — PowerShell orchestration (`chay.ps1`/`dung.ps1` run/stop everything in the right
-  order, `cai-dat.ps1` setup, `sao-luu.ps1`/`khoi-phuc.ps1` backup/restore) and Python maintenance
-  scripts (`ingest_corpus.py`, `calibrate_tau.py`, `download_models.py`).
+- `client/` — React 18 + Vite + TypeScript (strict) SPA, plain CSS in `client/src/styles/`
+  (`globals.css` + one file per feature area). Three workspaces by role (`utils/roles.ts`):
+  `sinh-vien` (STUDENT), `can-bo` (ACADEMIC_MANAGER / LECTURER / APPROVER / DEPARTMENT_HEAD),
+  `quan-tri` (ADMIN). Shared building blocks: `PageHeader`, `Tabs`/`TabPanel`, `Breadcrumb`,
+  `Metrics` in `components/shared/`.
+- `server/` — FastAPI + SQLAlchemy 2 (async) + Alembic. `app/routers` (HTTP + RBAC), `app/services`
+  (logic), `app/models`, `app/schemas` (Pydantic, camelCase via `CamelModel`), `app/pipeline`
+  (the RAG pipeline: hybrid retrieval → rerank → abstention gate → grade/rewrite → cited generation
+  → groundedness check). Entry point `server/main.py`.
+- `scripts/` — Python maintenance scripts (`ingest_giaotrinh*.py`, `check_*.py`, `doc_titles.py`,
+  `fix_document_titles.py`) and `scripts/test/` (HTTP acceptance tests; see below).
+- `notebooks/rag-pipeline-2026.ipynb` — the research notebook the pipeline was ported from.
+- `copus/` — raw source data (schedules, regulations). Not committed.
 
-When exploring code, prefer `.codegraph/` (CodeGraph MCP `codegraph_explore`, or
-`codegraph explore "<query>"` via CLI) over grep/find/Read — it returns verbatim source plus call
-paths in one round trip.
+### Feature areas (server ↔ client)
+
+| Area | Server | Client |
+|---|---|---|
+| Chat with citations | `chat` router/service, `pipeline/` | `ChatWorkspace`, `StudentChat`, `StaffChat` |
+| Review (quiz from curricula, wrong-answer book, notes, exam plan, reminders) | `learning` router, `learning_service`, `notes_service`, `exam_plan_service`, `study_reminders` | `StudyHub`, `QuizTake`, `ReviewBook`, `Notebook` |
+| Progress / lecturer insights | `progress_service`, `insights_service` (aggregate only, ≥2 learners) | `StudentHome`, `StaffHome`, `LearningInsights` |
+| Schedules | `schedules` router/service, `schedule_conflicts` (class/room/lecturer clash), CSV import | `StudentSchedule`, `StaffSchedule`, `SessionForm`, `ExamForm` |
+| Academic admin | `catalog` (classes, courses, students→class), `faculties`, `rooms` | `TrainingManagement` (tabs Khoa/Lớp/Môn/Học viên/Phòng) |
+| Forms & approvals | `forms`, `approvals`, `signatures_service` | `Templates`, `NewSubmission`, `ApprovalInbox` |
+| Accounts, audit, health | `users` router (`/admin/*`), `audit_service`, `health` | `pages/quan-tri/*` |
 
 ## Commands
 
 ```bash
-cp .env.example .env       # fill in GEMINI_API_KEY and/or HF_API_KEY
-npm install                # installs client + server/api workspaces
-npm run infra:up           # PostgreSQL + Qdrant via Docker
-npm run db:migrate
-npm run db:seed            # demo data from real CSVs; ingest_corpus.py depends on this
+cp server/.env.example server/.env   # fill in GEMINI_API_KEY and/or HF_API_KEY; never commit .env
+npm install                          # client workspace
+npm run infra:up                     # PostgreSQL + ChromaDB via Docker
+npm run db:migrate                   # alembic upgrade head
+npm run db:seed                      # demo data (seed_phase1.py); ingest scripts depend on it
 
-npm run chay                # start everything (dev), waits for each layer to actually respond
-npm run chay -- -SanPham    # start built/production bundles
-npm run chay -- -ChiHaTang  # infra only, run the rest by hand
-npm run dung                 # stop web/api/rag, keep infra
-npm run dung -- -CaHaTang    # stop infra too
-
-npm run dev:api / dev:web    # run one service directly
-npm run build:api / build:web
-npm run db:reset
-npm run test:all             # scripts/test/chay-tat-ca.ps1
-npm run test:ram             # scripts/test/do-ram.ps1
-
-npm run docker:dev / docker:dev:down
-npm run docker:prod / docker:prod:down
+npm run dev:server                   # FastAPI on :5000  (cd server && .venv/Scripts/python main.py)
+npm run dev:web                      # Vite on :5173
+npm run build:web
 ```
 
-RAG service (separate venv — CPU torch needs its own index URL):
+Python venv lives in `server/.venv` (CPU torch needs its own index URL). After a backend change
+the API must be restarted; Vite hot-reloads the client.
 
-```bash
-cd server/rag-service
-python -m venv .venv
-.venv/Scripts/pip install torch --index-url https://download.pytorch.org/whl/cpu
-.venv/Scripts/pip install -r requirements.txt
-python ../../scripts/download_models.py    # BGE-M3 + reranker, ~2.5 GB
-python ../../scripts/quantize_models.py    # pre-quantize both to int8, avoids fp32+int8 RAM peak at runtime
+### Tests
 
-python scripts/ingest_corpus.py --only quyche   # requires db:seed to have run first
-python scripts/calibrate_tau.py                 # then update ANSWER_THRESHOLD in .env
-```
+`scripts/test/` holds acceptance tests that talk to a running API and the Docker Postgres
+(`sa-postgres-dev`). Run one with `python scripts/test/test_catalog.py`, or all with
+`pwsh scripts/test/chay-tat-ca.ps1`. Login is rate-limited to 5/min per IP, so the runner sleeps
+65 s between suites and you should too when running several by hand. Tests create data with a
+`ZT`/`zt-` prefix and clean up after themselves (also on failure).
 
-Run `quantize_models.py` after `download_models.py` and after any model change; re-run
-`calibrate_tau.py` afterward since quantized reranker scores shift slightly (see
-`server/rag-service/app/pipeline/models.py`).
-
-Changing the corpus requires recalibrating τ — a stale threshold either abstains needlessly or
-starts hallucinating.
+Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `khoa@` (faculty head),
+`gv.*@` (lecturers), `sv.*@` (students), all `@hvktcnan.edu.vn`.
 
 ## Conventions to know before editing
 
 - Enter the app via `localhost`, not `127.0.0.1` — API CORS only allows `localhost:5173`.
 - Node >= 22.19 (see `engines` in `package.json`); keep Dockerfile/README/scripts in sync if
-  changing this — a prior review caught them drifting.
+  changing this.
 - Only `QUYCHE` and `GIAOTRINH` document types are indexed into RAG; `KHAC` is lecturer material,
-  stored but not searchable (`server/api/src/documents/documents.service.ts`).
+  stored but not searchable.
 - The RAG pipeline has three independent anti-hallucination layers: calibrated confidence gate
   (τ), evidence-sufficiency grading, and post-generation groundedness verification. Don't bypass
-  or merge these when touching `server/rag-service/app/pipeline/orchestrator.py`.
+  or merge these when touching `server/app/pipeline/orchestrator.py`. Changing the corpus requires
+  recalibrating τ.
 - E-signatures are internal (hash + audit log), not legally-binding digital certificates — the UI
   states this on every relevant page; don't imply otherwise in copy or docs.
 - Approval flow is fixed in code + JSON config per form type — there is no dynamic workflow
   designer (explicitly out of scope).
+- Learner analytics shown to lecturers are aggregate only; never return names, codes or ids of
+  individual learners from `insights_service`.
+- `schedules.room` / `exam_schedules.room` are plain strings (CSV compatible); the `rooms` table is
+  a catalog for choosing and capacity checks, not a foreign key. Rooms that already have a
+  timetable cannot be renamed, only deactivated. "Chưa xếp…" means no room and never conflicts.
+- Faculty is an entity (`faculties`); `classes.faculty` (string) is kept in sync with
+  `classes.faculty_id` for older readers. A DEPARTMENT_HEAD only sees and assigns inside the
+  faculty whose `head_id` is theirs (other faculties answer 404).
+- Async SQLAlchemy: load relationships explicitly (`selectinload`) and read ORM attributes into
+  locals before `commit()`; lazy loads raise `MissingGreenlet` (a 500).
+- CSS: only existing tokens (`--ink`, `--pen`, `--gap-*`, …), dark-theme safe, no gradients,
+  decorative shadows, emoji, uppercase text, coloured side borders or purple. Don't set `margin: 0`
+  on a direct child of `.stack` (it cancels the vertical rhythm).
 - Source comments and commit messages are written in Vietnamese; match that when editing existing
   files unless told otherwise.

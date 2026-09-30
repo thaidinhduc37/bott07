@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import uuid
+
 from fastapi import HTTPException
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette.requests import Request
 
-from app.models.academic import StudyClass
+from app.models.academic import Faculty, StudyClass
 from app.models.audit import AuditLog
 from app.models.enums import RoleCode, UserStatus
 from app.models.users import Role, StudentProfile, User, UserRole
@@ -215,8 +217,21 @@ class UsersService:
             if not study_class:
                 raise HTTPException(status_code=400, detail={"message": f"Không tìm thấy lớp {dto.class_code}"})
 
+        faculty_id = None
+        if dto.faculty_id:
+            try:
+                faculty = await self.db.get(Faculty, uuid.UUID(dto.faculty_id))
+            except (ValueError, TypeError):
+                faculty = None
+            if not faculty:
+                raise HTTPException(status_code=400, detail={"message": "Khoa không hợp lệ", "code": "INVALID_FACULTY"})
+            faculty_id = faculty.id
+
         password_hash = hash_password(dto.password)
-        user = User(email=dto.email, full_name=dto.full_name, phone=dto.phone, password_hash=password_hash)
+        user = User(
+            email=dto.email, full_name=dto.full_name, phone=dto.phone, password_hash=password_hash,
+            faculty_id=faculty_id if RoleCode.STUDENT not in dto.roles else None,
+        )
         self.db.add(user)
         await self.db.flush()
 
