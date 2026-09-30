@@ -1,4 +1,4 @@
-$API = "http://localhost:4000/api"
+$API = "http://localhost:5000/api"
 $pass = 0; $fail = 0
 function Check($n, $c, $d = "") {
   if ($c) { Write-Host "  PASS  $n" -ForegroundColor Green; $script:pass++ }
@@ -10,7 +10,7 @@ function Code($m, $p, $s) {
 }
 # Doc cookie theo dung path ma server dat (/api/auth), khong phai "/".
 function Refresh-Cookie($s) {
-  ($s.Cookies.GetCookies("http://localhost:4000/api/auth/refresh") |
+  ($s.Cookies.GetCookies("http://localhost:5000/api/auth/refresh") |
     Where-Object { $_.Name -eq "sa_refresh" }).Value
 }
 

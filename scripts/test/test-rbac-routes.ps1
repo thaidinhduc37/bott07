@@ -14,7 +14,7 @@
 #>
 
 $ErrorActionPreference = 'Stop'
-$Api = $env:API_URL; if (-not $Api) { $Api = 'http://localhost:4000/api' }
+$Api = $env:API_URL; if (-not $Api) { $Api = 'http://localhost:5000/api' }
 
 $script:Pass = 0; $script:Fail = 0; $script:Failures = @()
 

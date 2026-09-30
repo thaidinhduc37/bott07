@@ -1,6 +1,6 @@
 # Kiểm thử thủ công RBAC — tiêu chí nghiệm thu Ngày 3
 $ErrorActionPreference = "Continue"
-$API = "http://localhost:4000/api"
+$API = "http://localhost:5000/api"
 $pass = 0; $fail = 0
 
 function Check($name, $cond, $detail = "") {
@@ -122,10 +122,10 @@ Start-Sleep -Seconds 62
 $s2 = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 $l = Req "POST" "/auth/login" @{ email = "sv.tranthimai@hvktcnan.edu.vn"; password = "Demo@2026" } $s2
 Check "Dang nhap lai duoc sau khi rate limit reset" ($l.code -eq 200) "got $($l.code)"
-$oldRefresh = ($s2.Cookies.GetCookies("http://localhost:4000/api/auth/refresh") | Where-Object { $_.Name -eq "sa_refresh" }).Value
+$oldRefresh = ($s2.Cookies.GetCookies("http://localhost:5000/api/auth/refresh") | Where-Object { $_.Name -eq "sa_refresh" }).Value
 $r1 = Req "POST" "/auth/refresh" $null $s2
 Check "Refresh lan 1 -> 200" ($r1.code -eq 200) "got $($r1.code)"
-$newRefresh = ($s2.Cookies.GetCookies("http://localhost:4000/api/auth/refresh") | Where-Object { $_.Name -eq "sa_refresh" }).Value
+$newRefresh = ($s2.Cookies.GetCookies("http://localhost:5000/api/auth/refresh") | Where-Object { $_.Name -eq "sa_refresh" }).Value
 Check "Refresh token da bi xoay" ($oldRefresh -ne $newRefresh)
 
 # Dung lai token cu -> phai bi tu choi va thu hoi toan bo phien

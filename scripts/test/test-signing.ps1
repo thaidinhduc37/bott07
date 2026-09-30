@@ -14,7 +14,7 @@
 #>
 
 $ErrorActionPreference = 'Stop'
-$Api = $env:API_URL; if (-not $Api) { $Api = 'http://localhost:4000/api' }
+$Api = $env:API_URL; if (-not $Api) { $Api = 'http://localhost:5000/api' }
 $RepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 $script:Pass = 0
