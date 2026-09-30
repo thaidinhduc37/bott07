@@ -1,0 +1,303 @@
+/* Quản lý đào tạo (Lớp / Môn học / Học viên) — do agent Qwen C viết */
+
+/* ------------------------------------------------------------------ thanh công cụ
+   Hàng chứa nút "Thêm", ô tìm, bộ lọc `.seg`. Ở 400px các khối tự xếp xuống
+   hàng (`.row` đã có `flex-wrap`), không gây cuộn ngang. */
+.train-toolbar {
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: var(--gap-4);
+}
+
+/* Nút "Thêm" nằm cuối hàng, tụt phải khi còn chỗ. */
+.train-add {
+  margin-left: auto;
+}
+
+/* Ô tìm: icon nằm trong khung ô nhập. */
+.train-search {
+  flex: 1 1 14rem;
+  max-width: 22rem;
+}
+
+.train-search__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.train-search__icon {
+  position: absolute;
+  left: 0.7rem;
+  color: var(--ink-faint);
+  pointer-events: none;
+}
+
+.train-search__box .field__input {
+  padding-left: 2.2rem;
+}
+
+/* Bộ lọc lớp ở tab Học viên — rộng vừa đủ, không co quá. */
+.train-class-filter {
+  flex: 0 1 16rem;
+  min-width: 12rem;
+}
+
+/* Bộ lọc `.seg` ở tab Học viên: tụt phải. */
+.train-seg {
+  margin-left: auto;
+}
+
+/* Cột thao tác: cụm nút nhỏ căn phải, không đổi khoảng cách khi cuộn. */
+.train-acts {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.train-acts .btn {
+  margin-left: var(--gap-1);
+}
+
+/* Số học viên ở tab Lớp là liên kết sang tab Học viên. */
+.train-count-link {
+  font-variant-numeric: tabular-nums;
+  justify-content: flex-end;
+}
+
+/* ------------------------------------------------------------------ hộp thoại */
+.train-dlg {
+  width: min(28rem, 100%);
+  max-width: 100%;
+  max-height: 100dvh;
+  margin: 0;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--sheet);
+  color: var(--ink);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.train-dlg::backdrop {
+  background: color-mix(in oklab, var(--ink) 32%, transparent);
+}
+
+.train-dlg__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--rule-faint);
+  flex: none;
+}
+
+.train-dlg__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.train-dlg__body {
+  padding: 1rem;
+  overflow-y: auto;
+  display: grid;
+  gap: var(--gap-4);
+  align-content: start;
+}
+
+.train-dlg__actions {
+  display: flex;
+  gap: var(--gap-3);
+  margin-top: var(--gap-2);
+}
+
+/* Hộp thoại xác nhận xóa. */
+.train-confirm__msg {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* Hộp thoại đổi lớp: mã học viên. */
+.train-assign__who {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+
+/* ------------------------------------------------------------------ xếp hàng loạt */
+.train-bulk {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--gap-4);
+  flex-wrap: wrap;
+  padding: var(--gap-4);
+  background: var(--pen-wash);
+  border-radius: var(--r-md);
+}
+
+.train-bulk__count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pen-ink);
+  align-self: center;
+}
+
+.train-bulk__field {
+  flex: 0 1 16rem;
+  min-width: 12rem;
+}
+
+.train-bulk__field .field__label {
+  margin-bottom: var(--gap-1);
+}
+
+/* ------------------------------------------------------------------ phân trang */
+.train-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-4);
+}
+
+.train-pager__info {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------------ hẹp (400px)
+   Bảng đã cuộn trong `.table-wrap`; ở đây chỉ căn lại hàng công cụ và thanh
+   xếp hàng loạt cho gọn. */
+@media (max-width: 480px) {
+  .train-toolbar {
+    gap: var(--gap-3);
+  }
+
+  .train-search,
+  .train-class-filter {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .train-add,
+  .train-seg {
+    margin-left: 0;
+  }
+
+  .train-bulk {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .train-bulk__count {
+    align-self: flex-start;
+  }
+
+  .train-bulk__field {
+    flex-basis: 100%;
+  }
+}
+
+/* Chữ chỉ dành cho trình đọc màn hình (caption, nhãn ô chọn) được định vị tuyệt đối; nếu khung cuộn không
+   phải là "nơi neo" thì chúng thoát ra ngoài và làm cả trang cuộn ngang ở màn hẹp. */
+.table-wrap {
+  position: relative;
+}
+
+/* ------------------------------------------------------------------ chi tiết khoa */
+.train-detail__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.train-detail__section {
+  display: grid;
+  gap: var(--gap-3);
+}
+
+.train-detail__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+}
+
+.train-detail__head h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.train-detail__empty {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ink-faint);
+}
+
+.train-detail__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-2);
+}
+
+.train-detail__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  padding: var(--gap-2) var(--gap-3);
+  border-radius: var(--r-sm);
+  background: var(--paper);
+}
+
+.train-detail__name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.train-detail__sub {
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+
+.train-detail__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-2);
+  flex-wrap: wrap;
+}
+
+.train-detail__select {
+  max-width: 16rem;
+}
+
+/* Hẹp: hàng chi tiết khoa xếp dọc. */
+@media (max-width: 480px) {
+  .train-detail__row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .train-detail__head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .train-detail__select {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+/* Họ tên và email nằm cùng dòng: cách nhau một khoảng, không dính liền. */
+.train-detail__name + .train-detail__sub {
+  margin-left: var(--gap-3);
+}

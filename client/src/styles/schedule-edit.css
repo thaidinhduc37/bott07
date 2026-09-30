@@ -1,0 +1,151 @@
+/* Form tạo/sửa buổi học và ca thi — do agent Qwen D viết.
+   Mọi class tiền tố `sedit-`, chỉ dùng biến có sẵn trong globals.css. */
+
+/* ---------------------------------------------------------- hộp thoại form */
+
+.sedit-dlg {
+  margin: auto;
+  width: min(40rem, calc(100% - 2rem));
+  max-height: min(90dvh, 56rem);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-md);
+  background: var(--sheet);
+  color: var(--ink);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sedit-dlg::backdrop {
+  background: color-mix(in oklab, var(--ink) 32%, transparent);
+}
+
+.sedit-dlg__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--rule-faint);
+  flex: none;
+}
+
+.sedit-dlg__body {
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.sedit-dlg__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* -------------------------------------------------------------- lưới form */
+
+.sedit-form {
+  display: grid;
+  gap: var(--gap-4);
+}
+
+.sedit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-3) var(--gap-4);
+}
+
+.sedit-field--full {
+  grid-column: 1 / -1;
+}
+
+.sedit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-2);
+  justify-content: flex-end;
+  padding-top: var(--gap-2);
+  border-top: 1px solid var(--rule-faint);
+}
+
+/* ------------------------------------------------------ danh sách trùng lịch */
+
+.sedit-conflicts {
+  display: grid;
+  gap: var(--gap-2);
+}
+
+.sedit-conflicts__head {
+  margin: 0;
+  font-weight: 700;
+}
+
+.sedit-conflicts__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--gap-2);
+}
+
+.sedit-conflicts__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap-2);
+  flex-wrap: wrap;
+}
+
+.sedit-conflicts__text {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+/* -------------------------------------------- nút Sửa/Xóa trong hộp chi tiết */
+
+.sedit-entry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-2);
+  padding: var(--gap-3) 0 0;
+  border-top: 1px solid var(--rule-faint);
+}
+
+.sedit-confirm {
+  margin: var(--gap-3) 0 0;
+  padding: var(--gap-3);
+  border-radius: var(--r-md);
+  background: var(--seal-wash);
+  color: var(--seal-ink);
+  display: grid;
+  gap: var(--gap-2);
+}
+
+.sedit-confirm__text {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.sedit-confirm__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-2);
+}
+
+/* ------------------------------------------------- điện thoại: 1 cột form */
+
+@media (max-width: 640px) {
+  .sedit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sedit-dlg {
+    width: calc(100% - 1.5rem);
+    max-height: 92dvh;
+  }
+}
+
+/* Các ô trong lưới không mang margin-top của quy tắc `* + *` (làm cột phải lệch xuống so với cột trái). */
+.sedit-grid > .field {
+  margin: 0;
+}

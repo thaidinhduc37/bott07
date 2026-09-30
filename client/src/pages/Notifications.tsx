@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { notificationsApi, type NotificationItem } from '@/services/approvals-api';
 import { Icon, type IconName } from '@/components/shared/Icon';
 import { viDateTime } from '@/services/forms-api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 const TYPE_ICON: Record<string, IconName> = {
   SUBMISSION_STATUS: 'form',
@@ -69,21 +70,21 @@ export default function NotificationsPage() {
   );
 
   return (
-    <div className="stack shell--read">
-      <header className="spread" style={{ alignItems: 'flex-end', gap: 'var(--gap-4)' }}>
-        <div>
-          <span className="eyebrow">Hộp thư</span>
-          <h1 className="display page-title">Thông báo</h1>
-          <p className="page-sub">{unread > 0 ? `${unread} thông báo chưa đọc` : 'Bạn đã đọc hết'}</p>
-        </div>
-        {unread > 0 && (
-          <button type="button" className="btn btn--ghost" style={{ flexShrink: 0 }} onClick={markAll}>
-            Đánh dấu đã đọc tất cả
-          </button>
-        )}
-      </header>
+    <div className="stack">
+      <PageHeader
+        eyebrow="Hộp thư"
+        title="Thông báo"
+        description={unread > 0 ? `${unread} thông báo chưa đọc` : 'Bạn đã đọc hết'}
+        actions={
+          unread > 0 ? (
+            <button type="button" className="btn btn--ghost" onClick={markAll}>
+              Đánh dấu đã đọc tất cả
+            </button>
+          ) : undefined
+        }
+      />
 
-      <fieldset style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}>
+      <fieldset style={{ border: 0, marginInline: 0, marginBottom: 0, padding: 0, minWidth: 0 }}>
         <legend className="sr-only">Lọc thông báo</legend>
         <div className="seg">
           {(

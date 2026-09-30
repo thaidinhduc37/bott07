@@ -4,6 +4,7 @@ import { Field } from '@/components/shared/Field';
 import { useSession } from '@/components/shared/SessionProvider';
 import { SignatureCard } from '@/components/signature/SignatureCard';
 import { ApiError, authApi } from '@/services/api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 function formatDate(iso: string | null | undefined): string {
   if (!iso) return '—';
@@ -96,10 +97,7 @@ export default function ProfilePage() {
 
   return (
     <div className="stack">
-      <header className="page-head">
-        <h1 className="page-title">Hồ sơ cá nhân</h1>
-        <p className="page-sub">{user.roleNames.join(' · ')}</p>
-      </header>
+      <PageHeader title="Hồ sơ cá nhân" description={user.roleNames.join(' · ')} />
 
       <div className="sheet sheet--pad">
         <section>

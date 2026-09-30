@@ -88,8 +88,12 @@ function RepeatingTable({
         {field.required && <span aria-hidden="true"> *</span>}
       </div>
 
-      <div style={{ overflowX: 'auto' }}>
-        <table className="data-table" style={{ width: '100%' }}>
+      {/* Bảng co giãn theo bề rộng KHUNG CHỨA (container query `.form-table`): đủ
+          rộng thì là bảng; hẹp (cột nhập liệu 24rem của trang lập đơn, điện thoại)
+          thì mỗi dòng thành một khối, mỗi ô kèm nhãn cột. Trước đây bảng 4 cột nằm
+          trong khung ~15rem, hai cột cuối bị đẩy ra ngoài và ô nhập không thấy. */}
+      <div className="form-table">
+        <table className="data-table form-table__table">
           <thead>
             <tr>
               <th scope="col" style={{ width: '3rem' }}>
@@ -108,11 +112,13 @@ function RepeatingTable({
           <tbody>
             {rows.map((r, i) => (
               <tr key={i}>
-                <td>{i + 1}</td>
+                <td className="form-table__no" data-label="Dòng">
+                  {i + 1}
+                </td>
                 {cols.map((c) => (
-                  <td key={c.key}>
+                  <td key={c.key} data-label={c.label}>
                     <input
-                      className="input"
+                      className="field__input"
                       type="text"
                       maxLength={c.maxLength}
                       value={r[c.key] ?? ''}
@@ -121,7 +127,7 @@ function RepeatingTable({
                     />
                   </td>
                 ))}
-                <td>
+                <td className="form-table__del">
                   <button
                     type="button"
                     className="btn btn--ghost"

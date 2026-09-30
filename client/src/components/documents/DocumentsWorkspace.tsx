@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from '@/components/shared/SessionProvider';
-import { Icon } from '@/components/shared/Icon';
 import {
   DOCUMENT_TYPE_LABEL,
   INDEXABLE,
@@ -14,6 +13,7 @@ import {
   type IndexStatus,
   type IndexStatusReport,
 } from '@/services/documents-api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 const STATUS_TAG: Record<IndexStatus, string> = {
   UPLOADED: 'tag--muted',
@@ -41,6 +41,7 @@ export function DocumentsWorkspace() {
   const [report, setReport] = useState<IndexStatusReport | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [filterType, setFilterType] = useState('');
+  const [filterCourse, setFilterCourse] = useState('');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,129 +112,180 @@ export function DocumentsWorkspace() {
     }
   }
 
+  // Lọc theo môn phía client: API không có tham số môn, và danh sách đã tải đủ.
+  const visible = filterCourse ? items.filter((d) => d.course?.id === filterCourse) : items;
+
+  // Cảnh báo lập chỉ mục lặp lại: cùng một nội dung chỉ hiện một lần ở đầu
+  // danh sách, mỗi dòng chỉ còn một chấm nhỏ.
+  const { commonWarning, commonCount } = groupWarnings(visible);
+  const courseFilterable = items.some((d) => d.course);
+
   return (
     <div className="stack">
-      <header className="spread" style={{ alignItems: 'flex-end', gap: 'var(--gap-4)' }}>
-        <div>
-          <span className="eyebrow">Nguồn tri thức</span>
-          <h1
-            className="display"
-            style={{ fontSize: 'clamp(1.4rem, 1.15rem + 1vw, 1.85rem)', margin: '0.25rem 0 0' }}
-          >
-            Quản lý tài liệu
-          </h1>
-          <p className="page-sub">
-            Mọi câu trả lời của trợ lý đều phải trích dẫn được về một tài liệu ở đây. Tài liệu chưa
-            lập chỉ mục xong thì chưa có mặt trong câu trả lời nào — trạng thái bên dưới nói rõ từng
-            tệp đang ở bước nào.
-          </p>
+      <PageHeader
+        eyebrow="Nguồn tri thức"
+        title="Quản lý tài liệu"
+        description="Mọi câu trả lời của trợ lý đều phải trích dẫn được về một tài liệu ở đây."
+      />
+
+      <div className="page-grid">
+        <div className="page-grid__main">
+          {uploadOpen && (
+            <UploadForm
+              courses={courses}
+              isRagManager={isRagManager}
+              onClose={() => setUploadOpen(false)}
+              onDone={(msg) => {
+                setFlash(msg);
+                setUploadOpen(false);
+                void load();
+              }}
+            />
+          )}
+
+          {flash && (
+            <div className="notice notice--ok" role="status">
+              {flash}
+            </div>
+          )}
+          {error && (
+            <div className="notice notice--error" role="alert">
+              {error}
+            </div>
+          )}
+
+          {loading ? (
+            <p className="eyebrow">Đang tải…</p>
+          ) : visible.length === 0 ? (
+            <div className="sheet sheet--pad">
+              <p style={{ margin: 0, color: 'var(--ink-soft)' }}>
+                {search || filterType || filterCourse
+                  ? 'Không có tài liệu nào khớp bộ lọc.'
+                  : 'Chưa có tài liệu nào. Bấm “Tải tài liệu lên” để bắt đầu.'}
+              </p>
+            </div>
+          ) : (
+            <>
+              {commonWarning && (
+                <div className="notice notice--warn">
+                  {commonWarning}
+                  {commonCount > 1 && (
+                    <span style={{ display: 'block', marginTop: '0.25rem', fontSize: '0.8125rem' }}>
+                      Áp dụng cho {commonCount} tài liệu.
+                    </span>
+                  )}
+                </div>
+              )}
+              <div className="sheet doc-list">
+                <p className="doc-list__count">
+                  {visible.length} tài liệu
+                  {filterCourse && visible.length !== total && ` (trong tổng số ${total})`}
+                </p>
+                <ul className="doc-list__items">
+                  {visible.map((doc) => (
+                    <DocumentRow
+                      key={doc.id}
+                      doc={doc}
+                      canManage={isRagManager || !INDEXABLE.includes(doc.documentType)}
+                      onReindex={() => act(() => documentsApi.reindex(doc.id))}
+                      onRemove={() =>
+                        act(async () => {
+                          const r = await documentsApi.remove(doc.id);
+                          return {
+                            message: `${r.message} — xóa ${r.vectorsRemoved} vector, ${r.filesRemoved} tệp.`,
+                          };
+                        })
+                      }
+                    />
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
         </div>
-        {!uploadOpen && (
+
+        <aside className="page-grid__aside">
           <button
             type="button"
-            className="btn btn--primary"
-            style={{ flexShrink: 0 }}
-            onClick={() => setUploadOpen(true)}
+            className="btn btn--primary btn--block"
+            onClick={() => setUploadOpen((open) => !open)}
           >
-            Tải tài liệu lên
+            {uploadOpen ? 'Đóng biểu mẫu tải lên' : 'Tải tài liệu lên'}
           </button>
-        )}
-      </header>
 
-      {uploadOpen && (
-        <UploadForm
-          courses={courses}
-          isRagManager={isRagManager}
-          onClose={() => setUploadOpen(false)}
-          onDone={(msg) => {
-            setFlash(msg);
-            setUploadOpen(false);
-            void load();
-          }}
-        />
-      )}
+          {report && <IndexHealth report={report} />}
 
-      {report && <IndexHealth report={report} />}
-
-      {flash && (
-        <div className="notice notice--ok" role="status">
-          {flash}
-        </div>
-      )}
-      {error && (
-        <div className="notice notice--error" role="alert">
-          {error}
-        </div>
-      )}
-
-      {/* ------------------------------------------------------------ bộ lọc */}
-      <div className="sheet" style={{ padding: '0.85rem 1.1rem' }}>
-        <div className="row" style={{ gap: 'var(--gap-4)', flexWrap: 'wrap' }}>
-          <label style={{ flex: '1 1 14rem' }}>
-            <span className="field__label">Tìm theo tên</span>
-            <input
-              className="field__input"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Quy chế học tập…"
-            />
-          </label>
-          <label style={{ flex: '0 1 16rem' }}>
-            <span className="field__label">Loại tài liệu</span>
-            <select
-              className="field__input"
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-            >
-              <option value="">Tất cả loại</option>
-              {(Object.keys(DOCUMENT_TYPE_LABEL) as DocumentType[]).map((t) => (
-                <option key={t} value={t}>
-                  {DOCUMENT_TYPE_LABEL[t]}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+          <section className="sheet sheet--pad">
+            <h2 className="aside-h">Lọc</h2>
+            <div className="doc-filters">
+              <label className="field">
+                <span className="field__label">Tìm theo tên</span>
+                <input
+                  className="field__input"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Quy chế học tập…"
+                />
+              </label>
+              <label className="field">
+                <span className="field__label">Loại tài liệu</span>
+                <select
+                  className="field__input"
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value)}
+                >
+                  <option value="">Tất cả loại</option>
+                  {(Object.keys(DOCUMENT_TYPE_LABEL) as DocumentType[]).map((t) => (
+                    <option key={t} value={t}>
+                      {DOCUMENT_TYPE_LABEL[t]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {courseFilterable && (
+                <label className="field">
+                  <span className="field__label">Môn học</span>
+                  <select
+                    className="field__input"
+                    value={filterCourse}
+                    onChange={(e) => setFilterCourse(e.target.value)}
+                  >
+                    <option value="">Tất cả môn</option>
+                    {courses.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.code} — {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
+          </section>
+        </aside>
       </div>
-
-      {/* ---------------------------------------------------------- danh sách */}
-      {loading ? (
-        <p className="eyebrow">Đang tải…</p>
-      ) : items.length === 0 ? (
-        <div className="sheet sheet--pad">
-          <p style={{ margin: 0, color: 'var(--ink-soft)' }}>
-            {search || filterType
-              ? 'Không có tài liệu nào khớp bộ lọc.'
-              : 'Chưa có tài liệu nào. Tải tệp đầu tiên lên bằng biểu mẫu phía trên.'}
-          </p>
-        </div>
-      ) : (
-        <>
-          <p className="eyebrow" style={{ margin: 0 }}>
-            {total} tài liệu
-          </p>
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '1px', background: 'var(--rule-faint)', border: '1px solid var(--rule-faint)' }}>
-            {items.map((doc) => (
-              <DocumentRow
-                key={doc.id}
-                doc={doc}
-                canManage={isRagManager || !INDEXABLE.includes(doc.documentType)}
-                onReindex={() => act(() => documentsApi.reindex(doc.id))}
-                onRemove={() =>
-                  act(async () => {
-                    const r = await documentsApi.remove(doc.id);
-                    return {
-                      message: `${r.message} — xóa ${r.vectorsRemoved} vector, ${r.filesRemoved} tệp.`,
-                    };
-                  })
-                }
-              />
-            ))}
-          </ul>
-        </>
-      )}
     </div>
   );
+}
+
+/**
+ * Gom các cảnh báo lập chỉ mục cùng nội dung: nếu nhiều tài liệu dính cùng một
+ * câu (vd thiếu GEMINI_API_KEY), chỉ hiện một lần ở đầu danh sách.
+ */
+function groupWarnings(items: DocumentItem[]): { commonWarning: string | null; commonCount: number } {
+  const counts = new Map<string, number>();
+  for (const d of items) {
+    const w = d.latestVersion?.indexError;
+    if (w) counts.set(w, (counts.get(w) ?? 0) + 1);
+  }
+  let best: string | null = null;
+  let bestN = 0;
+  for (const [w, n] of counts) {
+    if (n > bestN) {
+      best = w;
+      bestN = n;
+    }
+  }
+  return bestN >= 2 ? { commonWarning: best, commonCount: bestN } : { commonWarning: null, commonCount: 0 };
 }
 
 // --------------------------------------------------------------- sức khỏe chỉ mục
@@ -244,8 +296,8 @@ function IndexHealth({ report }: { report: IndexStatusReport }) {
 
   return (
     <section className="sheet sheet--pad">
-      <div className="spread" style={{ marginBottom: 'var(--gap-4)' }}>
-        <h2 className="display" style={{ fontSize: '1.05rem', margin: 0 }}>
+      <div className="spread" style={{ marginBottom: 'var(--gap-3)' }}>
+        <h2 className="aside-h" style={{ margin: 0 }}>
           Trạng thái chỉ mục
         </h2>
         <span className={`tag ${!rag.reachable ? 'tag--seal' : inSync ? 'tag--ok' : 'tag--warn'}`}>
@@ -254,13 +306,13 @@ function IndexHealth({ report }: { report: IndexStatusReport }) {
       </div>
 
       {!rag.reachable ? (
-        <div className="notice notice--error">
+        <div className="notice notice--error" style={{ fontSize: '0.8125rem' }}>
           Không gọi được dịch vụ RAG. Tài liệu vẫn tải lên được nhưng sẽ nằm ở trạng thái “chờ lập
           chỉ mục” cho tới khi dịch vụ trở lại.
         </div>
       ) : (
         !inSync && (
-          <div className="notice notice--warn">
+          <div className="notice notice--warn" style={{ fontSize: '0.8125rem' }}>
             {report.consistency === 'unknown'
               ? 'Chưa đối chiếu được PostgreSQL với Qdrant.'
               : report.consistency}
@@ -268,21 +320,14 @@ function IndexHealth({ report }: { report: IndexStatusReport }) {
         )
       )}
 
-      <dl
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(9rem, 1fr))',
-          gap: 'var(--gap-4)',
-          margin: 'var(--gap-5) 0 0',
-        }}
-      >
+      <dl className="doc-idx">
         {(Object.keys(INDEX_STATUS_LABEL) as IndexStatus[]).map((s) => (
-          <div key={s}>
-            <dt className="eyebrow">{INDEX_STATUS_LABEL[s]}</dt>
-            <dd className="mono" style={{ margin: '0.15rem 0 0', fontSize: '0.9375rem' }}>
+          <div key={s} className="doc-idx__row">
+            <dt>{INDEX_STATUS_LABEL[s]}</dt>
+            <dd>
               {report.postgres[s]?.versions ?? 0}
               {report.postgres[s]?.chunks ? (
-                <span style={{ color: 'var(--ink-faint)' }}> · {report.postgres[s]?.chunks} đoạn</span>
+                <span className="doc-idx__sub"> · {report.postgres[s]?.chunks} đoạn</span>
               ) : null}
             </dd>
           </div>
@@ -290,35 +335,23 @@ function IndexHealth({ report }: { report: IndexStatusReport }) {
       </dl>
 
       {rag.reachable && (
-        <div style={{ marginTop: 'var(--gap-5)', borderTop: '1px dotted var(--rule)', paddingTop: 'var(--gap-4)' }}>
-          <div className="table-wrap">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Bộ sưu tập</th>
-                  {/* Hai cột này là số đếm được đặt cạnh nhau để so — căn phải
-                      và dùng chữ đẳng khoảng thì chỗ lệch đập vào mắt ngay. */}
-                  <th className="num">Vector</th>
-                  <th className="num">BM25</th>
-                  <th>Đồng bộ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(rag.collections).map(([name, c]) => (
-                  <tr key={name}>
-                    <td className="mono">{name}</td>
-                    <td className="mono num">{c.dense_points}</td>
-                    <td className="mono num">{c.sparse_documents}</td>
-                    <td>
-                      <span className={`tag ${c.in_sync ? 'tag--ok' : 'tag--warn'}`}>
-                        {c.in_sync ? 'khớp' : 'lệch'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="doc-idx__coll">
+          <p className="field__hint" style={{ margin: 0 }}>
+            Bộ sưu tập
+          </p>
+          <ul className="doc-idx__list">
+            {Object.entries(rag.collections).map(([name, c]) => (
+              <li key={name} className="doc-idx__item">
+                <span className="mono doc-idx__name">{name}</span>
+                <span className="mono doc-idx__nums">
+                  {c.dense_points} · {c.sparse_documents}
+                </span>
+                <span className={`tag ${c.in_sync ? 'tag--ok' : 'tag--warn'}`}>
+                  {c.in_sync ? 'khớp' : 'lệch'}
+                </span>
+              </li>
+            ))}
+          </ul>
           {!rag.llm.ok && (
             <p style={{ fontSize: '0.75rem', color: 'var(--ink-faint)', margin: 'var(--gap-3) 0 0' }}>
               {/* Dịch vụ RAG đã nói rõ hỏng gì và hệ quả ra sao. Nhắc lại ở đây
@@ -555,95 +588,70 @@ function DocumentRow({
   const v = doc.latestVersion;
   const status = v?.indexStatus ?? 'UPLOADED';
   const indexable = INDEXABLE.includes(doc.documentType);
+  const warning = v?.indexError ?? null;
 
   return (
-    <li style={{ background: 'var(--sheet)', padding: '1rem 1.15rem' }}>
-      <div className="spread" style={{ alignItems: 'flex-start', gap: 'var(--gap-4)' }}>
-        {/* Biểu tượng loại tài liệu ở đầu dòng: danh sách này được quét theo
-            chiều dọc, và một mỏ neo thị giác cố định giúp mắt bắt đầu dòng
-            nhanh hơn là phải đọc chữ đầu tiên của tiêu đề. */}
-        <div style={{ minWidth: 0, display: 'grid', gridTemplateColumns: '1.125rem minmax(0, 1fr)', gap: 'var(--gap-3)' }}>
-          <Icon
-            name={doc.documentType === 'GIAOTRINH' ? 'book' : 'log'}
-            size={18}
-            style={{ marginTop: '0.2rem', color: 'var(--ink-faint)' }}
-          />
-          <div style={{ minWidth: 0 }}>
-          <h3 className="display" style={{ fontSize: '1rem', margin: 0 }}>
-            {doc.title}
-          </h3>
-          <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem', color: 'var(--ink-soft)' }}>
-            {DOCUMENT_TYPE_LABEL[doc.documentType]}
-            {doc.course && ` · ${doc.course.code} ${doc.course.name}`}
-            {doc.referenceNo && ` · số ${doc.referenceNo}`}
-            {doc.issuedAt && ` · ban hành ${formatDate(doc.issuedAt)}`}
-          </p>
-          <p style={{ margin: '0.15rem 0 0', fontSize: '0.75rem', color: 'var(--ink-faint)' }}>
-            {v && (
-              <>
-                <span className="mono">{v.fileName}</span> · {formatBytes(v.fileSize)} · bản {v.version} ·{' '}
-              </>
-            )}
-            {doc.uploadedBy.fullName} tải lên {formatDate(doc.createdAt)}
-          </p>
-          </div>
-        </div>
-        <span className={`tag ${indexable ? STATUS_TAG[status] : 'tag--muted'}`} style={{ flexShrink: 0 }}>
+    <li className="doc-row">
+      <div className="doc-row__top">
+        <h3 className="doc-row__title">{doc.title}</h3>
+        <span
+          className={`tag ${indexable ? STATUS_TAG[status] : 'tag--muted'}`}
+          style={{ flexShrink: 0 }}
+        >
           {indexable ? INDEX_STATUS_LABEL[status] : 'ngoài chỉ mục'}
         </span>
       </div>
-
-      {indexable && status === 'INDEXED' && v && (
-        <p style={{ margin: '0.5rem 0 0', fontSize: '0.75rem', color: 'var(--ink-faint)' }}>
-          {v.pageCount ?? '—'} trang → {v.chunkCount ?? 0} đoạn
-          {v.contextualCount ? `, ${v.contextualCount} có ngữ cảnh LLM` : ''}
-          {v.indexedAt && ` · xong ${formatDate(v.indexedAt)}`}
-          {v.indexError && (
+      <div className="doc-row__bottom">
+        <p className="doc-row__meta">
+          {DOCUMENT_TYPE_LABEL[doc.documentType]}
+          {doc.course && ` · ${doc.course.code} ${doc.course.name}`}
+          {v && (
             <>
               {' · '}
-              <span style={{ color: 'var(--seal)' }}>cảnh báo: {v.indexError}</span>
+              <span className="mono">{v.fileName}</span> · {formatBytes(v.fileSize)} · bản {v.version}
             </>
+          )}
+          {' · '}
+          {doc.uploadedBy.fullName} · {formatDate(doc.createdAt)}
+          {warning && (
+            <span className="doc-row__warn" title={warning} aria-label={`Cảnh báo: ${warning}`}>
+              <span className="doc-row__warn-dot" aria-hidden="true" />
+              có cảnh báo
+            </span>
           )}
         </p>
-      )}
-
-      {indexable && status === 'FAILED' && v?.indexError && (
-        <div className="notice notice--error" style={{ marginTop: 'var(--gap-3)', fontSize: '0.8125rem' }}>
-          {v.indexError}
-        </div>
-      )}
-
-      {canManage && (
-        <div className="row" style={{ marginTop: 'var(--gap-4)', gap: 'var(--gap-3)' }}>
-          {indexable && (
-            <button
-              type="button"
-              className="btn btn--ghost"
-              onClick={onReindex}
-              disabled={status === 'PROCESSING'}
-            >
-              {status === 'FAILED' ? 'Thử lập chỉ mục lại' : 'Lập lại chỉ mục'}
-            </button>
-          )}
-          {confirming ? (
-            <>
-              <button type="button" className="btn btn--danger" onClick={onRemove}>
-                Xóa hẳn
+        {canManage && (
+          <span className="doc-row__actions">
+            {indexable && (
+              <button
+                type="button"
+                className="btn btn--quiet btn--sm"
+                onClick={onReindex}
+                disabled={status === 'PROCESSING'}
+              >
+                {status === 'FAILED' ? 'Thử lập chỉ mục lại' : 'Lập lại chỉ mục'}
               </button>
-              <button type="button" className="btn btn--ghost" onClick={() => setConfirming(false)}>
-                Thôi
+            )}
+            {confirming ? (
+              <>
+                <button type="button" className="btn btn--danger btn--sm" onClick={onRemove}>
+                  Xóa hẳn
+                </button>
+                <button type="button" className="btn btn--quiet btn--sm" onClick={() => setConfirming(false)}>
+                  Thôi
+                </button>
+                <span className="doc-row__confirm-hint">
+                  Xóa cả tệp lẫn vector. Không hoàn tác được.
+                </span>
+              </>
+            ) : (
+              <button type="button" className="btn btn--quiet btn--sm" onClick={() => setConfirming(true)}>
+                Xóa
               </button>
-              <span style={{ fontSize: '0.75rem', color: 'var(--ink-faint)' }}>
-                Xóa cả tệp lẫn vector. Không hoàn tác được.
-              </span>
-            </>
-          ) : (
-            <button type="button" className="btn btn--ghost" onClick={() => setConfirming(true)}>
-              Xóa
-            </button>
-          )}
-        </div>
-      )}
+            )}
+          </span>
+        )}
+      </div>
     </li>
   );
 }

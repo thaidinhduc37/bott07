@@ -2,12 +2,12 @@ import { StatTile } from '@/components/shared/StatTile';
 import { Icon } from '@/components/shared/Icon';
 import { StatusBarList } from '@/components/shared/charts/StatusBarList';
 import { TrendLine } from '@/components/shared/charts/TrendLine';
-import { adminDashboardApi, type ActivityAdminStats } from '@/services/admin-api';
+import type { ActivityAdminStats } from '@/services/admin-api';
+import { ROLE_LABEL } from '@/utils/roles';
 import { DashboardSection } from './DashboardSection';
-import { useDashboardSection } from './useDashboardSection';
+import type { Loaded } from './useDashboardSection';
 
-export function ActivitySection({ refreshKey }: { refreshKey: number }) {
-  const state = useDashboardSection(adminDashboardApi.activity, refreshKey);
+export function ActivitySection({ state }: { state: Loaded<ActivityAdminStats> }) {
 
   return (
     <DashboardSection<ActivityAdminStats>
@@ -25,7 +25,11 @@ export function ActivitySection({ refreshKey }: { refreshKey: number }) {
           </div>
 
           <StatusBarList
-            items={data.usersByRole.map((r) => ({ label: r.role, count: r.count, tone: 'pen' as const }))}
+            items={data.usersByRole.map((r) => ({
+              label: ROLE_LABEL[r.role] ?? r.role,
+              count: r.count,
+              tone: 'pen' as const,
+            }))}
           />
 
           <div>

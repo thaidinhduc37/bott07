@@ -22,7 +22,8 @@ export type Workspace = 'sinh-vien' | 'can-bo' | 'quan-tri';
 
 export function workspaceOf(roles: RoleCode[]): Workspace {
   if (roles.includes('ADMIN')) return 'quan-tri';
-  if (roles.some((r) => r === 'ACADEMIC_MANAGER' || r === 'LECTURER' || r === 'APPROVER')) {
+  // Lãnh đạo Khoa cũng làm việc ở khu cán bộ (trước đây rơi vào khu học viên).
+  if (roles.some((r) => r === 'ACADEMIC_MANAGER' || r === 'LECTURER' || r === 'APPROVER' || r === 'DEPARTMENT_HEAD')) {
     return 'can-bo';
   }
   return 'sinh-vien';
@@ -72,6 +73,8 @@ export const NAV: Record<Workspace, NavItem[]> = {
   'sinh-vien': [
     { href: '/sinh-vien', label: 'Trang chủ', icon: 'home' },
     { href: '/sinh-vien/hoi-dap', label: 'Hỏi đáp', icon: 'chat' },
+    { href: '/sinh-vien/on-tap', label: 'Ôn tập', icon: 'book' },
+    { href: '/sinh-vien/so-tay', label: 'Sổ tay', icon: 'pencil' },
     { href: '/sinh-vien/lich', label: 'Lịch học & lịch thi', icon: 'calendar' },
     { href: '/sinh-vien/bieu-mau', label: 'Biểu mẫu', icon: 'form' },
     { href: '/thong-bao', label: 'Thông báo', icon: 'bell' },
@@ -94,6 +97,18 @@ export const NAV: Record<Workspace, NavItem[]> = {
       href: '/can-bo/lich',
       label: 'Lịch học & lịch thi',
       icon: 'calendar',
+      roles: ['ACADEMIC_MANAGER', 'LECTURER'],
+    },
+    {
+      href: '/can-bo/dao-tao',
+      label: 'Quản lý đào tạo',
+      icon: 'users',
+      roles: ['ACADEMIC_MANAGER', 'DEPARTMENT_HEAD'],
+    },
+    {
+      href: '/can-bo/hoc-tap',
+      label: 'Tình hình học tập',
+      icon: 'pulse',
       roles: ['ACADEMIC_MANAGER', 'LECTURER'],
     },
     { href: '/can-bo/hoi-dap', label: 'Hỏi đáp quy chế', icon: 'chat' },

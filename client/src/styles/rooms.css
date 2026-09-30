@@ -1,0 +1,204 @@
+/* Danh mục phòng học — do agent Qwen H viết.
+   Mọi class tiền tố `room-`, chỉ dùng biến có sẵn trong globals.css. */
+
+/* ---------------------------------------------------------- thanh công cụ */
+
+.room-toolbar {
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: var(--gap-4);
+}
+
+.room-search {
+  flex: 1 1 14rem;
+  max-width: 22rem;
+}
+
+.room-search__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.room-search__icon {
+  position: absolute;
+  left: 0.7rem;
+  color: var(--ink-faint);
+  pointer-events: none;
+}
+
+.room-search__box .field__input {
+  padding-left: 2.2rem;
+}
+
+.room-seg {
+  margin-left: auto;
+}
+
+.room-add {
+  margin-left: 0;
+}
+
+/* Cột thao tác: cụm nút nhỏ căn phải. */
+.room-acts {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.room-acts .btn {
+  margin-left: var(--gap-1);
+}
+
+/* ------------------------------------------------------------------ hộp thoại */
+
+.room-dlg {
+  width: min(30rem, 100%);
+  max-width: 100%;
+  max-height: 100dvh;
+  margin: 0;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--sheet);
+  color: var(--ink);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-dlg::backdrop {
+  background: color-mix(in oklab, var(--ink) 32%, transparent);
+}
+
+.room-dlg__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--rule-faint);
+  flex: none;
+}
+
+.room-dlg__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.room-dlg__body {
+  padding: 1rem;
+  overflow-y: auto;
+  display: grid;
+  gap: var(--gap-4);
+  align-content: start;
+}
+
+.room-dlg__actions {
+  display: flex;
+  gap: var(--gap-3);
+  margin-top: var(--gap-2);
+}
+
+/* Công tắc "Đang sử dụng" — checkbox với nhãn. */
+.room-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  cursor: pointer;
+}
+
+.room-switch input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--pen);
+  cursor: pointer;
+}
+
+.room-switch__label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------- lịch phòng */
+
+.room-tl__range {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-3);
+}
+
+.room-tl__day {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  padding-top: var(--gap-2);
+  border-top: 1px solid var(--rule-faint);
+}
+
+.room-tl__day:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.room-tl__row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+  padding: var(--gap-2) 0;
+  border-bottom: 1px solid var(--rule-faint);
+  font-size: 0.875rem;
+}
+
+.room-tl__row:last-child {
+  border-bottom: 0;
+}
+
+.room-tl__time {
+  min-width: 7.5rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.room-tl__course {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.room-tl__cls {
+  color: var(--ink-faint);
+  font-size: 0.8125rem;
+}
+
+/* Hints trong form phòng / form lịch: dòng phụ nhỏ. */
+.room-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* ------------------------------------------------------------------ hẹp (400px) */
+
+@media (max-width: 480px) {
+  .room-toolbar {
+    gap: var(--gap-3);
+  }
+
+  .room-search {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .room-seg,
+  .room-add {
+    margin-left: 0;
+  }
+
+  .room-tl__range {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,10 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ApiError } from '@/services/api';
-import { dateOf, isoDate, mondayOf, scheduleApi, type CourseRef, type Timetable } from '@/services/schedule-api';
+import {
+  dateOf,
+  isoDate,
+  mondayOf,
+  scheduleApi,
+  type CourseRef,
+  type ScheduleEntry,
+  type Timetable,
+} from '@/services/schedule-api';
 import { TimetableWeek } from '@/components/schedule/TimetableWeek';
+import { EntryDetail } from '@/components/schedule/EntryDetail';
 import { Icon } from '@/components/shared/Icon';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 export default function StudentSchedulePage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [weekStart, setWeekStart] = useState<Date>(() => mondayOf(new Date()));
   const [courseId, setCourseId] = useState('');
   const [showExams, setShowExams] = useState(true);
@@ -12,6 +24,40 @@ export default function StudentSchedulePage() {
   const [data, setData] = useState<Timetable | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<ScheduleEntry | null>(null);
+
+  // Liên kết sâu từ thông báo: ?ngay=YYYY-MM-DD&buoi=SESSION-<id>|EXAM-<id>.
+  // Nhảy tới tuần chứa ngày đó; tự mở chi tiết sau khi dữ liệu tải xong.
+  const deepLinkRef = useRef<{ day: string; entryKey: string } | null>(null);
+  const [searchParamsInit] = useState(() => {
+    const day = searchParams.get('ngay');
+    const entryKey = searchParams.get('buoi');
+    if (!day || !entryKey) return null;
+    return { day, entryKey };
+  });
+  useEffect(() => {
+    const dl = deepLinkRef.current ?? searchParamsInit;
+    deepLinkRef.current = dl;
+    if (!dl) return;
+    const d = new Date(`${dl.day}T12:00:00+07:00`);
+    if (!Number.isNaN(d.getTime())) setWeekStart(mondayOf(d));
+  }, [searchParamsInit]);
+
+  // Dữ liệu về: mở chi tiết của mục liên kết (nếu tuần hiện có nó) rồi xóa
+  // `buoi` khỏi URL — mở lại chi tiết bằng cách bấm khối, không phải URL.
+  useEffect(() => {
+    const dl = deepLinkRef.current;
+    if (!dl || loading || !data) return;
+    const all = [...data.sessions, ...data.exams];
+    const found = all.find((e) => `${e.kind}-${e.id}` === dl.entryKey);
+    if (found) setSelected(found);
+    deepLinkRef.current = null;
+    if (searchParams.has('buoi')) {
+      const next = new URLSearchParams(searchParams);
+      next.delete('buoi');
+      setSearchParams(next, { replace: true });
+    }
+  }, [loading, data, searchParams, setSearchParams]);
 
   useEffect(() => {
     void scheduleApi.myCourses().then((r) => setCourses(r.items)).catch(() => setCourses([]));
@@ -62,18 +108,12 @@ export default function StudentSchedulePage() {
   const exams = showExams ? (data?.exams ?? []) : [];
 
   return (
-    <div className="stack shell--full">
-      <header>
-        <span className="eyebrow">Học vụ</span>
-        <h1 className="display page-title">
-          Lịch học và lịch thi
-        </h1>
-        {data?.class && (
-          <p style={{ color: 'var(--ink-soft)', margin: '0.35rem 0 0' }}>
-            Lớp {data.class.code} — {data.class.name}
-          </p>
-        )}
-      </header>
+    <div className="stack">
+      <PageHeader
+        eyebrow="Học vụ"
+        title="Lịch học và lịch thi"
+        description={data?.class ? `Lớp ${data.class.code} — ${data.class.name}` : undefined}
+      />
 
       {/* ------------------------------------------------------ điều hướng tuần */}
       <div className="sheet" style={{ padding: '0.6rem 0.75rem' }}>
@@ -153,6 +193,8 @@ export default function StudentSchedulePage() {
               exams={exams}
               from={data.range.from}
               to={data.range.to}
+              onSelect={(e) => setSelected(e)}
+              selectedKey={selected ? `${selected.kind}-${selected.id}` : undefined}
             />
             <p style={{ fontSize: '0.75rem', color: 'var(--ink-faint)', margin: 0 }}>
               Giờ hiển thị theo múi giờ Việt Nam ({data.range.timezone}).
@@ -163,6 +205,10 @@ export default function StudentSchedulePage() {
             </p>
           </>
         )
+      )}
+
+      {selected && (
+        <EntryDetail entry={selected} onClose={() => setSelected(null)} />
       )}
     </div>
   );

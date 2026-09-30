@@ -10,6 +10,7 @@ import {
 } from '@/services/chat-api';
 import { Icon } from '@/components/shared/Icon';
 import { AnswerCard } from './AnswerCard';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 const MODE_LABEL: Record<ChatMode, string> = {
   QUYCHE: 'Quy chế học tập',
@@ -198,7 +199,13 @@ export function ChatWorkspace() {
                 <>
                   {quyche.length > 0 && (
                     <div className="chat-history__section">
-                      <h3 className="chat-history__section-title">Quy chế học tập</h3>
+                      <button
+                        type="button"
+                        className="chat-history__section-title"
+                        onClick={() => startNew('QUYCHE')}
+                      >
+                        Quy chế học tập
+                      </button>
                       <ul className="chat-history__list">
                         {quyche.map((c) => (
                           <li key={c.id}>
@@ -217,7 +224,13 @@ export function ChatWorkspace() {
                   )}
                   {giaotrinh.length > 0 && (
                     <div className="chat-history__section">
-                      <h3 className="chat-history__section-title">Trợ lý học tập</h3>
+                      <button
+                        type="button"
+                        className="chat-history__section-title"
+                        onClick={() => startNew('GIAOTRINH')}
+                      >
+                        Trợ lý học tập
+                      </button>
                       <ul className="chat-history__list">
                         {giaotrinh.map((c) => (
                           <li key={c.id}>
@@ -243,10 +256,7 @@ export function ChatWorkspace() {
 
       <div className="chat-main">
       <div className="stack chat-scroll">
-      <header className="page-head">
-        <h1 className="page-title">{MODE_LABEL[mode]}</h1>
-        <p className="page-sub">{MODE_HINT[mode]}</p>
-      </header>
+      <PageHeader title={MODE_LABEL[mode]} description={MODE_HINT[mode]} />
 
       {mode === 'GIAOTRINH' && courses.length > 0 && (
         <div className="field" style={{ maxWidth: '26rem' }}>
@@ -387,7 +397,7 @@ export function ChatWorkspace() {
           </span>
           <div className="row">
             {messages.length > 0 && (
-              <button type="button" className="btn btn--ghost" onClick={startNew} disabled={busy}>
+              <button type="button" className="btn btn--ghost" onClick={() => startNew()} disabled={busy}>
                 Hội thoại mới
               </button>
             )}

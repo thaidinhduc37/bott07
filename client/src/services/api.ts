@@ -1,6 +1,6 @@
 import type { RoleCode } from '@/utils/roles';
 
-export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api';
+export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api';
 
 export class ApiError extends Error {
   constructor(
@@ -8,6 +8,8 @@ export class ApiError extends Error {
     message: string,
     public readonly code?: string,
     public readonly fieldErrors?: string[],
+    /** Toàn bộ thân lỗi JSON (vd `conflicts` của lỗi trùng lịch). */
+    public readonly details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -38,7 +40,13 @@ async function toApiError(res: Response): Promise<ApiError> {
     const m = body.message as { message?: string; code?: string };
     return new ApiError(res.status, m.message ?? 'Đã xảy ra lỗi', m.code);
   }
-  return new ApiError(res.status, (body?.message as string) ?? 'Đã xảy ra lỗi', body?.code);
+  return new ApiError(
+    res.status,
+    (body?.message as string) ?? 'Đã xảy ra lỗi',
+    body?.code,
+    undefined,
+    (body ?? undefined) as Record<string, unknown> | undefined,
+  );
 }
 
 /**

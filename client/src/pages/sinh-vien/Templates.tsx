@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useMySubmissions } from '@/hooks/useMySubmissions';
 import { SubmissionList } from '@/components/forms/SubmissionList';
 import { Icon } from '@/components/shared/Icon';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 /**
  * Trang chính là "Đơn của tôi" — đây là thứ học viên cần xem mỗi lần ghé qua
@@ -14,17 +15,17 @@ export default function TemplateListPage() {
   const submissions = useMySubmissions();
 
   return (
-    <div className="stack shell--full">
-      <header className="spread" style={{ alignItems: 'flex-end', gap: 'var(--gap-4)' }}>
-        <div>
-          <span className="eyebrow">Hành chính</span>
-          <h1 className="display page-title">Đơn của tôi</h1>
-        </div>
-        <Link to="/sinh-vien/bieu-mau/moi" className="btn btn--primary" style={{ flexShrink: 0 }}>
-          <Icon name="plus" size={16} />
-          Tạo đơn mới
-        </Link>
-      </header>
+    <div className="stack">
+      <PageHeader
+        eyebrow="Hành chính"
+        title="Đơn của tôi"
+        actions={
+          <Link to="/sinh-vien/bieu-mau/moi" className="btn btn--primary">
+            <Icon name="plus" size={16} />
+            Tạo đơn mới
+          </Link>
+        }
+      />
 
       {submissions.error && (
         <div className="notice notice--error" role="alert">

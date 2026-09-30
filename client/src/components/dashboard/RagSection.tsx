@@ -1,9 +1,9 @@
 import { StatTile } from '@/components/shared/StatTile';
 import { TrendLine } from '@/components/shared/charts/TrendLine';
 import { DonutBreakdown } from '@/components/shared/charts/DonutBreakdown';
-import { adminDashboardApi, type RagAdminStats } from '@/services/admin-api';
+import type { RagAdminStats } from '@/services/admin-api';
 import { DashboardSection } from './DashboardSection';
-import { useDashboardSection } from './useDashboardSection';
+import type { Loaded } from './useDashboardSection';
 import { pct } from './format';
 
 /** Tỉ lệ từ chối trả lời của một ngày trong dailyTrend — dùng chung cho cả
@@ -20,8 +20,7 @@ function groundedFailureRateOf(d: RagAdminStats['dailyTrend'][number]): number |
   return answered === 0 ? null : Math.round((d.groundedFailures / answered) * 100);
 }
 
-export function RagSection({ refreshKey }: { refreshKey: number }) {
-  const state = useDashboardSection(adminDashboardApi.rag, refreshKey);
+export function RagSection({ state }: { state: Loaded<RagAdminStats> }) {
 
   return (
     <DashboardSection<RagAdminStats>

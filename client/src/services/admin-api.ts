@@ -97,7 +97,7 @@ export interface FormsAdminStats {
   byStatus: Array<{ status: SubmissionStatus; count: number }>;
   byTemplate: Array<{ templateName: string; count: number }>;
   avgTurnaroundDays: number | null;
-  avgTurnaroundTrend: Array<{ day: string; value: number }>;
+  avgTurnaroundTrend: Array<{ day: string; value: number | null }>;
   backlog: Array<{
     code: string;
     templateName: string;
@@ -106,7 +106,7 @@ export interface FormsAdminStats {
     daysWaiting: number;
   }>;
   rejectionRate30d: number | null;
-  rejectionRateTrend: Array<{ day: string; value: number }>;
+  rejectionRateTrend: Array<{ day: string; value: number | null }>;
 }
 
 export interface RagAdminStats {

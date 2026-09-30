@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { adminApi, type AuditLogEntry } from '@/services/admin-api';
 import { viDateTime } from '@/services/forms-api';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 /** Nhóm hành động để lọc nhanh, thay vì bắt người dùng nhớ mã hành động. */
 const ACTION_GROUPS: Array<{ label: string; value: string }> = [
@@ -48,34 +49,11 @@ export default function AuditLogPage() {
 
   return (
     <div className="stack">
-      <header className="page-head">
-        <span className="eyebrow">Kiểm soát</span>
-        <h1 className="display page-title">Nhật ký thao tác</h1>
-        <p className="page-sub">
-          Ai làm gì, lúc nào, từ địa chỉ nào. Bao gồm cả các lần đăng nhập và ký đơn thất bại — một
-          nhật ký chỉ ghi việc thành công thì không phát hiện được ai đang dò mật khẩu.
-        </p>
-      </header>
-
-      <div className="sheet" style={{ padding: '0.85rem 1.1rem' }}>
-        <label style={{ display: 'block', maxWidth: '22rem' }}>
-          <span className="field__label">Lọc theo hành động</span>
-          <select
-            className="field__input"
-            value={action}
-            onChange={(e) => {
-              setAction(e.target.value);
-              setPage(1);
-            }}
-          >
-            {ACTION_GROUPS.map((g) => (
-              <option key={g.value} value={g.value}>
-                {g.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      <PageHeader
+        eyebrow="Kiểm soát"
+        title="Nhật ký thao tác"
+        description="Ai làm gì, lúc nào, từ địa chỉ nào."
+      />
 
       {error && (
         <div className="notice notice--error" role="alert">
@@ -91,8 +69,40 @@ export default function AuditLogPage() {
         </div>
       ) : (
         <>
-          <p className="eyebrow" style={{ margin: 0 }}>
-            {total} bản ghi
+          <div className="audit-toolbar">
+            <label className="audit-toolbar__filter">
+              <span className="field__label">Lọc theo hành động</span>
+              <select
+                className="field__input"
+                value={action}
+                onChange={(e) => {
+                  setAction(e.target.value);
+                  setPage(1);
+                }}
+              >
+                {ACTION_GROUPS.map((g) => (
+                  <option key={g.value} value={g.value}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <span className="audit-toolbar__count">{total} bản ghi</span>
+            <div className="audit-toolbar__pages">
+              <button type="button" className="btn btn--ghost btn--sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+                Trang trước
+              </button>
+              <span className="mono" style={{ fontSize: '0.8125rem', color: 'var(--ink-soft)' }}>
+                {page} / {pages}
+              </span>
+              <button type="button" className="btn btn--ghost btn--sm" disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>
+                Trang sau
+              </button>
+            </div>
+          </div>
+          <p className="field__hint">
+            Bao gồm cả các lần đăng nhập và ký đơn thất bại — một nhật ký chỉ ghi việc thành công
+            thì không phát hiện được ai đang dò mật khẩu.
           </p>
           <div className="table-wrap">
             <table className="data-table">

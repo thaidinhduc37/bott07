@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Icon } from '@/components/shared/Icon';
+import { SaveToNotebook } from '@/components/shared/SaveToNotebook';
 import type { AssistantMessage, Citation } from '@/services/chat-api';
+import { learningApi } from '@/services/learning-api';
 
 /**
  * Vị trí của một trích dẫn, viết cho người đọc.
@@ -238,6 +240,12 @@ export function AnswerCard({ message }: { message: AssistantMessage }) {
         </div>
       )}
 
+      {/* Nút lưu câu trả lời vào sổ tay — chỉ khi có câu trả lời thật. */}
+      {!message.abstained && (
+        <div className="answer-save">
+          <SaveToNotebook onSave={() => learningApi.noteFromChat({ sourceId: message.id })} />
+        </div>
+      )}
     </article>
   );
 }

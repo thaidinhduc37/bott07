@@ -1,12 +1,18 @@
+import { Link } from 'react-router-dom';
 import { StatusBarList } from '@/components/shared/charts/StatusBarList';
 import { Icon } from '@/components/shared/Icon';
-import { adminDashboardApi, type DocumentsAdminStats } from '@/services/admin-api';
+import type { DocumentsAdminStats } from '@/services/admin-api';
 import { DashboardSection } from './DashboardSection';
-import { useDashboardSection } from './useDashboardSection';
+import type { Loaded } from './useDashboardSection';
 import { INDEX_STATUS_LABEL, toneFor } from './format';
 
-export function DocumentsSection({ refreshKey }: { refreshKey: number }) {
-  const state = useDashboardSection(adminDashboardApi.documents, refreshKey);
+const DOC_TYPE_LABEL: Record<DocumentsAdminStats['byType'][number]['documentType'], string> = {
+  QUYCHE: 'Quy chế',
+  GIAOTRINH: 'Giáo trình',
+  KHAC: 'Khác',
+};
+
+export function DocumentsSection({ state }: { state: Loaded<DocumentsAdminStats> }) {
 
   return (
     <DashboardSection<DocumentsAdminStats>
@@ -29,6 +35,25 @@ export function DocumentsSection({ refreshKey }: { refreshKey: number }) {
             <span className={`tag ${data.ragConsistency === 'in_sync' ? 'tag--ok' : 'tag--warn'}`}>
               {data.ragConsistency === 'in_sync' ? 'khớp' : data.ragConsistency}
             </span>
+          </p>
+
+          <div>
+            <p className="eyebrow" style={{ marginBottom: 'var(--gap-2)' }}>
+              Theo loại tài liệu
+            </p>
+            <StatusBarList
+              items={data.byType.map((t) => ({
+                label: DOC_TYPE_LABEL[t.documentType] ?? t.documentType,
+                count: t.count,
+                tone: 'pen' as const,
+              }))}
+            />
+          </div>
+
+          <p style={{ margin: 0 }}>
+            <Link className="btn btn--quiet" to="/quan-tri/tai-lieu">
+              Quản lý tài liệu
+            </Link>
           </p>
 
           {data.failedList.length === 0 ? (

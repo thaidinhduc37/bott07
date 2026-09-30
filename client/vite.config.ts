@@ -10,7 +10,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: 5173,
     // Bind-mount qua Docker Desktop trên Windows không truyền sự kiện
     // filesystem gốc đáng tin cậy cho container Linux — chuyển sang polling
     // trong trường hợp đó. Chỉ bật khi chạy trong container dev (biến

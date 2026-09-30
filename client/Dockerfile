@@ -47,7 +47,7 @@ COPY client/ client/
 # VITE_* được nhúng vào bundle lúc build (đọc qua `import.meta.env`), không đọc
 # lúc chạy. Vì vậy nó phải là build-arg; đặt vào `environment` của compose sẽ
 # không có tác dụng gì.
-ARG VITE_API_URL=http://localhost:4000/api
+ARG VITE_API_URL=http://localhost:5000/api
 ENV VITE_API_URL=${VITE_API_URL}
 
 RUN npm run build --workspace client
@@ -58,16 +58,16 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV TZ=Asia/Ho_Chi_Minh
-ENV PORT=3000
+ENV PORT=5173
 
 RUN npm install --global serve@14
 
 COPY --from=build /app/client/dist ./dist
 
 USER node
-EXPOSE 3000
+EXPOSE 5173
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:3000/dang-nhap').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD node -e "fetch('http://127.0.0.1:5173/dang-nhap').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["serve", "-s", "dist", "-l", "5173"]

@@ -1,47 +1,21 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+import { AppShell } from '@/components/shared/AppShell';
 import { SessionProvider, useSession } from '@/components/shared/SessionProvider';
-import { Icon } from '@/components/shared/Icon';
-import { UserMenu } from '@/components/shared/UserMenu';
-import { ROLE_LABEL, homePathOf } from '@/utils/roles';
+import { workspaceOf } from '@/utils/roles';
 
+/**
+ * Thông báo và Hồ sơ dùng chung cho mọi vai trò nên không thuộc một khu vực cố định,
+ * nhưng vẫn phải nằm trong đúng khung của khu vực người dùng đang ở — có thanh menu,
+ * cùng bề rộng nội dung với mọi trang khác. Trước đây chúng có khung riêng (không menu,
+ * rộng 52rem) nên lệch cả về bố cục lẫn chiều ngang.
+ */
 function ProfileChrome() {
-  const { user, loading, logout } = useSession();
-
+  const { user } = useSession();
+  // Chưa có `user` (đang tải) thì AppShell hiện màn hình chờ, giá trị này chưa được dùng.
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
-      <header className="content-topbar" style={{ justifyContent: 'space-between' }}>
-        <Link
-          to={user ? homePathOf(user.roles) : '/'}
-          style={{ textDecoration: 'none', color: 'var(--ink)', fontSize: '0.875rem' }}
-        >
-          ← Về trang chủ
-        </Link>
-        {!loading && user && (
-          <div className="content-topbar__actions">
-            <Link to="/thong-bao" className="btn btn--ghost btn--icon" aria-label="Thông báo">
-              <Icon name="bell" size={18} />
-            </Link>
-            <UserMenu
-              fullName={user.fullName}
-              roleSummary={user.roles.map((r) => ROLE_LABEL[r]).join(', ')}
-              onLogout={() => void logout()}
-            />
-          </div>
-        )}
-      </header>
-      <main
-        id="noi-dung"
-        style={{
-          flex: 1,
-          maxWidth: '52rem',
-          width: '100%',
-          margin: '0 auto',
-          padding: 'clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem)',
-        }}
-      >
-        <Outlet />
-      </main>
-    </div>
+    <AppShell workspace={user ? workspaceOf(user.roles) : 'sinh-vien'}>
+      <Outlet />
+    </AppShell>
   );
 }
 

@@ -50,7 +50,8 @@ export type IconName =
   | 'moon'
   | 'location'
   | 'person'
-  | 'plus';
+  | 'plus'
+  | 'pin';
 
 /** Tên biểu tượng tương ứng trong bộ Material Symbols Outlined. */
 const SYMBOL: Record<IconName, string> = {
@@ -82,6 +83,7 @@ const SYMBOL: Record<IconName, string> = {
   location: 'location_on',
   person: 'person',
   plus: 'add',
+  pin: 'push_pin',
 };
 
 export interface IconProps {

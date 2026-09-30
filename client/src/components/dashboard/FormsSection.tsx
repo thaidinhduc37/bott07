@@ -1,13 +1,11 @@
 import { StatTile } from '@/components/shared/StatTile';
-import { Icon } from '@/components/shared/Icon';
 import { StatusBarList } from '@/components/shared/charts/StatusBarList';
-import { adminDashboardApi, type FormsAdminStats } from '@/services/admin-api';
+import type { FormsAdminStats } from '@/services/admin-api';
 import { DashboardSection } from './DashboardSection';
-import { useDashboardSection } from './useDashboardSection';
+import type { Loaded } from './useDashboardSection';
 import { STATUS_LABEL, pct, toneFor } from './format';
 
-export function FormsSection({ refreshKey }: { refreshKey: number }) {
-  const state = useDashboardSection(adminDashboardApi.forms, refreshKey);
+export function FormsSection({ state }: { state: Loaded<FormsAdminStats> }) {
 
   return (
     <DashboardSection<FormsAdminStats>
@@ -40,12 +38,12 @@ export function FormsSection({ refreshKey }: { refreshKey: number }) {
             }))}
           />
 
+          <p className="eyebrow" style={{ marginBottom: 'var(--gap-2)' }}>
+            Đơn tồn đọng lâu nhất
+          </p>
           {data.backlog.length === 0 ? (
             <div className="empty">
-              <span className="empty__icon" aria-hidden="true">
-                <Icon name="check" size={22} />
-              </span>
-              <p className="empty__title">Không có đơn nào đang chờ xử lý</p>
+              <p className="empty__title">Không có đơn tồn đọng</p>
             </div>
           ) : (
             <div className="table-wrap">
