@@ -33,9 +33,16 @@ from app.services.form_layouts import BodyLine, FormLayout, Seg, TableBlock
 FONT_NAME = "Times New Roman"
 FONT_SIZE = Pt(13)
 
-_AGENCY_LINES = ["BỘ CÔNG AN", "HỌC VIỆN KỸ THUẬT", "VÀ CÔNG NGHỆ AN NINH"]
+# Dòng 0 là cơ quan chủ quản trực tiếp (không in đậm); các dòng sau là tên
+# đơn vị ban hành văn bản (in đậm, có gạch chân bên dưới) — đúng thể thức
+# Mẫu 1.1 Phụ lục I, Nghị định 30/2020/NĐ-CP.
+_AGENCY_SUPERIOR_LINE = "BỘ CÔNG AN"
+_AGENCY_LINES = ["HỌC VIỆN KỸ THUẬT", "VÀ CÔNG NGHỆ AN NINH"]
 _NATION_LINE_1 = "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM"
 _NATION_LINE_2 = "Độc lập - Tự do - Hạnh phúc"
+# Độ dài gạch chân xấp xỉ 1/3-1/2 độ dài dòng chữ phía trên, theo thể thức.
+_AGENCY_UNDERLINE = "_" * 18
+_NATION_UNDERLINE = "_" * 14
 
 OWNER_SIGNATURE_TITLE = "HỌC VIÊN VIẾT ĐƠN"
 _SIGNATURE_CAPTION = "(Ký và ghi rõ họ tên)"
@@ -143,10 +150,18 @@ def _masthead(document: Document, submission_date: datetime) -> None:
 
     left, right = table.rows[0].cells
 
-    for i, line in enumerate(_AGENCY_LINES):
-        p = left.paragraphs[0] if i == 0 else left.add_paragraph()
+    p_superior = left.paragraphs[0]
+    p_superior.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    _run(p_superior, _AGENCY_SUPERIOR_LINE)
+
+    for line in _AGENCY_LINES:
+        p = left.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         _run(p, line, bold=True)
+
+    p_agency_underline = left.add_paragraph()
+    p_agency_underline.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    _run(p_agency_underline, _AGENCY_UNDERLINE, bold=True)
 
     p1 = right.paragraphs[0]
     p1.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -155,6 +170,10 @@ def _masthead(document: Document, submission_date: datetime) -> None:
     p2 = right.add_paragraph()
     p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
     _run(p2, _NATION_LINE_2, bold=True)
+
+    p_nation_underline = right.add_paragraph()
+    p_nation_underline.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    _run(p_nation_underline, _NATION_UNDERLINE, bold=True)
 
     p3 = right.add_paragraph()
     p3.alignment = WD_ALIGN_PARAGRAPH.CENTER

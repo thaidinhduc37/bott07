@@ -201,6 +201,15 @@ class IndexingService:
             for i in range(0, len(texts), EMBED_BATCH)
         ]
         vectors = parts[0] if len(parts) == 1 else np.vstack(parts)
+
+        # Xóa điểm cũ của tài liệu này trước khi ghi điểm mới: `upsert_chunks`
+        # chỉ upsert theo id xác định bởi (document_id, chunk.id), nên nếu lần
+        # lập lại chỉ mục này sinh ra ÍT chunk hơn lần trước (nội dung đổi,
+        # chunking không tất định tuyệt đối), các điểm thừa của lần trước sẽ
+        # mồ côi lại trong store — PostgreSQL ghi đúng số chunk mới nhưng
+        # Qdrant/Chroma còn giữ thêm điểm cũ, khiến "Trạng thái chỉ mục" báo
+        # lệch mãi sau mỗi lần lập lại chỉ mục dù lần lập lại đó thành công.
+        self.store.delete_document(collection, document_id)
         points = self.store.upsert_chunks(collection, chunks, vectors)
 
         return IngestReport(
