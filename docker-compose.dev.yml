@@ -80,6 +80,33 @@ services:
         limits:
           memory: 1500m
 
+  server:
+    build:
+      context: server
+    container_name: sa-server-dev
+    restart: unless-stopped
+    environment:
+      # Ghi đè .env: trong mạng compose, Postgres/Chroma gọi bằng tên service.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-student_assistant}:${POSTGRES_PASSWORD:-change_me_in_production}@postgres:5432/${POSTGRES_DB:-student_assistant}?schema=public
+      CHROMA_HOST: chroma
+      CHROMA_PORT: 8000
+      HF_HOME: /models
+    volumes:
+      # Bind-mount cả server/ (gồm .env, data, storage). REPO_ROOT = /app.
+      - ./server:/app/server
+      - models:/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+      chroma:
+        condition: service_started
+    ports:
+      - "${API_PORT:-5000}:5000"
+    deploy:
+      resources:
+        limits:
+          memory: 6g
+
   rag-service:
     build:
       context: .
