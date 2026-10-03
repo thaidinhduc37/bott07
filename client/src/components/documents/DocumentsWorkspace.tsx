@@ -344,11 +344,14 @@ function IndexHealth({ report }: { report: IndexStatusReport }) {
               <li key={name} className="doc-idx__item">
                 <span className="mono doc-idx__name">{name}</span>
                 <span className="mono doc-idx__nums">
-                  {c.dense_points} · {c.sparse_documents}
+                  {c.dense_points}
+                  {c.sparse_documents !== undefined && ` · ${c.sparse_documents}`}
                 </span>
-                <span className={`tag ${c.in_sync ? 'tag--ok' : 'tag--warn'}`}>
-                  {c.in_sync ? 'khớp' : 'lệch'}
-                </span>
+                {c.in_sync !== undefined && (
+                  <span className={`tag ${c.in_sync ? 'tag--ok' : 'tag--warn'}`}>
+                    {c.in_sync ? 'khớp' : 'lệch'}
+                  </span>
+                )}
               </li>
             ))}
           </ul>

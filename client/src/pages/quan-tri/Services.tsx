@@ -105,8 +105,6 @@ export default function ServicesPage() {
                     <tr style={{ textAlign: 'left', color: 'var(--ink-faint)' }}>
                       <th style={{ fontWeight: 400, padding: '0 0.6rem 0.3rem 0' }}>Bộ sưu tập</th>
                       <th style={{ fontWeight: 400, padding: '0 0.6rem 0.3rem' }}>Vector</th>
-                      <th style={{ fontWeight: 400, padding: '0 0.6rem 0.3rem' }}>BM25</th>
-                      <th style={{ fontWeight: 400, padding: '0 0 0.3rem' }}>Đồng bộ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -114,12 +112,6 @@ export default function ServicesPage() {
                       <tr key={name}>
                         <td className="mono" style={{ padding: '0.3rem 0.6rem 0.3rem 0' }}>{name}</td>
                         <td className="mono" style={{ padding: '0.3rem 0.6rem' }}>{c.dense_points}</td>
-                        <td className="mono" style={{ padding: '0.3rem 0.6rem' }}>{c.sparse_documents}</td>
-                        <td style={{ padding: '0.3rem 0' }}>
-                          <span className={`tag ${c.in_sync ? 'tag--ok' : 'tag--warn'}`}>
-                            {c.in_sync ? 'khớp' : 'lệch'}
-                          </span>
-                        </td>
                       </tr>
                     ))}
                   </tbody>
