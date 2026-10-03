@@ -23,9 +23,7 @@ function Centered({ children }: { children: React.ReactNode }) {
 function Brand({ workspace }: { workspace: Workspace }) {
   return (
     <Link to={`/${workspace}`} className="rail__brand">
-      <span className="rail__sigil" aria-hidden="true">
-        HV
-      </span>
+      <img className="rail__sigil" src="/logo.png" alt="" />
       <span style={{ minWidth: 0 }}>
         {/* Tên sản phẩm trước, tên đơn vị làm chú thích bên dưới. Đặt ngược lại
             thì tên đơn vị dài xuống hai dòng và đẩy tên sản phẩm — thứ người

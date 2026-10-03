@@ -44,9 +44,7 @@ export default function LoginPage() {
     <main id="noi-dung" className="login">
       <div className="sheet sheet--pad login__card">
         <div className="login__head">
-          <span className="rail__sigil" aria-hidden="true">
-            HV
-          </span>
+          <img className="rail__sigil" src="/logo.png" alt="" />
           <div>
             <h1 className="login__title">Trợ lý ảo hỗ trợ học viên</h1>
             <p className="login__org">Học viện Kỹ thuật và Công nghệ An ninh</p>

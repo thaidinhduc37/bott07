@@ -65,3 +65,5 @@ backups/
 
 # stray Windows reserved-name file from a misdirected command
 /nul
+
+!client/public/logo.png
