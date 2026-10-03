@@ -14,7 +14,7 @@ React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► Postg
                                                      └──► LLM fallback chain: Gemini → Hugging Face
 ```
 
-- `client/` — React 18 + Vite + TypeScript (strict) SPA, plain CSS in `client/src/styles/`
+- `client/` — React 19 + Vite 6 + TypeScript (strict) SPA, plain CSS in `client/src/styles/`
   (`globals.css` + one file per feature area). Three workspaces by role (`utils/roles.ts`):
   `sinh-vien` (STUDENT), `can-bo` (ACADEMIC_MANAGER / LECTURER / APPROVER / DEPARTMENT_HEAD),
   `quan-tri` (ADMIN). Shared building blocks: `PageHeader`, `Tabs`/`TabPanel`, `Breadcrumb`,
@@ -51,7 +51,8 @@ npm run db:seed                      # demo data (seed_phase1.py); ingest script
 
 npm run dev:server                   # FastAPI on :5000  (cd server && .venv/Scripts/python main.py)
 npm run dev:web                      # Vite on :5173
-npm run build:web
+npm run build:web                     # tsc -b --noEmit + vite build (the type-check)
+npm --prefix client run lint         # eslint
 ```
 
 Python venv lives in `server/.venv` (CPU torch needs its own index URL). After a backend change
