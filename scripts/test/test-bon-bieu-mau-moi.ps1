@@ -155,7 +155,7 @@ foreach ($don in $CAC_DON) {
   }
 
   # Hai ô cán bộ + một ô học viên. Bản gốc của cả bốn đơn đều hai cấp ký.
-  $soO = ([regex]::Matches($text, [regex]::Escape('(Ký và ghi rõ họ tên)'))).Count
+  $soO = ([regex]::Matches($text, [regex]::Escape('(Ký, ghi rõ họ tên)'))).Count
   Check "[$($don.ten)] có đúng ba ô ký" ($soO -eq 3) "$soO ô"
   Check "[$($don.ten)] có ô HỌC VIÊN VIẾT ĐƠN" ($text.Contains('HỌC VIÊN VIẾT ĐƠN'))
 }

@@ -1781,16 +1781,10 @@ a.action-row:hover .action-row__go {
    đơn vị, và một logo giả sẽ trông giống chỗ chưa làm xong hơn là một thương
    hiệu. */
 .rail__sigil {
-  display: grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: var(--r-md);
-  background: var(--pen);
-  color: var(--on-pen);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
 }
 
 .rail__product {
@@ -2976,31 +2970,22 @@ a.picker-row:hover {
   justify-content: center;
 }
 
+/* Trang giấy do docx-preview tự dựng (khổ A4, lề, phông, bảng đúng như file
+   .docx) — CSS ở đây chỉ lo phần khung: bỏ nền xám mặc định của thư viện để
+   dùng nền của `.doc-preview__canvas`, và cho cuộn ngang khi màn hình hẹp hơn
+   một tờ A4 thay vì bóp méo bố cục. */
 .doc-preview__page {
-  background: #fff;
-  color: #1a1a1a;
+  width: 100%;
+}
+.doc-preview__page .docx-wrapper {
+  background: transparent;
+  padding: 0;
+  align-items: center;
+}
+.doc-preview__page .docx-wrapper > section.docx {
   box-shadow: var(--shadow-md);
-  padding: clamp(1.5rem, 4vw, 3rem);
-  font-family: 'Times New Roman', Georgia, serif;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  width: 100%;
-  max-width: 44rem;
-  overflow-x: auto;
+  margin-bottom: var(--gap-4);
   flex-shrink: 0;
-}
-.doc-preview__page p {
-  margin: 0 0 0.75em;
-}
-.doc-preview__page table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 0.75em 0;
-}
-.doc-preview__page td,
-.doc-preview__page th {
-  border: 1px solid #999;
-  padding: 0.3rem 0.5rem;
 }
 
 /* Ô "HỌC VIÊN VIẾT ĐƠN" — tô sáng để thấy ngay chữ ký sẽ nằm ở đâu, tìm bằng

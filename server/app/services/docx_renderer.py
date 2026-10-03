@@ -3,8 +3,11 @@
 any — `server/storage/templates/` is empty); every form is built purely in
 code against a `FormLayout` from `form_layouts.py`.
 
-Layout follows Nghị định 30/2020/NĐ-CP formatting conventions: margins top
-20mm / bottom 20mm / left 30mm / right 15mm, Times New Roman 13pt body text.
+Layout follows Nghị định 30/2020/NĐ-CP formatting conventions (Phụ lục I,
+Mẫu 1.1) and the original forms in `server/data/thutuchanhchinh`: A4, margins
+top 20mm / bottom 20mm / left 30mm / right 20mm, Times New Roman 14pt body text
+(13pt for the masthead), line spacing 1.15, body lines justified with a 1.27cm
+first-line indent.
 
 Entry point: `render_form(layout, data, slots)` -> raw .docx bytes.
 `data` is the submission's merged data (profileSnapshot overlaid by
@@ -31,7 +34,14 @@ from docx.table import Table
 from app.services.form_layouts import BodyLine, FormLayout, Seg, TableBlock
 
 FONT_NAME = "Times New Roman"
-FONT_SIZE = Pt(13)
+FONT_SIZE = Pt(14)
+MASTHEAD_SIZE = Pt(13)
+CAPTION_SIZE = Pt(13)
+LINE_SPACING = 1.15
+FIRST_LINE_INDENT = Cm(1.27)
+PARA_GAP = Pt(6)
+# Khổ A4; vùng chữ rộng 21 - 3 - 2 = 16 cm.
+TEXT_WIDTH_CM = 16.0
 
 # Dòng 0 là cơ quan chủ quản trực tiếp (không in đậm); các dòng sau là tên
 # đơn vị ban hành văn bản (in đậm, có gạch chân bên dưới) — đúng thể thức
@@ -42,10 +52,9 @@ _NATION_LINE_1 = "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM"
 _NATION_LINE_2 = "Độc lập - Tự do - Hạnh phúc"
 # Độ dài gạch chân xấp xỉ 1/3-1/2 độ dài dòng chữ phía trên, theo thể thức.
 _AGENCY_UNDERLINE = "_" * 18
-_NATION_UNDERLINE = "_" * 14
 
 OWNER_SIGNATURE_TITLE = "HỌC VIÊN VIẾT ĐƠN"
-_SIGNATURE_CAPTION = "(Ký và ghi rõ họ tên)"
+_SIGNATURE_CAPTION = "(Ký, ghi rõ họ tên)"
 
 
 @dataclass
@@ -76,22 +85,37 @@ def _set_default_font(document: Document) -> None:
         rpr.append(rfonts)
     for attr in ("w:eastAsia", "w:cs"):
         rfonts.set(qn(attr), FONT_NAME)
+    style.paragraph_format.line_spacing = LINE_SPACING
+    style.paragraph_format.space_before = Pt(0)
+    style.paragraph_format.space_after = Pt(0)
 
 
 def _set_margins(document: Document) -> None:
     section = document.sections[0]
+    # python-docx mặc định khổ Letter; văn bản hành chính dùng A4.
+    section.page_width = Cm(21.0)
+    section.page_height = Cm(29.7)
     section.top_margin = Cm(2.0)
     section.bottom_margin = Cm(2.0)
     section.left_margin = Cm(3.0)
-    section.right_margin = Cm(1.5)
+    section.right_margin = Cm(2.0)
 
 
-def _run(paragraph, text: str, *, bold: bool = False, italic: bool = False, size: Pt | None = None):
+def _run(
+    paragraph,
+    text: str,
+    *,
+    bold: bool = False,
+    italic: bool = False,
+    underline: bool = False,
+    size: Pt | None = None,
+):
     r = paragraph.add_run(text)
     r.font.name = FONT_NAME
     r.font.size = size or FONT_SIZE
     r.bold = bold
     r.italic = italic
+    r.underline = underline
     rpr = r._element.get_or_add_rPr()
     rfonts = rpr.find(qn("w:rFonts"))
     if rfonts is None:
@@ -145,38 +169,40 @@ def _masthead(document: Document, submission_date: datetime) -> None:
     table = document.add_table(rows=1, cols=2)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     _no_borders(table)
-    table.columns[0].width = Cm(7.5)
-    table.columns[1].width = Cm(8.0)
+    left_w, right_w = Cm(6.5), Cm(9.5)
+    table.columns[0].width = left_w
+    table.columns[1].width = right_w
 
     left, right = table.rows[0].cells
+    left.width = left_w
+    right.width = right_w
 
     p_superior = left.paragraphs[0]
     p_superior.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _run(p_superior, _AGENCY_SUPERIOR_LINE)
+    _run(p_superior, _AGENCY_SUPERIOR_LINE, size=MASTHEAD_SIZE)
 
     for line in _AGENCY_LINES:
         p = left.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        _run(p, line, bold=True)
+        _run(p, line, bold=True, size=MASTHEAD_SIZE)
 
     p_agency_underline = left.add_paragraph()
     p_agency_underline.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _run(p_agency_underline, _AGENCY_UNDERLINE, bold=True)
+    _run(p_agency_underline, _AGENCY_UNDERLINE, bold=True, size=MASTHEAD_SIZE)
 
     p1 = right.paragraphs[0]
     p1.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _run(p1, _NATION_LINE_1, bold=True)
+    _run(p1, _NATION_LINE_1, bold=True, size=MASTHEAD_SIZE)
 
+    # Tiêu ngữ: chữ thường đứng đậm, gạch chân đúng độ dài dòng chữ.
     p2 = right.add_paragraph()
     p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _run(p2, _NATION_LINE_2, bold=True)
+    _run(p2, _NATION_LINE_2, bold=True, underline=True)
 
-    p_nation_underline = right.add_paragraph()
-    p_nation_underline.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _run(p_nation_underline, _NATION_UNDERLINE, bold=True)
-
+    # Địa danh, ngày tháng năm: chữ nghiêng, cách tiêu ngữ một dòng.
     p3 = right.add_paragraph()
     p3.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p3.paragraph_format.space_before = Pt(10)
     _run(
         p3,
         f"Bắc Ninh, ngày {submission_date.day:02d} tháng {submission_date.month:02d} năm {submission_date.year}",
@@ -187,14 +213,18 @@ def _masthead(document: Document, submission_date: datetime) -> None:
 # ------------------------------------------------------------------ title
 
 def _title(document: Document, layout: FormLayout, data: dict) -> None:
-    document.add_paragraph()
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _run(p, layout.title, bold=True, size=Pt(14))
+    p.paragraph_format.space_before = Pt(18)
+    p.paragraph_format.space_after = Pt(0 if layout.subtitle else 12)
+    p.paragraph_format.keep_with_next = True
+    _run(p, layout.title, bold=True)
 
     if layout.subtitle:
         p2 = document.add_paragraph()
         p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p2.paragraph_format.space_after = Pt(12)
+        p2.paragraph_format.keep_with_next = True
         if isinstance(layout.subtitle, str):
             _run(p2, layout.subtitle, italic=True)
         else:
@@ -203,18 +233,27 @@ def _title(document: Document, layout: FormLayout, data: dict) -> None:
                     _run(p2, seg.t, italic=True)
                 elif seg.f is not None:
                     _run(p2, _resolve_value(seg.f, data), italic=True, bold=True)
-    document.add_paragraph()
 
 
 # -------------------------------------------------------------- recipients
 
 def _recipients(document: Document, layout: FormLayout, data: dict) -> None:
-    p = document.add_paragraph()
-    _run(p, "Kính gửi:", bold=True)
+    """"Kính gửi:" thụt vào, mỗi nơi nhận một dòng gạch đầu dòng; dòng cuối
+    kết thúc bằng dấu chấm, các dòng trước bằng dấu chấm phẩy — như các mẫu
+    gốc."""
 
-    for r in layout.recipients:
+    p = document.add_paragraph()
+    p.paragraph_format.left_indent = Cm(2.0)
+    p.paragraph_format.keep_with_next = True
+    _run(p, "Kính gửi:")
+
+    last = len(layout.recipients) - 1
+    rp = p
+    for i, r in enumerate(layout.recipients):
         rp = document.add_paragraph()
-        rp.paragraph_format.left_indent = Cm(1.0)
+        rp.paragraph_format.left_indent = Cm(4.0)
+        rp.paragraph_format.first_line_indent = Cm(-0.5)
+        rp.paragraph_format.keep_with_next = i != last
         _run(rp, "- ")
         if isinstance(r, str):
             _run(rp, r)
@@ -224,10 +263,20 @@ def _recipients(document: Document, layout: FormLayout, data: dict) -> None:
                     _run(rp, seg.t)
                 elif seg.f is not None:
                     _run(rp, _resolve_value(seg.f, data), bold=True)
-    document.add_paragraph()
+        _run(rp, "." if i == last else ";")
+    rp.paragraph_format.space_after = Pt(12)
 
 
 # -------------------------------------------------------------------- body
+
+def _body_paragraph(document: Document):
+    """Đoạn văn bản chính: căn đều hai bên, dòng đầu thụt 1,27 cm."""
+    p = document.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    p.paragraph_format.first_line_indent = FIRST_LINE_INDENT
+    p.paragraph_format.space_after = PARA_GAP
+    return p
+
 
 def _body_line(document: Document, line: BodyLine, data: dict) -> None:
     if line.only_if is not None and not data.get(line.only_if):
@@ -235,23 +284,19 @@ def _body_line(document: Document, line: BodyLine, data: dict) -> None:
 
     pieces, extra_paragraphs = _seg_line_text_and_multiline(line.segs, data)
 
-    for _ in range(line.before):
-        document.add_paragraph()
-
-    p = document.add_paragraph()
-    if line.indent_first:
-        p.paragraph_format.first_line_indent = Cm(1.0)
-    p.paragraph_format.space_after = Pt(0)
+    p = _body_paragraph(document)
     for text, is_fill in pieces:
         _run(p, text, bold=is_fill)
 
     for extra in extra_paragraphs:
-        ep = document.add_paragraph()
-        ep.paragraph_format.space_after = Pt(0)
+        ep = _body_paragraph(document)
+        ep.paragraph_format.first_line_indent = Cm(0)
         _run(ep, extra, bold=True)
 
-    for _ in range(line.after):
-        document.add_paragraph()
+
+# Cột STT cố định hẹp; các cột còn lại chia phần dư của vùng chữ, riêng cột
+# đầu (tên học phần) rộng gấp đôi. Tổng luôn bằng bề rộng vùng chữ.
+_STT_WIDTH_CM = 1.5
 
 
 def _data_table(document: Document, block: TableBlock, data: dict) -> None:
@@ -265,28 +310,42 @@ def _data_table(document: Document, block: TableBlock, data: dict) -> None:
     table.style = "Table Grid"
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
+    weights = [2.0 if i == 0 else 1.0 for i in range(len(block.columns))]
+    rest = TEXT_WIDTH_CM - _STT_WIDTH_CM
+    widths = [Cm(_STT_WIDTH_CM)] + [Cm(rest * w / sum(weights)) for w in weights]
+    for col, w in zip(table.columns, widths):
+        col.width = w
+
+    def _fill(cell, text: str, *, bold: bool = False, center: bool = True) -> None:
+        cp = cell.paragraphs[0]
+        cp.alignment = WD_ALIGN_PARAGRAPH.CENTER if center else WD_ALIGN_PARAGRAPH.LEFT
+        cp.paragraph_format.space_before = Pt(2)
+        cp.paragraph_format.space_after = Pt(2)
+        _run(cp, text, bold=bold)
+
     header = table.rows[0].cells
-    hp = header[0].paragraphs[0]
-    hp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _run(hp, "STT", bold=True)
+    for cell, w in zip(header, widths):
+        cell.width = w
+    _fill(header[0], "STT", bold=True)
     for ci, col in enumerate(block.columns, start=1):
-        hp = header[ci].paragraphs[0]
-        hp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        _run(hp, col.label, bold=True)
+        _fill(header[ci], col.label, bold=True)
+    # Dòng tiêu đề lặp lại nếu bảng sang trang mới.
+    tr_pr = table.rows[0]._tr.get_or_add_trPr()
+    tr_pr.append(tr_pr.makeelement(qn("w:tblHeader"), {}))
 
     for ri in range(n_rows):
         row_cells = table.rows[ri + 1].cells
-        stt_p = row_cells[0].paragraphs[0]
-        stt_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        for cell, w in zip(row_cells, widths):
+            cell.width = w
         # STT is always auto-numbered here, never trusted from client data.
-        _run(stt_p, str(ri + 1))
+        _fill(row_cells[0], str(ri + 1))
 
         row_data = raw_rows[ri] if ri < len(raw_rows) and isinstance(raw_rows[ri], dict) else {}
         for ci, col in enumerate(block.columns, start=1):
-            cp = row_cells[ci].paragraphs[0]
-            _run(cp, str(row_data.get(col.key) or ""))
+            _fill(row_cells[ci], str(row_data.get(col.key) or ""), center=ci != 1)
 
-    document.add_paragraph()
+    gap = document.add_paragraph()
+    gap.paragraph_format.space_after = Pt(6)
 
 
 def _body(document: Document, layout: FormLayout, data: dict) -> None:
@@ -305,19 +364,23 @@ def _signature_table(document: Document, slots: list[SignatureSlot]) -> None:
     table = document.add_table(rows=1, cols=len(slots))
     _no_borders(table)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    col_width = Cm(15.5 / max(len(slots), 1))
+    col_width = Cm(TEXT_WIDTH_CM / max(len(slots), 1))
     for col in table.columns:
         col.width = col_width
+    # Khối chữ ký không bị cắt đôi giữa hai trang.
+    tr_pr = table.rows[0]._tr.get_or_add_trPr()
+    tr_pr.append(tr_pr.makeelement(qn("w:cantSplit"), {}))
 
     for cell, slot in zip(table.rows[0].cells, slots):
         cell.width = col_width
         p_title = cell.paragraphs[0]
         p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        _run(p_title, slot.title, bold=True)
+        p_title.paragraph_format.keep_with_next = True
+        _run(p_title, slot.title, bold=True, size=MASTHEAD_SIZE)
 
         p_caption = cell.add_paragraph()
         p_caption.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        _run(p_caption, _SIGNATURE_CAPTION, italic=True, size=Pt(11))
+        _run(p_caption, _SIGNATURE_CAPTION, italic=True, size=CAPTION_SIZE)
 
         p_mark = cell.add_paragraph()
         p_mark.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -339,7 +402,7 @@ def _signature_table(document: Document, slots: list[SignatureSlot]) -> None:
                 ts = slot.signed_at
                 if ts.tzinfo is None:
                     ts = ts.replace(tzinfo=timezone.utc)
-                _run(p_time, f"Ký lúc {ts.strftime('%H:%M %d/%m/%Y')}", italic=True, size=Pt(10))
+                _run(p_time, f"Ký lúc {ts.strftime('%H:%M %d/%m/%Y')}", italic=True, size=Pt(11))
 
 
 # --------------------------------------------------------------- entrypoint
@@ -361,7 +424,8 @@ def render_form(
     _title(document, layout, data)
     _recipients(document, layout, data)
     _body(document, layout, data)
-    document.add_paragraph()
+    spacer = document.add_paragraph()
+    spacer.paragraph_format.keep_with_next = True
     _signature_table(document, slots)
 
     buf = io.BytesIO()

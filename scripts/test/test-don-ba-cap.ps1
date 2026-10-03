@@ -174,7 +174,7 @@ Check 'Bản in có đúng tiêu đề' ($text.Contains('ĐƠN XIN HỌC BỔ SU
 Check 'Tên khoa học viên điền hiện trong phần Kính gửi' `
   ($text.Contains('Lãnh đạo Khoa Khoa An toàn thông tin'))
 Check 'Bản in có lý do đã nhập' ($text.Contains('Em bị ốm phải nằm viện dài ngày.'))
-$soO = ([regex]::Matches($text, [regex]::Escape('(Ký và ghi rõ họ tên)'))).Count
+$soO = ([regex]::Matches($text, [regex]::Escape('(Ký, ghi rõ họ tên)'))).Count
 Check 'Có đúng BỐN ô ký (ba cấp + học viên)' ($soO -eq 4) "$soO ô"
 Check 'Có ô Lãnh đạo Khoa' ($text -match 'LÃNH ĐẠO KHOA|Lãnh đạo Khoa')
 # Cột in theo order giảm dần, nên LĐ Khoa (order 3) phải đứng TRƯỚC QLĐT trong
