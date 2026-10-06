@@ -70,3 +70,7 @@ backups/
 
 # tệp khóa tạm của Word/Office
 ~$*
+
+# công cụ cục bộ
+.qwen/
+.kilo/
