@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Icon } from '@/components/shared/Icon';
 import { ApiError } from '@/services/api';
 import { catalogApi, type ClassItem } from '@/services/catalog-api';
-import { ClassDialog, ConfirmDeleteDialog } from './Dialogs';
+import { ClassDialog } from './ClassDialog';
+import { ConfirmDeleteDialog } from './Dialogs';
 
 /**
  * Tab "Lớp": danh sách lớp + thêm / sửa / xóa. Số học viên là liên kết sang

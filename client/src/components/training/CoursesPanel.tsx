@@ -6,7 +6,8 @@ import {
   type CourseItem,
   type LecturerItem,
 } from '@/services/catalog-api';
-import { ConfirmDeleteDialog, CourseDialog } from './Dialogs';
+import { CourseDialog } from './CourseDialog';
+import { ConfirmDeleteDialog } from './Dialogs';
 
 type CourseFilter = 'all' | 'no-lecturer';
 
