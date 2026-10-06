@@ -100,20 +100,22 @@
   background: color-mix(in oklab, var(--seal-wash) 40%, transparent);
 }
 
+/* Bề rộng theo tỉ lệ: tên môn nhận phần còn lại (≈ 24%, tên dài tự xuống dòng), các cột số được chia rộng hơn
+   nên từ tên môn tới cột TC không còn một khoảng trống dài. Màn hẹp dùng bề rộng cố định ở cuối tệp. */
 .grd-c-stt {
-  width: 3.5rem;
+  width: 5%;
 }
 .grd-c-code {
-  width: 6rem;
+  width: 9%;
 }
 .grd-c-tc {
-  width: 3.5rem;
+  width: 9%;
 }
 .grd-c-part {
-  width: 4rem;
+  width: 10%;
 }
 .grd-c-total {
-  width: 6rem;
+  width: 13%;
 }
 
 /* Điểm chưa nhập: "—" màu nhạt. */
