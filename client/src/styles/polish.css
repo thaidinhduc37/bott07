@@ -453,17 +453,6 @@ button.study-aside__link:focus-visible {
   border-radius: var(--r-sm);
 }
 
-/* Cuộn tới một kỳ thi (liên kết #id từ thông báo) không được để hàng nằm dưới thanh trên
-   cùng đang dính (cao 3.5rem). */
-.plan-row {
-  scroll-margin-top: calc(3.5rem + var(--gap-4));
-}
-
-/* Chi tiết kỳ thi mở ngay dưới dòng (màn hẹp): dòng đã ghi tên môn rồi, không lặp lại. */
-.plan-detail--inline .plan-detail__title {
-  display: none;
-}
-
 /* ---- breadcrumb ở đầu trang con */
 .crumbs { margin-bottom: var(--gap-2); }
 .crumbs__list { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-2); margin: 0; padding: 0; list-style: none; font-size: 0.875rem; color: var(--ink-soft, var(--ink)); }

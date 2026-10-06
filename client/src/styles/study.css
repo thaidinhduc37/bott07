@@ -282,7 +282,6 @@
 
 /* Cảnh báo inline khi còn câu trống — không dùng confirm(). */
 
-
 /* ------------------------------------------------------------------ trang ôn tập
 
    Dải trạng thái sổ câu sai một hàng (trái: số liệu, phải: nút chính + link
@@ -356,10 +355,6 @@
 
 .plan-list {
   overflow: hidden;
-}
-
-.plan-row + .plan-row {
-  border-top: 1px solid var(--rule-faint);
 }
 
 /* Hàng bấm được: không phải `.action-row` vì có khối ngày riêng bên trái. */
@@ -448,17 +443,6 @@
   color: var(--seal-ink);
 }
 
-/* Chi tiết mở ra bên dưới hàng. */
-.plan-detail {
-  display: grid;
-  gap: var(--gap-3);
-  padding: 0 var(--gap-5) var(--gap-5) calc(3.25rem + var(--gap-4) + var(--gap-5));
-}
-
-.plan-detail > p {
-  margin: 0;
-}
-
 /* Hàng số liệu: chữ, không stat-card. */
 .plan-detail__stats {
   font-size: 0.875rem;
@@ -474,13 +458,6 @@
 .plan-detail__today {
   font-size: 0.9375rem;
   font-weight: 600;
-}
-
-/* Timeline dọc: chấm + đường kẻ mảnh, không icon màu mè. */
-.plan-timeline {
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
 .plan-timeline__item {
@@ -1119,17 +1096,6 @@
 .plan-row__head {
   grid-template-columns: auto minmax(0, 1fr) auto;
 }
-.plan-row--open > .plan-row__head {
-  background: var(--pen-wash);
-}
-.plan-row--open > .plan-row__head:hover {
-  background: var(--pen-wash);
-}
-
-/* Chi tiết trong cột phải: giấy đầy đủ, không thụt lề kiểu accordion. */
-.plan-detail {
-  padding: var(--gap-5);
-}
 .plan-detail__title {
   margin: 0 0 var(--gap-3);
   font-size: 1.15rem;
@@ -1162,11 +1128,6 @@
   flex-wrap: wrap;
   padding-top: var(--gap-3);
   border-top: 1px solid var(--rule-faint);
-}
-
-/* Bản inline (màn hẹp): giữ hành vi accordion cũ — thụt lề dưới khối ngày. */
-.plan-detail--inline {
-  padding: 0 var(--gap-5) var(--gap-5) calc(3.5rem + var(--gap-4) + var(--gap-5));
 }
 
 /* Màn rộng: ẩn bản inline; màn hẹp: ẩn bản cột phải. */

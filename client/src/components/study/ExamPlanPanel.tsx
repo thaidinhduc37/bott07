@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/shared/Icon';
 import type { ExamPlanItem } from '@/services/learning-api';
-import { MONTHS, READINESS_TAG, rangeLabel, viScore } from './format';
+import { MONTHS, READINESS_TAG, dayLabel, rangeLabel, viScore } from './format';
 
 /**
- * Nội dung tab "Kế hoạch ôn thi": một dòng cho mỗi kỳ thi trong 120 ngày tới,
- * bấm mở chi tiết (số liệu ôn tập + timeline ngày ôn) ngay bên dưới. Trang cha
- * đã có H1/dòng phụ nên ở đây chỉ giữ phần thân. Các nút "Tạo đề ôn" không điều
- * hướng — gọi `onStartQuiz` để trang cha chuyển sang tab Ôn tập và điền sẵn.
+ * Nội dung tab "Kế hoạch ôn thi": danh sách kỳ thi trong 120 ngày tới (cột trái) và chi tiết kỳ đang chọn
+ * (cột phải: đếm ngược, thông tin ca thi, số liệu ôn tập, các bước ôn). Màn hẹp: mỗi dòng mở chi tiết ngay bên
+ * dưới (accordion). Các nút "Tạo đề ôn" không điều hướng — gọi `onStartQuiz` để trang cha chuyển sang tab
+ * "Làm đề" và điền sẵn.
  */
 export function ExamPlanPanel(props: {
   plan: { today: string; exams: ExamPlanItem[]; reason?: 'NO_CLASS' } | null;
@@ -68,12 +68,9 @@ export function ExamPlanPanel(props: {
   }
 
   return (
-    <div
-      className="page-grid page-grid--aside-left"
-      style={{ ['--aside-w' as string]: '24rem' }}
-    >
+    <div className="page-grid page-grid--aside-left" style={{ ['--aside-w' as string]: '22rem' }}>
       <aside className="page-grid__aside">
-        <div className="sheet plan-list">
+        <div className="sheet xp-list">
           {plan.exams.map((exam) => (
             <ExamRow
               key={exam.id}
@@ -112,30 +109,29 @@ function ExamRow({
 }) {
   const d = new Date(exam.examDate);
   const readiness = READINESS_TAG[exam.progress.readiness];
-  const daysLeft = exam.daysLeft;
 
   return (
-    <div id={exam.id} className={`plan-row${open ? ' plan-row--open' : ''}`}>
+    <div id={exam.id} className={`xp-row${open ? ' xp-row--open' : ''}`}>
       <button
         type="button"
-        className="plan-row__head"
+        className="xp-row__head"
         aria-expanded={open}
         aria-current={open ? 'true' : undefined}
         onClick={onToggle}
       >
-        <span className="plan-row__date" aria-hidden="true">
-          <span className="plan-row__day">{d.getDate()}</span>
-          <span className="plan-row__month">{MONTHS[d.getMonth()]}</span>
+        <span className="xp-date" aria-hidden="true">
+          <span className="xp-date__day">{d.getDate()}</span>
+          <span className="xp-date__month">{MONTHS[d.getMonth()]}</span>
         </span>
-        <span className="plan-row__body">
-          <span className="plan-row__title">
+        <span className="xp-row__body">
+          <span className="xp-row__title">
             <span className="mono">{exam.course.code}</span> — {exam.course.name}
           </span>
-          <span className="plan-row__desc">
-            {daysLeft === 0 ? 'Hôm nay' : `còn ${daysLeft} ngày`}
+          <span className="xp-row__meta">
+            <span>{exam.daysLeft === 0 ? 'Hôm nay' : `còn ${exam.daysLeft} ngày`}</span>
+            <span className={`tag ${readiness.cls}`}>{readiness.label}</span>
           </span>
         </span>
-        <span className={`tag ${readiness.cls}`}>{readiness.label}</span>
       </button>
 
       {/* Chi tiết inline — chỉ hiện ở màn hẹp (accordion), ẩn khi có cột chi tiết bên phải. */}
@@ -155,70 +151,96 @@ function ExamDetail({
   inline?: boolean;
   onStartQuiz: (d: { courseId: string; topic?: string }) => void;
 }) {
-  const time = new Intl.DateTimeFormat('vi-VN', { hour: '2-digit', minute: '2-digit' }).format(
-    new Date(exam.startsAt),
-  );
+  const time = new Intl.DateTimeFormat('vi-VN', { hour: '2-digit', minute: '2-digit' }).format(new Date(exam.startsAt));
+  const readiness = READINESS_TAG[exam.progress.readiness];
+  const place = [exam.room && `Phòng ${exam.room}`, exam.building].filter(Boolean).join(' · ');
+
+  const facts: { label: string; value: string }[] = [
+    { label: 'Ngày thi', value: `${dayLabel(exam.examDate)} · ${time}` },
+    { label: 'Thời lượng', value: exam.durationMinutes > 0 ? `${exam.durationMinutes} phút` : '' },
+    { label: 'Hình thức', value: exam.formatLabel },
+    { label: 'Địa điểm', value: place },
+    { label: 'Được mang vào', value: exam.allowedMaterials ?? '' },
+  ].filter((f) => f.value);
 
   return (
-    <div className={`plan-detail${inline ? ' plan-detail--inline' : ' sheet'}`}>
-      <h2 className="plan-detail__title">
-        <span className="mono">{exam.course.code}</span> — {exam.course.name}
-      </h2>
+    <div className={`xp${inline ? ' xp--inline' : ' sheet'}`}>
+      <header className="xp__head">
+        <div className="xp__who">
+          <h2 className="xp__title">
+            <span className="mono">{exam.course.code}</span> — {exam.course.name}
+          </h2>
+          <span className={`tag ${readiness.cls}`}>{readiness.label}</span>
+        </div>
+        <p className="xp__count">
+          {exam.daysLeft === 0 ? (
+            <strong>Hôm nay</strong>
+          ) : (
+            <>
+              <strong>{exam.daysLeft}</strong>
+              <span>ngày nữa</span>
+            </>
+          )}
+        </p>
+      </header>
 
-      <p className="plan-detail__info">
-        {exam.formatLabel}
-        {exam.room && <> · Phòng {exam.room}</>}
-        {exam.building && <> ({exam.building})</>}
-        {time && <> · {time}</>}
-        {exam.durationMinutes > 0 && <> · {exam.durationMinutes} phút</>}
-      </p>
+      <dl className="xp__facts">
+        {facts.map((f) => (
+          <div key={f.label} className="xp__fact">
+            <dt>{f.label}</dt>
+            <dd>{f.value}</dd>
+          </div>
+        ))}
+      </dl>
 
-      <p className="plan-detail__stats">
-        <span>
-          <strong>{exam.progress.quizCount}</strong> lượt ôn
-        </span>
-        <span>
-          <strong>{exam.progress.avgScore != null ? viScore(exam.progress.avgScore) : '—'}</strong> điểm TB
-        </span>
-        <span>
-          <strong>{exam.progress.reviewDue}</strong> câu sai đến hạn
-        </span>
-      </p>
+      <ul className="xp__stats" aria-label="Số liệu ôn tập">
+        <li>
+          <strong>{exam.progress.quizCount}</strong>
+          <span>lượt ôn</span>
+        </li>
+        <li>
+          <strong>{exam.progress.avgScore != null ? viScore(exam.progress.avgScore) : '—'}</strong>
+          <span>điểm TB</span>
+        </li>
+        <li>
+          <strong>{exam.progress.reviewDue}</strong>
+          <span>câu sai đến hạn</span>
+        </li>
+      </ul>
 
-      {exam.allowedMaterials && <p className="plan-detail__materials">Được mang vào: {exam.allowedMaterials}</p>}
-
+      <h3 className="xp__h">Kế hoạch ôn</h3>
       {exam.plan.length === 0 ? (
-        <p className="plan-detail__today">Hôm nay thi — chúc bạn làm bài tốt.</p>
+        <p className="xp__empty">Hôm nay thi — chúc bạn làm bài tốt.</p>
       ) : (
-        <ol className="plan-timeline">
+        <ol className="xp__steps">
           {exam.plan.map((day, i) => {
             const isToday = day.from <= today && today <= day.to;
             return (
-              <li key={`${day.from}-${i}`} className={`plan-timeline__item${isToday ? ' plan-timeline__item--today' : ''}`}>
-                <span className="plan-timeline__dot" aria-hidden="true" />
-                <div className="plan-timeline__body">
-                  <p className="plan-timeline__date">
+              <li key={`${day.from}-${i}`} className={`xp-step${isToday ? ' xp-step--today' : ''}`}>
+                <span className="xp-step__dot" aria-hidden="true" />
+                <div className="xp-step__body">
+                  <p className="xp-step__date">
                     {rangeLabel(day.from, day.to)}
-                    {isToday && <span className="plan-timeline__today">Hôm nay</span>}
+                    {isToday && <span className="tag tag--pen">Hôm nay</span>}
                   </p>
-                  <p className="plan-timeline__title">{day.title}</p>
-                  {day.kind === 'DOC' && day.suggestedTopic && (
-                    <button
-                      type="button"
-                      className="plan-timeline__link"
-                      onClick={() => onStartQuiz({ courseId: exam.course.id, topic: day.suggestedTopic ?? undefined })}
-                    >
-                      Tạo đề ôn
-                    </button>
-                  )}
+                  <p className="xp-step__title">{day.title}</p>
                 </div>
+                {day.kind === 'DOC' && day.suggestedTopic && (
+                  <button
+                    type="button"
+                    className="btn btn--ghost btn--sm"
+                    onClick={() => onStartQuiz({ courseId: exam.course.id, topic: day.suggestedTopic ?? undefined })}
+                  >
+                    Tạo đề ôn
+                  </button>
+                )}
               </li>
             );
           })}
         </ol>
       )}
 
-      <div className="plan-detail__actions">
+      <div className="xp__actions">
         <button type="button" className="btn btn--primary" onClick={() => onStartQuiz({ courseId: exam.course.id })}>
           Tạo đề ôn môn này
         </button>
