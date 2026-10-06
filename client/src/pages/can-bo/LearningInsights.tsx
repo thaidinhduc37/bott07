@@ -8,6 +8,7 @@ import { ApiError } from '@/services/api';
 import {
   insightsApi,
   type InsightCourse,
+  type FeedbackReview,
   type InsightCourseDetail,
   type UnansweredQuestion,
 } from '@/services/learning-api';
@@ -27,6 +28,7 @@ export default function LearningInsights() {
   const [windowDays, setWindowDays] = useState(30);
   const [detail, setDetail] = useState<InsightCourseDetail | null>(null);
   const [unanswered, setUnanswered] = useState<UnansweredQuestion[] | null>(null);
+  const [feedback, setFeedback] = useState<FeedbackReview | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const selected = params.get('mon') ?? courses?.[0]?.course.id ?? null;
@@ -44,6 +46,10 @@ export default function LearningInsights() {
         .unanswered()
         .then((r) => setUnanswered(r.items))
         .catch(() => setUnanswered([]));
+      insightsApi
+        .feedback()
+        .then(setFeedback)
+        .catch(() => setFeedback(null));
     }
   }, [sees]);
 
@@ -170,6 +176,49 @@ export default function LearningInsights() {
                   )}
                 </section>
               </>
+            )}
+
+            {sees && feedback && (
+              <section className="sheet sheet--pad">
+                <div className="section-head">
+                  <h2 className="aside-h">Phản hồi về trợ lý</h2>
+                  <span className="section-head__note">{feedback.windowDays} ngày gần nhất</span>
+                </div>
+                {feedback.up + feedback.down === 0 ? (
+                  <p className="home-aside__empty">Chưa có phản hồi nào.</p>
+                ) : (
+                  <>
+                    <p className="hard__meta" style={{ marginBottom: 'var(--gap-4)' }}>
+                      <span className="tag tag--ok">{feedback.up} hữu ích</span>{' '}
+                      <span className="tag tag--warn">{feedback.down} chưa đúng</span>
+                      {feedback.helpfulRate !== null && <> · {Math.round(feedback.helpfulRate * 100)}% hữu ích</>}
+                      {feedback.byReason.length > 0 && (
+                        <> · {feedback.byReason.map((r) => `${r.label}: ${r.count}`).join('; ')}</>
+                      )}
+                    </p>
+                    {feedback.items.length > 0 && (
+                      <ul className="hard">
+                        {feedback.items.map((f, i) => (
+                          <li key={i} className="hard__item">
+                            <p className="hard__q">{f.question ?? '(không tìm thấy câu hỏi)'}</p>
+                            <p className="hard__a" style={{ color: 'var(--ink-soft)' }}>
+                              {f.abstained ? 'Trợ lý từ chối: ' : 'Trợ lý trả lời: '}
+                              {f.answer.length > 220 ? `${f.answer.slice(0, 220)}…` : f.answer}
+                            </p>
+                            <p className="hard__meta">
+                              {f.reasonLabel && <span className="tag tag--warn">{f.reasonLabel}</span>}
+                              {f.comment && <> “{f.comment}”</>}
+                              {' · '}
+                              {f.mode === 'QUYCHE' ? 'Quy chế' : 'Giáo trình'} ·{' '}
+                              {new Date(f.createdAt).toLocaleDateString('vi-VN')}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
+                )}
+              </section>
             )}
 
             {sees && unanswered && (

@@ -11,10 +11,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings
 from app.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
 from app.models.enums import RoleCode
-from app.schemas.chat import AskDto
+from app.schemas.chat import AskDto, FeedbackDto
 from app.services.admin_dashboard_service import AdminDashboardService
 from app.services.chat_service import ChatService
 from app.services.documents_service import DocumentsService
+from app.services.feedback_service import FeedbackService
 from app.services.forms_service import FormsService
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -62,6 +63,19 @@ async def list_conversations(
     db: AsyncSession = Depends(get_db),
 ):
     return await ChatService(db).list_conversations(user.id, page=page, page_size=page_size)
+
+
+@router.put("/messages/{message_id}/feedback")
+async def message_feedback(
+    message_id: str,
+    dto: FeedbackDto,
+    user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Đánh giá hữu ích (`UP`) / chưa đúng (`DOWN`, kèm lý do) cho một câu trả lời; `rating: null` = bỏ đánh giá."""
+    return await FeedbackService(db).set_feedback(
+        user, message_id, rating=dto.rating, reason=dto.reason, comment=dto.comment
+    )
 
 
 @router.get("/conversations/{conversation_id}")

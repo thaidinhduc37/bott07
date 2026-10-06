@@ -15,6 +15,7 @@ from app.models.documents import Document, DocumentVersion
 from app.models.enums import ChatMode, DocumentType, IndexStatus, MessageRole
 from app.schemas.chat import AskDto
 from app.schemas.rag import QueryPayload, QueryResult
+from app.services.feedback_service import FeedbackService
 from app.services.rag_client import RagClientService, get_rag_client
 
 
@@ -222,6 +223,9 @@ class ChatService:
             raise HTTPException(status_code=404, detail={"message": "Không tìm thấy hội thoại"})
 
         messages = sorted(conversation.messages, key=lambda m: m.created_at)
+        mine = await FeedbackService(self.db).mine_for(
+            user_id, [m.id for m in messages if m.role != MessageRole.USER]
+        )
         out_messages = []
         for m in messages:
             if m.role == MessageRole.USER:
@@ -231,7 +235,9 @@ class ChatService:
             else:
                 # No `result` passed here -> abstainReason omitted, matching
                 # the reference's intentional asymmetry on history reload.
-                out_messages.append(self._present_message(m, result=None))
+                presented = self._present_message(m, result=None)
+                presented["feedback"] = mine.get(str(m.id))
+                out_messages.append(presented)
 
         return {
             "id": str(conversation.id),

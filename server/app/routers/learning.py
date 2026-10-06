@@ -14,6 +14,7 @@ from app.models.enums import RoleCode
 from app.schemas.learning import CreateQuizDto, CreateReviewDto, SubmitQuizDto
 from app.schemas.notes import CreateNoteDto, NoteFromSourceDto, UpdateNoteDto
 from app.services.exam_plan_service import ExamPlanService
+from app.services.feedback_service import FeedbackService
 from app.services.insights_service import InsightsService
 from app.services.progress_service import ProgressService
 from app.services.learning_service import LearningService
@@ -204,3 +205,13 @@ async def insights_unanswered(
     db: AsyncSession = Depends(get_db),
 ):
     return await InsightsService(db).unanswered(user, limit)
+
+
+@router.get("/insights/feedback")
+async def insights_feedback(
+    limit: int = Query(default=30, ge=1, le=100),
+    user: AuthenticatedUser = Depends(require_roles(RoleCode.ACADEMIC_MANAGER.value, RoleCode.ADMIN.value)),
+    db: AsyncSession = Depends(get_db),
+):
+    """Tổng hợp phản hồi về trợ lý (30 ngày) và các câu bị đánh giá chưa đúng — không kèm danh tính người đánh giá."""
+    return await FeedbackService(db).review_list(limit)

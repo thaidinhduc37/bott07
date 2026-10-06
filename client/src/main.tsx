@@ -11,6 +11,7 @@ import './styles/grades.css';
 import './styles/grade-entry.css';
 import './styles/schedule-term.css';
 import './styles/support.css';
+import './styles/feedback.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

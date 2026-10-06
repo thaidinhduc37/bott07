@@ -48,3 +48,11 @@ class AskDto(CamelModel):
     @classmethod
     def _uuid4(cls, v: str | None) -> str | None:
         return _validate_uuid4(v)
+
+
+class FeedbackDto(CamelModel):
+    """`rating`: "UP" | "DOWN" | null (bỏ đánh giá). `reason` chỉ dùng với "DOWN"."""
+
+    rating: str | None = None
+    reason: str | None = Field(default=None, max_length=40)
+    comment: str | None = Field(default=None, max_length=500)

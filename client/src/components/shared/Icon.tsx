@@ -52,7 +52,9 @@ export type IconName =
   | 'person'
   | 'plus'
   | 'pin'
-  | 'help';
+  | 'help'
+  | 'thumbUp'
+  | 'thumbDown';
 
 /** Tên biểu tượng tương ứng trong bộ Material Symbols Outlined. */
 const SYMBOL: Record<IconName, string> = {
@@ -86,6 +88,8 @@ const SYMBOL: Record<IconName, string> = {
   plus: 'add',
   pin: 'push_pin',
   help: 'help',
+  thumbUp: 'thumb_up',
+  thumbDown: 'thumb_down',
 };
 
 export interface IconProps {

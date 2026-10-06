@@ -225,9 +225,30 @@ export interface UnansweredQuestion {
   createdAt: string;
 }
 
+export interface FeedbackReview {
+  windowDays: number;
+  up: number;
+  down: number;
+  /** Tỉ lệ hữu ích 0–1; null khi chưa có phản hồi nào. */
+  helpfulRate: number | null;
+  byReason: { reason: string; label: string; count: number }[];
+  items: {
+    question: string | null;
+    answer: string;
+    abstained: boolean;
+    mode: string;
+    confidence: number | null;
+    reason: string | null;
+    reasonLabel: string | null;
+    comment: string | null;
+    createdAt: string;
+  }[];
+}
+
 export const insightsApi = {
   courses: () => api<{ windowDays: number; items: InsightCourse[] }>('/learning/insights/courses'),
   course: (id: string) => api<InsightCourseDetail>(`/learning/insights/courses/${id}`),
+  feedback: (limit = 30) => api<FeedbackReview>(`/learning/insights/feedback?limit=${limit}`),
   unanswered: (limit = 30) =>
     api<{ windowDays: number; items: UnansweredQuestion[] }>(`/learning/insights/unanswered?limit=${limit}`),
 };

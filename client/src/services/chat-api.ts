@@ -25,6 +25,13 @@ export interface RetrievedChunk {
   cited: boolean;
 }
 
+/** Phản hồi của chính người dùng về một câu trả lời. */
+export interface MessageFeedback {
+  rating: 'UP' | 'DOWN';
+  reason: string | null;
+  comment: string | null;
+}
+
 export interface AssistantMessage {
   id: string;
   role: 'ASSISTANT';
@@ -43,6 +50,8 @@ export interface AssistantMessage {
   trace: string[] | null;
   citations: Citation[];
   retrievedChunks: RetrievedChunk[] | null;
+  /** Đánh giá của chính bạn (chỉ có khi tải lại lịch sử hội thoại). */
+  feedback?: MessageFeedback | null;
   createdAt: string;
 }
 
@@ -90,4 +99,8 @@ export const chatApi = {
     ),
 
   remove: (id: string) => api<{ message: string }>(`/chat/conversations/${id}`, { method: 'DELETE' }),
+
+  /** `rating: null` = bỏ đánh giá. `reason` chỉ có nghĩa với `DOWN`. */
+  feedback: (messageId: string, body: { rating: 'UP' | 'DOWN' | null; reason?: string; comment?: string }) =>
+    api<{ feedback: MessageFeedback | null }>(`/chat/messages/${messageId}/feedback`, { method: 'PUT', body }),
 };

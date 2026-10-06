@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Icon } from '@/components/shared/Icon';
 import { SaveToNotebook } from '@/components/shared/SaveToNotebook';
 import type { AssistantMessage, Citation } from '@/services/chat-api';
+import { AnswerFeedback } from './AnswerFeedback';
 import { learningApi } from '@/services/learning-api';
 
 /**
@@ -246,6 +247,8 @@ export function AnswerCard({ message }: { message: AssistantMessage }) {
           <SaveToNotebook onSave={() => learningApi.noteFromChat({ sourceId: message.id })} />
         </div>
       )}
+
+      <AnswerFeedback messageId={message.id} initial={message.feedback} abstained={message.abstained} />
     </article>
   );
 }

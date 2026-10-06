@@ -1,0 +1,110 @@
+/* Phản hồi hữu ích / chưa đúng dưới câu trả lời của trợ lý (tiền tố fb-) */
+
+.fb {
+  display: grid;
+  gap: var(--gap-3);
+  margin-top: var(--gap-4);
+  padding-top: var(--gap-3);
+  border-top: 1px solid var(--rule-faint);
+}
+
+.fb__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gap-3);
+}
+
+.fb__label {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.fb__btns {
+  display: flex;
+  gap: var(--gap-2);
+}
+
+.fb__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  padding: 0.3rem 0.7rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-md);
+  cursor: pointer;
+}
+
+.fb__btn:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--ink-faint);
+}
+
+.fb__btn[aria-pressed='true'] {
+  color: var(--pen-ink);
+  background: var(--pen-wash);
+  border-color: var(--pen);
+}
+
+.fb__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.fb__btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.fb__thanks {
+  font-size: 0.8125rem;
+  color: var(--ok-ink);
+}
+
+.fb__form {
+  display: grid;
+  gap: var(--gap-3);
+  padding: var(--gap-4);
+  background: var(--paper);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-md);
+}
+
+.fb__reasons {
+  display: grid;
+  gap: var(--gap-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.fb__legend {
+  padding: 0;
+  margin-bottom: var(--gap-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.fb__reason {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.fb__reason input {
+  accent-color: var(--pen);
+}
+
+.fb__note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
