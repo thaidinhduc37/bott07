@@ -19,11 +19,10 @@ from collections import defaultdict
 from dataclasses import dataclass
 
 from fastapi import Cookie, Depends, HTTPException, Request, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.db import get_db  # noqa: F401  (re-exported)
-from app.security import ACCESS_COOKIE, TokenExpiredError, TokenInvalidError, decode_access_token
+from app.security import TokenExpiredError, TokenInvalidError, decode_access_token
 
 
 @dataclass

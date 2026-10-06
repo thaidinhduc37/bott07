@@ -3,7 +3,6 @@
 Phân tích các file trong corpus để tìm file có vấn đề xuống hàng sớm.
 """
 
-import os
 import re
 from pathlib import Path
 
@@ -34,7 +33,7 @@ def analyze_file(filepath):
             'double_char_lines': double_char_lines,
             'total_lines': total_lines
         }
-    except Exception as e:
+    except Exception:
         return None
 
 def main():

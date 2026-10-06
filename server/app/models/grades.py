@@ -18,7 +18,7 @@ from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
-from app.models.common import TIMESTAMPTZ, created_at_col, updated_at_col, uuid_pk
+from app.models.common import created_at_col, updated_at_col, uuid_pk
 
 # Điểm học phần từ ngưỡng này trở lên là đạt (tích lũy tín chỉ).
 PASS_SCORE = 5.0

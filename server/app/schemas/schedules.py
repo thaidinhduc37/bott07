@@ -8,7 +8,7 @@ import re
 
 from pydantic import Field, field_validator
 
-from app.models.enums import ExamFormat, ExamStatus, ScheduleStatus, SessionType
+from app.models.enums import ExamFormat, ScheduleStatus, SessionType
 from app.schemas.base import CamelModel
 
 _TIME_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")

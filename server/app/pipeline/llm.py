@@ -36,7 +36,6 @@ Hiện chỉ còn Gemini; muốn thêm nhà cung cấp khác thì kế thừa `B
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 import re
 import time

@@ -26,7 +26,6 @@ import json
 import os
 import re
 import sys
-import time
 from pathlib import Path
 
 import httpx
@@ -239,7 +238,7 @@ def main() -> int:
         else:
             print(f"        không từ chối: {q!r} conf={res['confidence']:.3f}")
     check(
-        f"Từ chối ≥ 7/8 câu ngoài phạm vi",
+        "Từ chối ≥ 7/8 câu ngoài phạm vi",
         rejected >= 7,
         f"chỉ từ chối {rejected}/8 — τ={tau} có thể đang quá thấp, chạy lại scripts/calibrate_tau.py",
     )

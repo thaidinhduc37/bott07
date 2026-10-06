@@ -71,6 +71,8 @@ export default function StudyHubPage() {
         }
       })
       .catch((e) => setExamPlanError(e instanceof ApiError ? e.message : 'Không tải được kế hoạch ôn thi'));
+    // Chỉ chạy khi vào trang: `navigate`/`searchParams` chỉ được đọc một lần để xử lý `#id` ban đầu.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function onReview() {

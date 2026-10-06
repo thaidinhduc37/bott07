@@ -11,7 +11,6 @@ from collections import defaultdict
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
-from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload

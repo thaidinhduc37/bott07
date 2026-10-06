@@ -12,7 +12,6 @@ from app.deps import AuthenticatedUser, get_current_user, get_db, require_roles
 from app.models.enums import RoleCode, UserStatus
 from app.schemas.users import (
     CreateUserRequest,
-    ListUsersQuery,
     UpdateMyProfileRequest,
     UpdateUserRolesRequest,
     UpdateUserStatusRequest,

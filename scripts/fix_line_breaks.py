@@ -5,7 +5,6 @@ Gộp các dòng kết thúc bằng dấu phẩy, chấm phẩy với dòng ti�
 """
 
 import re
-import sys
 from pathlib import Path
 
 def should_join_next_line(current_line, next_line):

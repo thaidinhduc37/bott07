@@ -49,11 +49,10 @@ from app.schemas.schedules import (
 from app.services.audit_service import AuditService
 from app.services.schedule_conflicts import (
     _is_unset_room,
-    _normalize_room,
     conflict_message,
     find_conflicts,
 )
-from app.services.schedule_csv import RowError, detect_conflicts, parse_exam_csv, parse_schedule_csv, sniff_is_exam
+from app.services.schedule_csv import detect_conflicts, parse_exam_csv, parse_schedule_csv, sniff_is_exam
 
 VN_TZ = ZoneInfo("Asia/Ho_Chi_Minh")
 

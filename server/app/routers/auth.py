@@ -6,9 +6,8 @@ from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from starlette import status
 
-from app.deps import AuthenticatedUser, default_rate_limit, get_current_user, get_db, rate_limit
+from app.deps import AuthenticatedUser, get_current_user, get_db, rate_limit
 from app.models.users import StudentProfile, User, UserRole
 from app.schemas.auth import (
     AuthenticatedUserOut,
@@ -19,7 +18,7 @@ from app.schemas.auth import (
     RefreshResponse,
     SetSignaturePinRequest,
 )
-from app.security import REFRESH_COOKIE, clear_auth_cookies, set_auth_cookies
+from app.security import clear_auth_cookies, set_auth_cookies
 from app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
