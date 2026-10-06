@@ -1,0 +1,824 @@
+/* ------------------------------------------------------------- hỏi đáp */
+
+/* Khối chọn chế độ. `<fieldset>` không có viền, không có nền: nó không phải một
+   thẻ, nó là một dòng điều khiển. */
+.mode-pick {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.mode-pick__hint {
+  margin: var(--gap-2) 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--ink-faint);
+  max-width: var(--measure);
+}
+
+.mode-pick .field {
+  margin-top: var(--gap-4);
+}
+
+.thread {
+  display: grid;
+  gap: var(--gap-5);
+}
+
+/* Câu hỏi của người dùng. Bo lệch một góc — góc dưới bên phải vuông hơn — để
+   bong bóng "trỏ" về phía người gửi mà không cần vẽ thêm cái đuôi nhọn. */
+.bubble {
+  justify-self: end;
+  max-width: min(100%, 40rem);
+  margin: 0;
+  padding: var(--gap-3) var(--gap-4);
+  border-radius: var(--r-lg) var(--r-lg) var(--r-xs) var(--r-lg);
+  background: var(--pen);
+  color: var(--on-pen);
+  line-height: 1.6;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Ô đặt câu hỏi. Dính đáy khung nhìn khi cuộn qua một hội thoại dài: câu hỏi
+   tiếp theo luôn nằm trong tầm tay, không phải cuộn xuống hết mới gõ được. */
+.ask {
+  position: sticky;
+  bottom: var(--gap-4);
+  z-index: 5;
+  padding: var(--gap-4) var(--gap-5);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 60rem) {
+  .ask {
+    position: static;
+  }
+}
+
+/* --------------------------------------------------- bố cục trang chat
+
+   Hai cột: lịch sử hội thoại cố định bên trái (giống danh sách hội thoại của
+   mọi ứng dụng chat), nội dung chính bên phải — thay cho danh sách rời nằm
+   dưới ô nhập của bản trước. */
+/* `app-main:has(.shell--wide)` bỏ padding/max-width (xem định nghĩa của nó
+   phía trên) và ở đây được khóa đúng bằng phần khung nhìn còn lại sau top bar
+   (3.5rem) — để `.chat-layout`/`.chat-main` có MỘT chiều cao thật để chia,
+   thay vì đoán `100dvh` từ một hộp không biết offset thật của chính nó (đó là
+   lý do ô nhập từng "nhảy" khi cuộn: hộp cao hơn khung nhìn nên cả trang phải
+   cuộn để lộ nó ra). */
+.app-main:has(.shell--wide) {
+  /* `.app-main` cơ sở có `flex: 1`, tức `flex-basis: 0%` — chiều cao khai báo
+     ở đây bị bỏ qua hoàn toàn vì flexbox tính kích thước từ flex-basis rồi
+     phân bổ theo `flex-grow`, không phải từ `height`. Đó là lý do lần sửa
+     trước không có tác dụng dù số đo đúng về mặt CSS: `flex: none` trả quyền
+     định kích thước lại cho `height`. */
+  flex: none;
+  height: calc(100dvh - 3.5rem);
+  /* Lề ngang bằng mọi trang khác để bề rộng nội dung thống nhất. */
+  padding: 0 clamp(1rem, 3vw, 2rem);
+  overflow: hidden;
+}
+
+.chat-layout {
+  display: grid;
+  grid-template-columns: 19rem minmax(0, 1fr);
+  /* Bắt buộc phải khai báo — hàng `auto` ngầm định co theo NỘI DUNG (giống
+     `min-width: auto` ở cột, nhưng ở trục dọc): dù container cao 100% khai
+     báo rõ, hàng bên trong vẫn tự cao theo chiều cao thật của luồng tin nhắn
+     và tràn ra ngoài. `minmax(0, 1fr)` buộc hàng bằng đúng chiều cao container,
+     để item bên trong (`.chat-main`) có một khung hữu hạn mà cuộn bên trong
+     thay vì đẩy khung cha cao lên. */
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--gap-6);
+  height: 100%;
+  padding: var(--gap-5);
+}
+
+@media (max-width: 60rem) {
+  .chat-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Cột chat lấp đầy chiều cao đã khóa ở trên. Chỉ `.chat-scroll` bên trong cuộn
+   — ô nhập (`.ask`, sibling cuối) là một hàng flex bình thường, không
+   `position: sticky`, nên nó không còn "nhảy" mỗi khi khung chờ/câu trả lời
+   làm nội dung phía trên đổi chiều cao. */
+.chat-main {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.chat-main .ask {
+  flex: none;
+  position: static;
+}
+
+/* `min-width: 0` là bắt buộc: đây là item của một grid, và item grid mặc định
+   `min-width: auto` — tức co theo nội dung dài nhất (tiêu đề hội thoại chưa
+   cắt) thay vì theo bề rộng cột 16rem, khiến cả khối tràn ngang và hiện thanh
+   cuộn ngang. Đó là nguyên nhân giao diện bị vỡ ở ảnh chụp. */
+.chat-history {
+  /* `align-self: start` là bắt buộc — mặc định `align-items: stretch` của
+     grid kéo item cao bằng cả hàng (bằng `.chat-main`), nên dù đã khai
+     `height: fit-content` khối vẫn cao lộ ra một mảng trắng rỗng phía dưới ba
+     mục thật, đúng như trong ảnh chụp. */
+  align-self: start;
+  position: sticky;
+  top: var(--gap-4);
+  min-width: 0;
+  width: 100%;
+  height: fit-content;
+  max-height: 100%;
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-md);
+  background: var(--sheet);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-history__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--gap-3) var(--gap-3) var(--gap-2);
+  border-bottom: 1px solid var(--rule-faint);
+}
+
+/* Icon trần trong header sidebar hội thoại — cùng lý do như
+   `.content-topbar__actions .btn--icon`: viền hộp của `.btn--ghost` quá nặng
+   cho hai icon đứng cạnh nhãn "Hội thoại" trong một cột chỉ 19rem. */
+.chat-history__head .btn--icon {
+  background: none;
+  border-color: transparent;
+}
+.chat-history__head .btn--icon:hover {
+  background: var(--sheet-2);
+  border-color: transparent;
+}
+
+.chat-history__empty {
+  padding: var(--gap-4) var(--gap-3);
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+
+/* `grid-template-columns: minmax(0, 1fr)` khai báo rõ ràng — không khai báo
+   thì cột ngầm định vẫn co theo nội dung dài nhất bên trong (đúng lỗi
+   `min-width: auto` đã sửa ở `.chat-history`, nhưng lặp lại một tầng sâu hơn:
+   `<li>`/`<button>` bên trong CŨNG là item grid). `overflow-x: hidden` chặn
+   luôn thanh cuộn ngang mà `overflow-y: auto` vô tình bật kèm — đặt overflow
+   một trục không phải `visible` thì trục kia cũng ngầm định thành `auto`. */
+.chat-history__list {
+  list-style: none;
+  margin: 0;
+  padding: var(--gap-2);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Nhãn nhóm ("Quy chế học tập" / "Trợ lý học tập"), đồng thời là nút chuyển
+   nhanh sang chế độ chat tương ứng — trước đây là `<h3>` tĩnh, tô nền đặc
+   khiến người dùng tưởng bấm được nhưng không có onClick; đổi thành
+   `<button>` thật để không còn "nút giả". */
+.chat-history__section-title {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: var(--gap-2) var(--gap-3);
+  border: none;
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #ffffff;
+  background: #006d77;
+  cursor: pointer;
+}
+.chat-history__section-title:hover {
+  background: #00565d;
+}
+
+.chat-history__section + .chat-history__section {
+  margin-top: var(--gap-2);
+  border-top: 1px solid var(--rule-faint);
+}
+
+.chat-history__item {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  padding: var(--gap-2) var(--gap-3);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 130ms var(--ease);
+}
+
+.chat-history__item:hover {
+  background: var(--sheet-2);
+}
+
+.chat-history__item--on {
+  background: var(--pen-wash);
+}
+
+.chat-history__item--on .chat-history__title {
+  color: var(--pen-ink);
+  font-weight: 600;
+}
+
+.chat-history__title {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-history__meta {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+/* ------------------------------------------------------- thân câu trả lời
+
+   Trước đây toàn bộ nội dung đổ ra một khối `white-space: pre-wrap` duy nhất,
+   nên danh sách đánh số/gạch đầu dòng mà mô hình sinh ra ("1. …", "- …") hiện
+   thành các dòng phẳng, không thụt lề, dính liền nhau. `toBlocks()` (AnswerCard)
+   tách các dòng đó thành đoạn văn / <ol> / <ul> thật, CSS này chỉ định khoảng
+   cách giữa chúng. */
+.answer-body {
+  line-height: 1.7;
+}
+
+.answer-p {
+  margin: 0;
+}
+
+.answer-p + .answer-p,
+.answer-body > .answer-list {
+  margin-top: var(--gap-3);
+}
+
+.answer-list {
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+.answer-list li {
+  margin: 0;
+}
+
+.answer-list li + li {
+  margin-top: var(--gap-2);
+}
+
+.answer-list li::marker {
+  color: var(--ink-faint);
+}
+
+/* --------------------------------------------------------- khối trích dẫn */
+
+.cite {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: var(--gap-3);
+  padding: var(--gap-3) var(--gap-4);
+  border-radius: var(--r-md);
+  background: var(--sheet-2);
+  transition: background-color 400ms var(--ease);
+}
+
+.cite + .cite {
+  margin-top: var(--gap-2);
+}
+
+.cite__marker {
+  color: var(--pen);
+  padding-top: 0.15rem;
+}
+
+.cite__title {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.cite__meta {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  margin-top: 0.1rem;
+}
+
+/* Trích dẫn vừa được nhảy tới từ một dấu `[n]` trong câu trả lời. Vàng chứ không
+   phải xanh: xanh là màu của "bấm được" ở khắp nơi khác, và ở đây không có gì
+   để bấm — đây là chỗ mắt cần dừng lại. */
+.cite--focus {
+  background: var(--warn-wash);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--warn) 40%, transparent);
+}
+
+/* Đoạn trích nguyên văn bên trong một khối trích dẫn. */
+.cite__snippet {
+  margin: var(--gap-2) 0 0;
+  padding-left: var(--gap-3);
+  border-left: 2px solid var(--rule);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* --------------------------------------------------------- dấu trích dẫn
+
+   Số `[1]`, `[2]` trong câu trả lời, bấm được để nhảy tới nguồn. */
+.cite-ref {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25em;
+  padding: 0 0.3em;
+  margin: 0 0.12em;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+  font: inherit;
+  font-size: 0.7em;
+  font-weight: 700;
+  line-height: 1.6;
+  vertical-align: 0.35em;
+  cursor: pointer;
+  transition: background-color 130ms var(--ease);
+}
+
+.cite-ref:hover {
+  background: var(--pen);
+  color: var(--on-pen);
+}
+
+/* ------------------------------------------------- chân thẻ trả lời
+
+   Dòng bằng chứng xử lý: độ tin cậy, nhãn kiểm chứng, thời gian, và hai nút mở
+   phần chi tiết. Luôn hiển thị — người dùng có quyền biết hệ thống chắc chắn
+   tới đâu, và một câu trả lời sát ngưỡng đáng được đọc kỹ hơn một câu ở 0.99. */
+
+.answer-foot {
+  margin-top: var(--gap-6);
+  padding-top: var(--gap-3);
+  border-top: 1px solid var(--rule-faint);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gap-3);
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+/* Khối mã / vết xử lý. */
+.code-block {
+  margin: var(--gap-3) 0 0;
+  padding: var(--gap-3) var(--gap-4);
+  border-radius: var(--r-md);
+  background: var(--sheet-2);
+  font-size: 0.75rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+/* Một đoạn đã truy xuất, mở ra xem được. */
+.chunk {
+  border-top: 1px solid var(--rule-faint);
+  padding: var(--gap-2) 0;
+}
+
+.chunk > summary {
+  cursor: pointer;
+  font-size: 0.8125rem;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-2);
+  flex-wrap: wrap;
+}
+
+.chunk__text {
+  margin: var(--gap-2) 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  color: var(--ink-soft);
+}
+
+/* --------------------------------------------------------- lưới dữ kiện
+
+   Nhãn nhỏ trên, giá trị dưới. Dùng cho phần đầu tờ đơn: người duyệt quét bốn
+   dữ kiện (ai, lớp nào, từ ngày nào, mấy ngày) trước khi đọc lý do.
+   ------------------------------------------------------------------------- */
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--gap-4) var(--gap-6);
+  margin: 0;
+}
+
+.facts dt {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.facts dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+/* ------------------------------------------------------ dải luồng duyệt
+
+   Các bước trình ký nằm ngang, mỗi bước một cột. Trước đây luồng duyệt được kể
+   bằng câu văn ("đơn đi qua A → B"), thứ đọc được nhưng không trả lời được câu
+   người dùng thực sự hỏi: *đang ở bước nào*.
+
+   Ô số là trạng thái, không phải số thứ tự trang trí: rỗng = chưa tới, viền
+   xanh = đang ở đây, tô đầy = đã xong.
+   ------------------------------------------------------------------------- */
+
+.flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-lg);
+  background: var(--sheet);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.flow__step {
+  display: grid;
+  grid-template-columns: 1.625rem minmax(0, 1fr);
+  gap: var(--gap-3);
+  padding: var(--gap-4);
+  border-right: 1px solid var(--rule-faint);
+}
+
+.flow__step:last-child {
+  border-right: 0;
+}
+
+.flow__n {
+  display: grid;
+  place-items: center;
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--rule);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-faint);
+}
+
+.flow__step--current .flow__n {
+  border-color: var(--pen);
+  color: var(--pen);
+  /* Vòng ngoài mảnh: bước đang chờ xử lý phải bắt mắt trước các bước khác, nhưng
+     không được to đến mức làm lệch chiều cao hàng. */
+  box-shadow: 0 0 0 3px var(--pen-wash);
+}
+
+.flow__step--done .flow__n {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: var(--sheet);
+}
+
+.flow__step--rejected .flow__n {
+  background: var(--seal);
+  border-color: var(--seal);
+  color: var(--sheet);
+}
+
+/* Biến thể dọc — dùng ở trang chi tiết đơn của học viên khi đặt cạnh khung
+   xem trước tài liệu: một cột hẹp bên trái đọc từ trên xuống tự nhiên hơn
+   dải ngang (dải ngang hợp với khung rộng độc lập, không hợp khi bị ép hẹp
+   trong nửa cột). Chấm nối bằng một đường kẻ dọc kiểu "timeline". */
+.flow--vertical {
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.flow--vertical .flow__step {
+  position: relative;
+  border-right: 0;
+  padding: 0 0 var(--gap-5) 0;
+}
+.flow--vertical .flow__step:last-child {
+  padding-bottom: 0;
+}
+.flow--vertical .flow__step::before {
+  content: '';
+  position: absolute;
+  left: calc(1.625rem / 2 - 1px);
+  top: 1.625rem;
+  bottom: 0;
+  width: 2px;
+  background: var(--rule-faint);
+}
+.flow--vertical .flow__step:last-child::before {
+  display: none;
+}
+.flow--vertical .flow__step--done::before {
+  background: var(--ok);
+}
+.flow--vertical .flow__step--rejected::before {
+  background: var(--seal);
+}
+
+.flow__role {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.flow__who {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  margin-top: 0.1rem;
+}
+
+/* --------------------------------------------------------- màn hình trống
+
+   Một trang trống không phải là không có gì để nói — nó là chỗ để nói điều
+   người dùng cần làm tiếp theo. */
+
+/* ------------------------------------------------------- khung soạn thảo
+
+   Lập đơn / xem chi tiết đơn phủ kín khung nhìn, không còn thấy sidebar hay
+   thanh trên cùng của khu vực học viên phía sau — giống một cửa sổ soạn
+   thảo văn bản riêng, không phải một trang con của ứng dụng. Không đụng vào
+   layout/route: `position: fixed` tự phủ lên trên bất kể cây component bên
+   dưới là gì. */
+
+.composer {
+  position: fixed;
+  inset: 0;
+  /* Phải cao hơn MỌI lớp chrome khác của app — thanh trên cùng (z-index 20),
+     ngăn kéo di động (50), tấm phủ ngăn kéo (40) — nếu không chúng đè lên
+     đúng chỗ nút đóng của composer, dù composer đã phủ kín khung nhìn. */
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+
+.composer__bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-4);
+  padding: 0.85rem clamp(1rem, 3vw, 2rem);
+  background: var(--pen);
+  color: #fff;
+}
+
+.composer__bar-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.composer__bar-text strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.composer__bar-sub {
+  margin-left: var(--gap-3);
+  font-size: 0.8125rem;
+  opacity: 0.85;
+}
+
+.composer__close {
+  display: flex;
+  background: none;
+  border: 0;
+  color: #fff;
+  opacity: 0.85;
+  cursor: pointer;
+  padding: 0.2rem;
+}
+.composer__close:hover {
+  opacity: 1;
+}
+
+.composer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.composer__inner {
+  max-width: 90rem;
+  margin: 0 auto;
+}
+
+/* Trong khung soạn thảo không có thanh trên cùng 3.5rem của AppShell nữa —
+   điểm dính của cột "Bản in" chỉ cần né chính thanh tiêu đề của composer. */
+.composer .doc-layout__aside {
+  top: var(--gap-5);
+}
+
+/* ----------------------------------------------------- 2 cột: đơn + xem trước
+
+   Cột trái là nội dung/hành động (nhập liệu, ký, gửi), cột phải là khung
+   xem trước tài liệu + đường đi của đơn, dính lại khi cuộn — luôn thấy được
+   "đơn sẽ trông ra sao" và "đang ở đâu" trong khi làm việc ở cột trái, không
+   phải cuộn xuống tận cuối trang mới thấy. */
+
+.doc-layout {
+  display: grid;
+  /* Cột trái rộng cho bản in (mô phỏng một tờ A4, cần nhiều bề ngang để đọc),
+     cột phải hẹp cố định cho tab chi tiết/nhập liệu (chỉ là nhãn + giá trị).
+     `.doc-layout__aside` đứng SAU trong DOM nhưng hiện ở cột trái nhờ
+     `order: -1` — đổi chỗ bằng CSS, không phải sắp lại JSX. */
+  grid-template-columns: minmax(0, 1fr) 24rem;
+  gap: var(--gap-5);
+  align-items: start;
+}
+
+.doc-layout__aside {
+  order: -1;
+  position: sticky;
+  top: calc(3.5rem + var(--gap-5));
+}
+
+@media (max-width: 60rem) {
+  .doc-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .doc-layout__aside {
+    position: static;
+  }
+}
+
+/* -------------------------------------------------------- xem trước tài liệu
+
+   Mô phỏng một tờ giấy A4 để đọc bản .docx đã dựng ngay trong trang, không
+   phải tải xuống mở bằng Word — xem `DocumentPreview.tsx`. Kiểu chữ nghiêm
+   túc hơn phần còn lại của ứng dụng (serif, viền, bóng) vì đây là bản mô
+   phỏng một tờ đơn thật, không phải một khối giao diện web. */
+
+/* Khung ngoài kiểu OnlyOffice: thanh công cụ mỏng cố định + trang giấy nổi
+   trên nền xám, thuần CSS cho quen mắt với phần mềm soạn thảo văn bản —
+   KHÔNG phải một module chọn vùng ký thật, không có gì trên đó bấm được. */
+.doc-preview {
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.doc-preview__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  padding: 0.45rem 0.85rem;
+  background: var(--sheet-2);
+  border-bottom: 1px solid var(--rule-faint);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+.doc-preview__toolbar-file {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.doc-preview__toolbar-zoom {
+  flex-shrink: 0;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  color: var(--ink-faint);
+}
+
+/* Chỉ phần VĂN BẢN cuộn riêng — tab, nút Sửa/Lưu/Ký ở header phía trên vẫn
+   đứng yên, không bị kéo trôi theo khi đọc một bản in dài nhiều trang. */
+.doc-preview__canvas {
+  max-height: calc(100dvh - 10rem);
+  overflow-y: auto;
+  background: #dfe1e6;
+  padding: clamp(1rem, 3vw, 2rem);
+  display: flex;
+  justify-content: center;
+}
+
+/* Trang giấy do docx-preview tự dựng (khổ A4, lề, phông, bảng đúng như file
+   .docx) — CSS ở đây chỉ lo phần khung: bỏ nền xám mặc định của thư viện để
+   dùng nền của `.doc-preview__canvas`, và cho cuộn ngang khi màn hình hẹp hơn
+   một tờ A4 thay vì bóp méo bố cục. */
+.doc-preview__page {
+  width: 100%;
+}
+.doc-preview__page .docx-wrapper {
+  background: transparent;
+  padding: 0;
+  align-items: center;
+}
+.doc-preview__page .docx-wrapper > section.docx {
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--gap-4);
+  flex-shrink: 0;
+}
+
+/* Ô "HỌC VIÊN VIẾT ĐƠN" — tô sáng để thấy ngay chữ ký sẽ nằm ở đâu, tìm bằng
+   nội dung chữ (xem `DocumentPreview.tsx`), không phải toạ độ cố định. */
+.doc-preview__sign-zone {
+  background: var(--pen-wash) !important;
+  outline: 2px dashed var(--pen);
+  outline-offset: -2px;
+  position: relative;
+}
+
+.empty {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--gap-3);
+  padding: var(--gap-12) var(--gap-4);
+  color: var(--ink-soft);
+}
+
+.empty__icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--r-pill);
+  background: var(--sheet-2);
+  color: var(--ink-faint);
+}
+
+.empty__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+.empty p {
+  margin: 0;
+  font-size: 0.875rem;
+  max-width: 42ch;
+}
+
+/* ----------------------------------------------------------- khung chờ
+
+   Khối xám nhấp nháy thay cho dòng chữ "Đang tải…". Nó giữ đúng chỗ của nội dung
+   sắp tới, nên khi dữ liệu về, trang không nhảy. */
+
+.skeleton {
+  border-radius: var(--r-sm);
+  background: linear-gradient(
+    90deg,
+    var(--sheet-2) 25%,
+    color-mix(in oklab, var(--sheet-2) 55%, var(--rule)) 37%,
+    var(--sheet-2) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to   { background-position: 0 0; }
+}
+

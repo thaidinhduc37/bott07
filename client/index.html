@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <!-- Áp lựa chọn sáng/tối đã lưu TRƯỚC khi CSS tải, để không nháy sai màu
          một khắc rồi mới đổi lại. Không có gì để áp thì bỏ qua — mặc định
-         theo hệ điều hành qua `prefers-color-scheme` trong globals.css. -->
+         theo hệ điều hành qua `prefers-color-scheme` trong styles/. -->
     <script>
       (function () {
         var t = localStorage.getItem('theme');
@@ -22,7 +22,7 @@
       rel="stylesheet"
     />
     <!-- Chữ chính của hệ thiết kế mới — Plus Jakarta Sans, thay Be Vietnam Pro
-         làm giọng chủ đạo (biến --font-be-vietnam trỏ sang nó ở globals.css,
+         làm giọng chủ đạo (biến --font-be-vietnam trỏ sang nó ở styles/,
          tên biến giữ nguyên để không phải sửa mọi nơi đã dùng var()). -->
     <link
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"

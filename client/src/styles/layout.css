@@ -1,0 +1,737 @@
+/* ================================================================ bố cục */
+
+.stack > * + * {
+  margin-top: var(--gap-6);
+}
+
+.stack--tight > * + * {
+  margin-top: var(--gap-3);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+}
+
+.spread {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-4);
+  flex-wrap: wrap;
+}
+
+/* Lưới thẻ. Bản trước dựng lưới bằng `gap: 1px` trên một nền màu, tạo ra một
+   mạng kẻ ô liền mạch — bốn thẻ dính nhau thành một bảng. Khoảng cách thật cho
+   mỗi thẻ là một vật riêng. */
+/* Đúng 2 cột — không phải `auto-fill` co giãn theo bề rộng khả dụng. `auto-fill`
+   khiến số cột đổi tùy độ rộng màn hình/thanh cuộn, và ở khung nội dung 1200px
+   nó vừa đủ ba cột, đẩy ô thứ tư xuống hàng riêng một mình — bốn khối chức
+   năng cạnh nhau mà trông như ba-trên-một-dưới không đối xứng. Cố định 2 cột
+   thì bốn thẻ luôn xếp 2×2 đều nhau, dù có bao nhiêu thẻ đi nữa. */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-4);
+}
+
+@media (max-width: 40rem) {
+  .card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ------------------------------------------------------------ nhãn nhỏ
+
+   Viên thuốc nền nhạt, không viền. Bản trước dùng viền + nền + chữ hoa giãn:
+   ba tín hiệu cho một nhãn dài sáu chữ, và trên thẻ trả lời có ba cái cạnh
+   nhau. Bỏ viền, giảm giãn chữ, thêm một chấm màu — chấm nói được trạng thái
+   ngay cả khi in đen trắng. */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--r-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.tag::before {
+  content: '';
+  width: 0.4em;
+  height: 0.4em;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.tag--pen   { color: var(--pen-ink);  background: var(--pen-wash); }
+.tag--seal  { color: var(--seal-ink); background: var(--seal-wash); }
+.tag--ok    { color: var(--ok-ink);   background: var(--ok-wash); }
+.tag--warn  { color: var(--warn-ink); background: var(--warn-wash); }
+.tag--muted { color: var(--ink-soft); background: var(--sheet-2); }
+
+/* --------------------------------------------------------------- thông báo
+
+   Khối màu bo góc, không còn nẹp trái 3px. Nẹp trái trên một khối đã có nền
+   màu là tín hiệu thứ hai cho cùng một thông tin. */
+
+.notice {
+  border-radius: var(--r-md);
+  padding: var(--gap-3) var(--gap-4);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.notice > :first-child { margin-top: 0; }
+.notice > :last-child  { margin-bottom: 0; }
+
+.notice--error { background: var(--seal-wash); color: var(--seal-ink); }
+.notice--info  { background: var(--pen-wash);  color: var(--pen-ink); }
+.notice--ok    { background: var(--ok-wash);   color: var(--ok-ink); }
+.notice--warn  { background: var(--warn-wash); color: var(--warn-ink); }
+
+/* ================================================================== bảng
+
+   Bảng phải cuộn được theo chiều ngang trong hộp của nó. Trang không bao giờ
+   được cuộn ngang — đó là lỗi bố cục, không phải một cách xem dữ liệu.
+   ======================================================================== */
+
+.table-wrap {
+  overflow: auto;
+  /* Giới hạn chiều cao để tiêu đề cột dính lại thật sự.
+
+     `overflow-x: auto` một mình đã biến khối này thành vùng cuộn theo cả hai
+     trục (quy tắc CSS: một trục khác `visible` thì trục kia thành `auto`), nên
+     `position: sticky` ở `<th>` neo vào khối này chứ không vào khung nhìn. Mà
+     khối này không có trần chiều cao thì nó không bao giờ cuộn dọc — nghĩa là
+     tiêu đề cột **không** dính, dù CSS trông như đã bảo nó dính.
+
+     Nhật ký có 430 dòng. Trần chiều cao làm bảng tự cuộn bên trong, và lúc đó
+     tiêu đề mới làm đúng việc của nó. Bảng ngắn hơn trần thì không đổi gì. */
+  max-height: min(75vh, 46rem);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-lg);
+  background: var(--sheet);
+  box-shadow: var(--shadow-sm);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  /* Dòng dữ liệu quét theo hàng ngang; nhịp 1.7 của phần đọc làm hàng cao quá
+     và mắt mất dấu cột. */
+  line-height: 1.5;
+}
+
+.data-table th {
+  text-align: left;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: var(--gap-3) var(--gap-4);
+  border-bottom: 1px solid var(--rule-faint);
+  white-space: nowrap;
+  /* Tiêu đề cột dính lại khi cuộn dọc: nhật ký dài hàng trăm dòng, và một bảng
+     mà phải cuộn ngược lên để nhớ cột nào là cột nào thì không dùng được. */
+  position: sticky;
+  top: 0;
+  background: var(--sheet-2);
+  z-index: 1;
+}
+
+.data-table td {
+  padding: var(--gap-3) var(--gap-4);
+  border-bottom: 1px solid var(--rule-faint);
+  vertical-align: top;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table tbody tr {
+  transition: background-color 120ms var(--ease);
+}
+
+.data-table tbody tr:hover td {
+  background: var(--sheet-2);
+}
+
+/* Cột số căn phải và dùng chữ đẳng khoảng: so hai con số theo chiều dọc là việc
+   người đọc làm liên tục ở trang nhật ký và trang chỉ mục. */
+.data-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.data-table caption {
+  caption-side: top;
+  text-align: left;
+  padding: var(--gap-3) var(--gap-4);
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+/* ========================================================== đầu trang
+
+   Khối tiêu đề trang xuất hiện ở gần như mọi trang. Ba lớp độc lập chứ không
+   phải bộ chọn con của `.page-head`: thẻ bọc mỗi trang một khác, nên buộc trình
+   bày vào thẻ bọc thì mỗi lần thêm trang lại phải nhớ đúng cấu trúc. Đặt thẳng
+   lên phần tử mang nội dung thì không nhớ gì cả.
+   ======================================================================== */
+
+/* Phần đầu trang (component `PageHeader`). KHÔNG có margin-bottom riêng: khoảng cách tới
+   nội dung là của `.stack` cha (24px). Trước đây `.page-head` cộng thêm 24px nữa nên từ
+   tiêu đề tới nội dung tốn 48px trên mọi trang dùng nó. */
+.page-head {
+  margin-bottom: 0;
+}
+
+.page-head__row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gap-4);
+  flex-wrap: wrap;
+}
+.page-head__text {
+  min-width: 0;
+}
+.page-head__eyebrow {
+  display: block;
+  margin-bottom: var(--gap-1);
+}
+.page-head__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-2);
+  flex-wrap: wrap;
+}
+
+/* Có tab: header gọn hơn, tab sát đáy, và nội dung ngay sau cách 20px (không phải 24px) —
+   tab luôn nằm liền trên nội dung nó điều khiển. */
+.page-head--tabs p.page-sub {
+  margin-top: var(--gap-1);
+  font-size: 0.875rem;
+}
+.stack > .page-head--tabs + * {
+  margin-top: var(--gap-5);
+}
+
+/* ----------------------------------------------------------------- tab (Tabs)
+   Kiểu gạch chân dùng chung cho mọi trang đổi phần nội dung bằng tab. Cao 40px, so với
+   nhóm `.seg` dạng hộp (~44px kèm khoảng đệm) — và đường kẻ chung dưới cả hàng thay cho
+   khung riêng nên không tốn thêm một khối trên trang. */
+.tabs {
+  display: flex;
+  gap: var(--gap-1);
+  margin-top: var(--gap-3);
+  border-bottom: 1px solid var(--rule-faint);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+.tabs__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  padding: 0.6rem 0.85rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  transition: color 130ms var(--ease);
+}
+.tabs__tab:hover {
+  color: var(--ink);
+}
+.tabs__tab[aria-selected='true'] {
+  color: var(--ink);
+  font-weight: 600;
+}
+/* Gạch chân tab đang chọn — đè lên đường kẻ chung (bottom: -1px). */
+.tabs__tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: -1px;
+  height: 2px;
+  background: var(--pen);
+  border-radius: 2px 2px 0 0;
+}
+.tabs__tab:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+.tabs__badge {
+  min-width: 1.25rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--r-pill);
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+h1.page-title {
+  font-family: var(--font-be-vietnam), system-ui, sans-serif;
+  font-size: clamp(1.5rem, 1.15rem + 1.4vw, 2.125rem);
+  font-weight: 700;
+  line-height: 1.2;
+  /* Giãn âm ở cỡ lớn: chữ càng to thì khoảng cách giữa các chữ càng trông rộng
+     ra, và tiêu đề không siết lại sẽ trông rời rạc. */
+  letter-spacing: -0.025em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p.page-sub {
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  max-width: var(--measure);
+  margin: var(--gap-2) 0 0;
+}
+
+/* ------------------------------------------------------- hero trang chủ
+
+   Ba trang chủ (học viên/cán bộ/quản trị) trước đây chỉ có `.page-head` +
+   `.page-title` — đúng một dòng chào, không nói gì thêm về tình trạng thực
+   tế của người dùng. `.home-stats` thêm một dải số thật lấy từ dữ liệu đã
+   tải sẵn ở nơi khác trong ứng dụng (đơn chờ xử lý, thông báo chưa đọc),
+   không phải trang trí — bỏ dải này thì thiếu thông tin, không chỉ thiếu
+   hình thức. Chấm màu dùng lại đúng ngữ nghĩa của `.tag` (mực = thao tác,
+   hổ phách = cần chú ý, lục = xong), không phát minh bảng màu riêng. */
+
+.home-hero__eyebrow {
+  margin: 0 0 var(--gap-2);
+}
+
+.home-hero__title {
+  font-size: clamp(1.75rem, 1.3rem + 1.7vw, 2.5rem);
+  margin: 0;
+}
+
+.home-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-8);
+  margin-top: var(--gap-6);
+  padding-top: var(--gap-5);
+  border-top: 1px solid var(--rule-faint);
+}
+
+.home-stat {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+}
+
+.home-stat__dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  flex: none;
+  background: var(--ink-faint);
+}
+
+.home-stat__value {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.home-stat__label {
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.home-stat--seal .home-stat__dot { background: var(--seal); }
+.home-stat--warn .home-stat__dot { background: var(--warn); }
+.home-stat--ok   .home-stat__dot { background: var(--ok); }
+.home-stat--pen  .home-stat__dot { background: var(--pen); }
+
+/* Đoạn văn giải thích. Giới hạn bề rộng theo số ký tự, không theo pixel: đo theo
+   `ch` thì dòng giữ nguyên độ dài dù người dùng phóng to chữ. */
+.prose {
+  max-width: var(--measure);
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+.prose > * + * {
+  margin-top: var(--gap-3);
+}
+
+/* Top app bar của cột nội dung — kéo dài hết bề rộng vùng nội dung (bên phải
+   thanh bên), không phải một dải nhỏ nằm trong góc thanh bên. Mẫu của mockup:
+   cụm icon thông báo/giao diện/đăng xuất rồi tới avatar, dồn về bên phải. */
+.content-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 3.5rem;
+  padding: 0 var(--gap-5);
+  background: color-mix(in oklab, var(--sheet) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule-faint);
+}
+
+.content-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-2);
+}
+
+/* Icon trần trong thanh trên cùng (hiện chỉ còn chuông thông báo) — không
+   dùng `.btn--ghost` vì viền hộp của nó quá nặng cho một cụm chỉ có 1-2 icon
+   đứng cạnh avatar. */
+.content-topbar__actions .btn--icon {
+  background: none;
+  border-color: transparent;
+}
+.content-topbar__actions .btn--icon:hover {
+  background: var(--sheet-2);
+  border-color: transparent;
+}
+
+/* ---------------------------------------------------------------- avatar */
+
+.user-menu {
+  position: relative;
+  margin-left: var(--gap-1);
+}
+
+.user-menu__trigger {
+  display: flex;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  border-radius: var(--r-pill);
+}
+
+.user-menu__panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 30;
+  width: 15rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem;
+  background: var(--sheet);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-md, var(--shadow-sm));
+}
+
+.user-menu__who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.6rem 0.4rem;
+}
+.user-menu__who strong {
+  font-size: 0.875rem;
+}
+.user-menu__who span {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.user-menu__divider {
+  height: 1px;
+  margin: 0.3rem 0;
+  background: var(--rule-faint);
+}
+
+.user-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  padding: 0.5rem 0.6rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8125rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.user-menu__item:hover {
+  background: var(--sheet-2);
+}
+.user-menu__item--danger {
+  color: var(--seal);
+}
+
+/* Khung nội dung chính. Mặc định là bề rộng cho trang dữ liệu. */
+.app-main {
+  flex: 1;
+  width: 100%;
+  /* KHÔNG giới hạn chiều rộng: mọi trang chiếm hết vùng nội dung (bên phải thanh menu),
+     lấy trang "Lịch học & lịch thi" làm chuẩn. Trước đây mặc định chặn ở 1440px, trang
+     đọc chặn ở 64rem, riêng vài trang thoát ra bằng `shell--full` — nên trên màn rộng
+     mỗi trang một bề ngang. Độ dài dòng chữ do `--measure` của từng đoạn văn lo. */
+  margin: 0 auto;
+  padding: clamp(1.5rem, 3vw, 2.75rem) clamp(1rem, 3vw, 2rem) var(--gap-12);
+}
+
+/* Trang chủ yếu để đọc tự thu hẹp khung: đặt `shell--read` lên phần tử gốc của
+   trang, `:has()` lo phần còn lại. Trình duyệt không hỗ trợ `:has()` sẽ giữ bề
+   rộng rộng — vẫn đọc được, chỉ là dòng dài hơn mức lý tưởng. */
+
+
+/* Trang tự quản lý bố cục nhiều cột (vd chat: lịch sử + nội dung) không nên bị
+   ép vào khung 1200px căn giữa — khung đó cộng với cột lịch sử tạo ra khoảng
+   trắng thừa hai bên trong khi cột nội dung chính giữa lại bị bóp hẹp. */
+.app-main:has(.shell--wide) {
+  max-width: none;
+}
+
+/* Trang có nội dung ngang cần hết bề rộng thật (vd lưới thời khóa biểu 7 cột)
+   nhưng KHÔNG cần khóa chiều cao/ẩn footer như `.shell--wide` (đó là hành vi
+   riêng của trang chat, xem quy tắc `.app-main:has(.shell--wide)` phía trên
+   — dùng chung class đó sẽ kéo theo `flex:none; height:...; overflow:hidden`
+   không liên quan gì tới các trang khác). */
+
+
+/* Bố cục hai cột dùng chung: cột chính (nội dung) + cột phụ (tóm tắt, bộ lọc,
+   điều hướng). Chuyển hai cột theo bề rộng THẬT của vùng nội dung (container
+   query) chứ không theo màn hình — thanh bên chiếm 16rem nên màn 1280px chỉ còn
+   ~1000px cho nội dung; mốc 56rem để laptop 1280px vẫn có hai cột. Hẹp hơn thì
+   cột phụ xếp lên TRÊN cột chính (thông tin
+   tóm tắt đọc trước), trừ khi đánh dấu `.page-grid--aside-last`. */
+.app-main {
+  container: main / inline-size;
+}
+
+.page-grid {
+  display: grid;
+  gap: var(--gap-6);
+  align-items: start;
+}
+
+.page-grid__main,
+.page-grid__aside {
+  min-width: 0;
+  display: grid;
+  gap: var(--gap-5);
+  align-content: start;
+}
+
+/* Trong DOM cột chính đứng trước. Màn hẹp: cột phụ lên trước (order -1). */
+.page-grid__aside {
+  order: -1;
+}
+.page-grid--aside-last .page-grid__aside {
+  order: 1;
+}
+
+@container main (min-width: 56rem) {
+  .page-grid {
+    /* Cột phụ tối đa --aside-w nhưng không quá 32% — ở laptop 1280px (vùng nội
+       dung ~56rem) cột chính vẫn còn ~2/3 bề rộng. */
+    grid-template-columns: minmax(0, 1fr) min(var(--aside-w), 32%);
+    gap: clamp(var(--gap-5), 2vw, var(--gap-8));
+  }
+
+  .page-grid .page-grid__aside {
+    order: 1;
+    /* Dính ngay dưới thanh trên cùng (3.5rem) khi cuộn cột chính dài. */
+    position: sticky;
+    top: calc(3.5rem + var(--gap-5));
+    max-height: calc(100dvh - 3.5rem - var(--gap-5) * 2);
+    overflow-y: auto;
+  }
+
+  /* Cột phụ bên trái (danh sách chọn → chi tiết bên phải). */
+  .page-grid--aside-left {
+    grid-template-columns: min(var(--aside-w), 36%) minmax(0, 1fr);
+  }
+  .page-grid--aside-left .page-grid__aside {
+    order: -1;
+  }
+}
+
+/* Nội dung hiện lên khi đổi trang.
+
+   `<main>` mang `key={pathname}` nên nó dựng lại ở mỗi lần điều hướng, và hoạt
+   ảnh chạy lại. 12px và 260ms — đủ để mắt thấy trang đã đổi, chưa đủ để phải
+   chờ. Người bật "giảm chuyển động" không thấy gì cả (quy tắc ở cuối tệp). */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.app-main {
+  animation: rise 260ms var(--ease) both;
+}
+
+/* ------------------------------------------------------- danh sách chức năng
+
+   Trước đây mỗi chức năng ở ba trang chủ là một ô thẻ rời, xếp lưới —
+   `.card-grid`. Ba/bốn ô cạnh nhau, hàng cuối lẻ một ô, và mỗi ô lại có viền
+   + bóng đổ riêng: quá nhiều ranh giới lặp lại cho một danh sách chỉ vài
+   mục. Thay bằng MỘT khối `.sheet` duy nhất, mỗi chức năng một dòng đầy đủ
+   chiều rộng, ngăn nhau bằng đúng một nét kẻ mảnh — giống một menu, không
+   phải một mảng ô vuông rời rạc. Mũi tên nhích sang phải khi rê chuột —
+   chuyển động nhỏ nhất nói được "cái này dẫn đi đâu đó". */
+
+.action-list {
+  /* Cắt gọn theo bo góc của `.sheet`: dòng đầu/cuối không được thò góc vuông
+     ra ngoài viền cong. */
+  overflow: hidden;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) 1.25rem;
+  gap: var(--gap-4);
+  align-items: center;
+  padding: var(--gap-5);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 130ms var(--ease);
+}
+
+.action-row + .action-row {
+  border-top: 1px solid var(--rule-faint);
+}
+
+a.action-row:hover,
+button.action-row:hover:not(:disabled) {
+  background: var(--sheet-2);
+}
+
+/* `<button>` khi dòng không có link để điều hướng (vd thông báo hệ thống) —
+   vẫn cần bấm được để đánh dấu đã đọc, nhưng không phải một liên kết. */
+button.action-row {
+  width: 100%;
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.action-row:disabled {
+  cursor: default;
+}
+
+.action-row__icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--r-md);
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+  transition: background-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+a.action-row:hover .action-row__icon,
+button.action-row:hover:not(:disabled) .action-row__icon {
+  background: var(--pen);
+  color: var(--on-pen);
+}
+
+/* Thông báo đã đọc — icon nhạt lại, cùng mức xám với dòng "chưa mở"
+   (`.action-row--off`) nhưng không kéo theo các thay đổi khác của nó (dòng
+   này vẫn có thể bấm được nếu có link). */
+.action-row__icon--read {
+  background: var(--sheet-2);
+  color: var(--ink-faint);
+}
+
+.action-row__body {
+  display: block;
+  min-width: 0;
+}
+
+.action-row__title {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.35;
+}
+
+.action-row__desc {
+  display: block;
+  margin-top: var(--gap-2);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.action-row__pending {
+  display: block;
+  margin-top: var(--gap-3);
+}
+
+.action-row__go {
+  color: var(--ink-faint);
+  transition: transform 160ms var(--ease), color 160ms var(--ease);
+}
+
+a.action-row:hover .action-row__go {
+  color: var(--pen);
+  transform: translateX(3px);
+}
+
+/* Dòng của chức năng chưa mở. Không làm mờ cả dòng (opacity kéo luôn chữ mô
+   tả xuống dưới ngưỡng đọc được) — chỉ làm nhạt ô biểu tượng, để nhãn "chưa
+   mở" nói phần còn lại. */
+.action-row--off {
+  cursor: default;
+  background: var(--sheet-2);
+}
+
+.action-row--off .action-row__icon {
+  background: var(--sheet);
+  color: var(--ink-faint);
+}
+
+.action-row--off .action-row__title {
+  color: var(--ink-soft);
+}
+
+/* Mặt bảng ký — xem ghi chú ở token `--signature-surface`. */
+.signature-pad {
+  background: var(--signature-surface);
+  border-radius: var(--r-md);
+}
+

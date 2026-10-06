@@ -1,5 +1,5 @@
 /* Hộp thoại "Tạo tài khoản" trong trang Tài khoản (quản trị) — do agent Qwen I viết.
-   Tiền tố class: `acct-new-`. Chỉ dùng biến có sẵn trong globals.css. */
+   Tiền tố class: `acct-new-`. Chỉ dùng biến có sẵn trong styles/. */
 
 /* ------------------------------------------------------------------ khung hộp thoại */
 .acct-new-dlg {

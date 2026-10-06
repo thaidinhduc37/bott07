@@ -1,0 +1,287 @@
+/* ------------------------------------------------------- tiếp cận cơ bản */
+
+:focus-visible {
+  outline: 2px solid var(--pen);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--pen);
+  color: var(--on-pen);
+  padding: var(--gap-2) var(--gap-4);
+  border-radius: 0 0 var(--r-sm) 0;
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Ngăn kéo vẫn phải trượt được — bỏ transition thì nó nhảy vào chỗ, điều đó
+     đúng với "giảm chuyển động". Nhưng hoạt ảnh vào trang thì bỏ hẳn cả phần
+     dịch chuyển, không chỉ bỏ thời lượng. */
+  .app-main {
+    animation: none !important;
+  }
+
+  a.card:hover,
+  button.card:hover {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------- dashboard điều hành
+
+   Lưới hai cột cho các khối chỉ số ở /quan-tri. Một cột dưới 74rem — hai
+   biểu đồ cạnh nhau ở khung hẹp hơn thì trục hoành của StatusBarList/
+   TrendLine bị bóp tới mức không đọc được nhãn. */
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-6);
+}
+
+@media (max-width: 74rem) {
+  .dash-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.dash-section__head {
+  margin-bottom: var(--gap-5);
+}
+
+.dash-section__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dash-section__desc {
+  margin: var(--gap-1) 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+/* ----------------------------------------------------------- thẻ thống kê
+
+   Bốn ô tổng-đang xử lý-đã duyệt-từ chối trên đầu "Đơn của tôi" — liếc là
+   biết tình hình chung trước khi đọc từng dòng trong bảng bên dưới. */
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--gap-4);
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-3);
+}
+
+.stat-card__icon {
+  color: var(--ink-faint);
+}
+.stat-card__icon--pen {
+  color: var(--pen-ink);
+}
+.stat-card__icon--ok {
+  color: var(--ok-ink);
+}
+.stat-card__icon--seal {
+  color: var(--seal);
+}
+
+.stat-card__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.stat-card__value--pen {
+  color: var(--pen-ink);
+}
+.stat-card__value--ok {
+  color: var(--ok-ink);
+}
+.stat-card__value--seal {
+  color: var(--seal);
+}
+
+/* ------------------------------------------------------ lưới thời khóa biểu
+
+   Đúng mẫu tham chiếu: cột giờ bên trái, 7 cột ngày, mỗi buổi học/ca thi là
+   một khối đặt tuyệt đối theo giờ thực trong cột ngày của nó — không phải
+   danh sách xếp dọc theo ngày. */
+
+/* Cuộn RIÊNG bên trong khối lịch — trang, header, thanh chọn tuần và dòng
+   Thứ/ngày đứng yên, chỉ phần khung giờ bên dưới trôi. Dòng Thứ/ngày dính lại
+   bằng `position: sticky` NGAY TRONG khung cuộn này (không phải cuộn trang). */
+.timetable-scroll {
+  overflow: auto;
+  max-height: calc(100dvh - 16rem);
+}
+
+.timetable-grid {
+  display: grid;
+  grid-template-columns: 3.5rem repeat(7, minmax(9rem, 1fr));
+  grid-template-rows: auto 1fr;
+}
+
+.timetable-grid__row-labels {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--sheet);
+  border-bottom: 1px solid var(--rule-faint);
+}
+
+.timetable-grid__day-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--sheet);
+  padding: 0.6rem 0.4rem;
+  text-align: center;
+  border-bottom: 1px solid var(--rule-faint);
+  border-left: 1px solid var(--rule-faint);
+}
+.timetable-grid__day-head--today {
+  background: var(--pen-wash);
+}
+.timetable-grid__weekday {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.timetable-grid__day-head--today .timetable-grid__weekday {
+  color: var(--pen-ink);
+}
+.timetable-grid__date {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.timetable-grid__hours {
+  position: relative;
+}
+.timetable-grid__hour-label {
+  position: absolute;
+  left: 0;
+  right: 0.5rem;
+  /* `top` (theo giờ) đặt trực tiếp từ component — neo mép trên nhãn xuống
+     dưới đường kẻ 2px thay vì lấy giữa (`translateY(-50%)` cũ đẩy nhãn ĐẦU
+     TIÊN lên nửa trên đường kẻ 07:00, ra ngoài mép trên khung cuộn nên bị
+     cắt mất). Xem hằng số `HOUR_LABEL_OFFSET` trong TimetableWeek.tsx. */
+  text-align: right;
+  font-size: 0.6875rem;
+  color: var(--ink-faint);
+}
+
+.timetable-grid__day-col {
+  position: relative;
+  border-left: 1px solid var(--rule-faint);
+}
+.timetable-grid__day-col--today {
+  background: color-mix(in oklab, var(--pen-wash) 45%, transparent);
+}
+.timetable-grid__gridline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--rule-faint);
+}
+
+.timetable-block {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  overflow: hidden;
+  background: var(--sheet);
+  border: 1px solid var(--rule-faint);
+  border-left: 3px solid var(--pen);
+  border-radius: var(--r-sm);
+  padding: 0.35rem 0.5rem;
+  box-shadow: var(--shadow-sm);
+  cursor: default;
+  transition: box-shadow 160ms var(--ease);
+  z-index: 1;
+}
+.timetable-block:hover {
+  box-shadow: var(--shadow-md);
+  z-index: 2;
+}
+.timetable-block--lab {
+  border-left-color: var(--warn);
+}
+.timetable-block--exam {
+  border-left-color: var(--seal);
+  background: var(--seal-wash);
+}
+.timetable-block--off {
+  opacity: 0.55;
+}
+.timetable-block__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem;
+  margin-bottom: 0.2rem;
+}
+.timetable-block__flag {
+  font-size: 0.625rem;
+  padding: 0.05rem 0.4rem;
+}
+.timetable-block__time {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  color: var(--ink-faint);
+}
+.timetable-block__title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.006em;
+}
+.timetable-block__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.6rem;
+  margin-top: 0.2rem;
+  font-size: 0.6875rem;
+  color: var(--ink-soft);
+}
+.timetable-block__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+

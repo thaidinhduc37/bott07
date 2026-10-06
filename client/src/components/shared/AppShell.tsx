@@ -137,7 +137,7 @@ export function AppShell({
 
   return (
     <div className="shell">
-      {/* Thanh trên cùng chỉ hiện dưới 60rem — xem `.topbar` trong globals.css.
+      {/* Thanh trên cùng chỉ hiện dưới 60rem — xem `.topbar` trong styles/.
           Trên màn hình rộng, thanh bên đã mang cả thương hiệu lẫn điều hướng nên
           một thanh ngang nữa chỉ lấy mất chiều cao của nội dung. */}
       <header className="topbar">
@@ -236,7 +236,7 @@ export function AppShell({
         </header>
 
         {/* `key` buộc `<main>` dựng lại ở mỗi lần đổi trang, nên hoạt ảnh `rise`
-            trong globals.css chạy lại. Không có nó thì layout của App Router giữ
+            trong styles/ chạy lại. Không có nó thì layout của App Router giữ
             nguyên phần tử và hoạt ảnh chỉ chạy đúng một lần trong cả phiên. */}
         <main key={pathname} id="noi-dung" className="app-main">
           {children}

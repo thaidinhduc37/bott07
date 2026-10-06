@@ -1,0 +1,1305 @@
+/* ------------------------------------------------------------- ôn tập
+
+   Ẩn dụ: tờ đề thi giấy. Tất cả câu nằm trên MỘT `.sheet`, ngăn nhau bằng
+   đường kẻ mảnh — không mỗi câu một thẻ. Mỗi câu là một `<fieldset>` với các
+   `<label>` bọc radio thật: bấm vào cả dòng được, bàn phím đi bằng mũi tên
+   như mọi nhóm radio; sau khi nộp fieldset bị `disabled` nên không đổi đáp án.
+   Phương án là dòng gọn, không viền hộp — chỉ có vòng chữ cái A/B/C/D. */
+
+/* Tờ đề: một mặt giấy duy nhất chứa mọi câu. */
+.quiz-sheet {
+  padding: clamp(1.25rem, 0.9rem + 1.8vw, 2.25rem);
+}
+
+.quiz-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Mỗi câu là một khối gọn trong khung (trang đã tự thu về 60rem, căn giữa). */
+.quiz-q {
+  min-width: 0;
+}
+
+.quiz-q + .quiz-q {
+  border-top: 1px solid var(--rule-faint);
+  padding-top: var(--gap-5);
+  margin-top: var(--gap-5);
+}
+
+.quiz-q__set {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.quiz-q__stem {
+  padding: 0;
+  margin-bottom: var(--gap-4);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.quiz-q__n {
+  color: var(--ink-faint);
+}
+
+/* Tag "Ôn lại" — nhẹ, đặt cạnh số thứ tự. */
+.quiz-q__flag {
+  margin-left: var(--gap-2);
+  vertical-align: middle;
+}
+
+.quiz-q__opts {
+  display: grid;
+  gap: var(--gap-2);
+}
+
+/* Phương án: dòng gọn, không viền. Hover chỉ đổi nền. */
+.quiz-opt {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap-3);
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  line-height: 1.45;
+}
+
+.quiz-opt input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.quiz-opt:hover {
+  background: var(--sheet-2);
+}
+
+.quiz-opt:has(input:focus-visible) {
+  box-shadow: var(--ring);
+}
+
+/* Vòng chữ cái: mặc định rỗng (nền lõm, không viền). */
+.quiz-opt__letter {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  background: var(--sheet-2);
+  font-size: 0.8125rem;
+}
+
+.quiz-opt__text {
+  min-width: 0;
+}
+
+/* Đang chọn: vòng chữ cái đặc màu mực, chữ đậm hơn — không tô cả khối. */
+.quiz-opt--on .quiz-opt__letter {
+  background: var(--pen-ink);
+  color: var(--sheet);
+}
+.quiz-opt--on .quiz-opt__text {
+  font-weight: 600;
+}
+
+/* Đáp án đúng: dấu check + màu lục, không tô nền cả dòng. */
+.quiz-opt--right .quiz-opt__text {
+  color: var(--ok-ink);
+}
+.quiz-opt__mark {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--ok-ink);
+  display: grid;
+  place-items: center;
+}
+
+/* Chọn sai: gạch ngang chữ + màu dấu, không tô nền. */
+.quiz-opt--wrong .quiz-opt__text {
+  color: var(--seal-ink);
+  text-decoration: line-through;
+}
+
+.quiz-q__set:disabled .quiz-opt {
+  cursor: default;
+}
+.quiz-q__set:disabled .quiz-opt:hover {
+  background: none;
+}
+
+/* Giải thích: thụt lề bằng khoảng cách (không viền trái màu), chữ nhỏ hơn. */
+.quiz-q__explain {
+  display: grid;
+  gap: var(--gap-2);
+  margin-top: var(--gap-3);
+  padding-left: var(--gap-6);
+  font-size: 0.9375rem;
+}
+
+.quiz-q__blank {
+  margin: 0;
+  color: var(--warn-ink);
+  font-weight: 600;
+}
+
+/* Nút "Lưu vào sổ tay" dưới giải thích câu trắc nghiệm sau khi nộp. */
+.quiz-save {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-1);
+}
+
+.quiz-save--done {
+  color: var(--ok-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.quiz-save__error {
+  display: block;
+  margin-top: var(--gap-1);
+  font-size: 0.75rem;
+  color: var(--seal-ink);
+}
+
+/* ------------------------------------------------------------------ kết quả
+
+   Dải tóm tắt đầu trang: điểm lớn (dấu phẩy kiểu Việt), "Đúng a/b", và một
+   hàng ô số 1..n làm link neo tới từng câu, màu theo đúng/sai/bỏ trống. */
+
+/* Hàng trên: điểm lớn + "Đúng a/b" bên trái, hàng ô số bên phải (cùng hàng trên
+   desktop, xuống dưới trên điện thoại). Nhận xét + dòng "N câu sai" nằm dưới,
+   cách bằng một đường kẻ mảnh. */
+.quiz-result {
+  display: grid;
+  gap: var(--gap-4);
+}
+
+.quiz-result__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-4);
+  flex-wrap: wrap;
+}
+
+.quiz-result__score {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--pen-ink);
+}
+
+.quiz-result__of {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+/* Nhận xét + dòng "N câu sai": nằm dưới hàng trên, cách bằng nét kẻ mảnh. */
+.quiz-result__foot {
+  display: grid;
+  gap: var(--gap-2);
+  padding-top: var(--gap-4);
+  border-top: 1px solid var(--rule-faint);
+}
+
+/* Hàng ô số: mỗi ô là link neo #cau-N. */
+.quiz-result__map {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-2);
+  justify-content: flex-end;
+}
+
+.quiz-cell {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--r-md);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 120ms var(--ease);
+}
+
+.quiz-cell:hover {
+  transform: translateY(-1px);
+}
+
+.quiz-cell:has(:focus-visible),
+.quiz-cell:focus-visible {
+  box-shadow: var(--ring);
+}
+
+.quiz-cell--ok {
+  background: var(--ok-wash);
+  color: var(--ok-ink);
+}
+.quiz-cell--seal {
+  background: var(--seal-wash);
+  color: var(--seal-ink);
+}
+.quiz-cell--muted {
+  background: var(--sheet-2);
+  color: var(--ink-faint);
+}
+
+/* Nhận xét AI: chữ thường, không đóng khung. */
+.quiz-result__fb {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* Thanh dưới cùng dính khi đang làm: "Đã chọn a/b" + nút Nộp bài. Rộng đúng
+   bằng khung nội dung, bo góc trên — không tràn ra ngoài khung. */
+.quiz-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-4);
+  flex-wrap: wrap;
+  padding: var(--gap-4) clamp(1rem, 0.6rem + 1.4vw, 2rem);
+  background: var(--sheet);
+  border-top: 1px solid var(--rule-faint);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+}
+
+/* Cảnh báo inline khi còn câu trống — không dùng confirm(). */
+
+
+/* ------------------------------------------------------------------ trang ôn tập
+
+   Dải trạng thái sổ câu sai một hàng (trái: số liệu, phải: nút chính + link
+   mở sổ), rồi form tạo đề chiếm hết bề rộng khung, rồi danh sách lượt đã làm. */
+
+/* Dải trạng thái: số câu đến hạn / đang học / đã thuộc + hành động. */
+.study-due {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-4);
+  flex-wrap: wrap;
+  padding: var(--gap-4) var(--gap-5);
+  border-radius: var(--r-md);
+  background: var(--sheet-2);
+}
+
+.study-due__text {
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+
+.study-due__text strong {
+  color: var(--ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.study-due__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+}
+
+/* Nút "Tạo đề" căn phải trên desktop, full width trên điện thoại. */
+.study-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.study-form__actions .btn {
+  width: 100%;
+}
+
+@media (min-width: 60rem) {
+  .study-form__actions .btn {
+    width: auto;
+  }
+}
+
+/* Lịch sử: mỗi dòng là một `.action-row` nhưng không có icon — chỉ thân + điểm. */
+.study-hist {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.study-hist__score {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------------ kế hoạch ôn thi
+
+   Một `.sheet` duy nhất, mỗi kỳ thi một dòng kiểu tờ lịch: khối ngày bên trái,
+   tên môn ở giữa, "còn N ngày" + nhãn sẵn sàng bên phải. Bấm một dòng mở chi
+   tiết (số liệu + timeline ngày ôn) ngay bên dưới — accordion, chỉ một mở. */
+
+.plan-list {
+  overflow: hidden;
+}
+
+.plan-row + .plan-row {
+  border-top: 1px solid var(--rule-faint);
+}
+
+/* Hàng bấm được: không phải `.action-row` vì có khối ngày riêng bên trái. */
+.plan-row__head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--gap-4);
+  align-items: center;
+  width: 100%;
+  padding: var(--gap-5);
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 130ms var(--ease);
+}
+
+.plan-row__head:hover {
+  background: var(--sheet-2);
+}
+
+/* Khối ngày kiểu tờ lịch: số ngày to, tháng nhỏ. */
+.plan-row__date {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  min-width: 3.25rem;
+  padding: var(--gap-2) var(--gap-3);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-md);
+  background: var(--sheet-2);
+}
+
+.plan-row__day {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-row__month {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.plan-row__body {
+  display: block;
+  min-width: 0;
+}
+
+.plan-row__title {
+  display: block;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.plan-row__desc {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+/* Cột phải bề rộng cố định để "còn N ngày" + nhãn thẳng hàng giữa các dòng. */
+.plan-row__side {
+  display: grid;
+  justify-items: end;
+  gap: var(--gap-2);
+  min-width: 7.5rem;
+}
+
+/* "còn N ngày" — chữ thường + tabular-nums, không mono. */
+.plan-row__left {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* ≤ 3 ngày: mực dấu, nói được "gần đến" mà không cần màu nền. */
+.plan-row__left--soon {
+  color: var(--seal-ink);
+}
+
+/* Chi tiết mở ra bên dưới hàng. */
+.plan-detail {
+  display: grid;
+  gap: var(--gap-3);
+  padding: 0 var(--gap-5) var(--gap-5) calc(3.25rem + var(--gap-4) + var(--gap-5));
+}
+
+.plan-detail > p {
+  margin: 0;
+}
+
+/* Hàng số liệu: chữ, không stat-card. */
+.plan-detail__stats {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-detail__materials {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.plan-detail__today {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* Timeline dọc: chấm + đường kẻ mảnh, không icon màu mè. */
+.plan-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plan-timeline__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--gap-3);
+  padding: 0 0 var(--gap-4) 0;
+}
+
+/* Đường kẻ mảnh nối các chấm — không vẽ qua chấm cuối. */
+.plan-timeline__item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 0.3rem;
+  top: 0.65rem;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule-faint);
+}
+
+.plan-timeline__dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-top: 0.3rem;
+  border-radius: 50%;
+  background: var(--sheet);
+  border: 1.5px solid var(--ink-faint);
+}
+
+.plan-timeline__body {
+  min-width: 0;
+}
+
+.plan-timeline__date {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-timeline__today {
+  margin-left: var(--gap-2);
+  color: var(--pen-ink);
+}
+
+.plan-timeline__title {
+  margin: 0.1rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* Ngày trùng hôm nay: đậm hơn + chấm đặc. */
+.plan-timeline__item--today .plan-timeline__dot {
+  background: var(--pen);
+  border-color: var(--pen);
+}
+
+.plan-timeline__item--today .plan-timeline__title {
+  font-weight: 600;
+}
+
+.plan-timeline__link {
+  display: inline-block;
+  margin-top: 0.15rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ sổ tay
+
+   Một `.sheet` duy nhất, mỗi ghi chú ngăn bằng đường kẻ mảnh. */
+
+/* Thanh công cụ một hàng trên desktop: tìm kiếm co giãn, select môn bề rộng
+   cố định, nút "Ghi chú mới" — ba phần tử cùng chiều cao, thẳng đáy. Điện
+   thoại: tìm kiếm full width, hàng dưới là select + nút. */
+.note-tools {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+}
+
+.note-tools__search {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Select môn bề rộng cố định (~14rem); trên điện thoại chiếm hết hàng. */
+.note-tools > .field:not(.note-tools__search) {
+  flex: 0 0 14rem;
+}
+
+@media (max-width: 59.9375rem) {
+  .note-tools__search {
+    flex: 1 1 100%;
+  }
+
+  /* basis 0 thay vì auto: select co lại nhường chỗ cho nút trên cùng một hàng. */
+  .note-tools > .field:not(.note-tools__search) {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.note-list {
+  overflow: hidden;
+}
+
+.note-item {
+  display: grid;
+  gap: var(--gap-2);
+  padding: var(--gap-5);
+}
+
+.note-item + .note-item {
+  border-top: 1px solid var(--rule-faint);
+}
+
+/* Dòng nhãn: nguồn + mã môn + ngày — chữ chiếm chỗ còn lại, hành động sát phải. */
+.note-item__top {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+}
+
+.note-item__label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-2);
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.note-item__pin {
+  display: inline-flex;
+  color: var(--ink-faint);
+}
+
+.note-item__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  flex-shrink: 0;
+}
+
+/* Xác nhận xóa inline nằm cạnh chính nút Xóa kích hoạt nó. */
+.note-item__confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  flex-shrink: 0;
+  font-size: 0.875rem;
+}
+
+.note-item__title {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.note-item__content {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* Thu gọn 4 dòng khi chưa mở rộng. */
+.note-item__content--clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* "Xem thêm/Thu gọn" (trái) và "Sửa ghi chú" (phải) cùng một hàng dưới nội dung. */
+.note-item__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+}
+
+.note-item__cites {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.note-item__own {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.note-item__edit {
+  display: grid;
+  gap: var(--gap-2);
+}
+
+.note-item__error {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--seal-ink);
+}
+
+/* ------------------------------------------------------------------ sổ câu sai
+
+   Một `.sheet` duy nhất, mỗi mục ngăn bằng đường kẻ mảnh. */
+
+.review-list {
+  overflow: hidden;
+}
+
+.review-item {
+  display: grid;
+  gap: var(--gap-3);
+  padding: var(--gap-5);
+}
+
+.review-item + .review-item {
+  border-top: 1px solid var(--rule-faint);
+}
+
+.review-item__top {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap-3);
+}
+
+.review-item__q {
+  flex: 1;
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.5;
+  min-width: 0;
+}
+
+.review-item__ans {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+/* Giải thích thu gọn trong <details>. */
+.review-item__ex {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.review-item__ex summary {
+  cursor: pointer;
+  color: var(--pen);
+  font-weight: 500;
+}
+
+.review-item__ex p {
+  margin: var(--gap-2) 0 0;
+  line-height: 1.6;
+}
+
+.review-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-2);
+  align-items: center;
+}
+
+/* Xác nhận xóa inline: "Xóa?" Có / Không — không dùng confirm(). */
+.review-item__confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  flex-shrink: 0;
+  font-size: 0.875rem;
+}
+
+/* ------------------------------------------------------------------ trang chủ học viên
+
+   Một `.sheet.action-list` thay cho lưới 4 thẻ; trên đó một dòng nhắc nhỏ nếu
+   có câu đến hạn ôn. */
+
+.home-due {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+  padding: var(--gap-3) var(--gap-4);
+  border-radius: var(--r-md);
+  background: var(--warn-wash);
+  color: var(--warn-ink);
+  font-size: 0.9375rem;
+}
+
+.home-due a {
+  color: var(--warn-ink);
+  font-weight: 600;
+}
+
+.home-info {
+  margin: 0;
+  padding: var(--gap-4) var(--gap-5);
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+/* Sau khi nộp, thanh chỉ còn một nút — không cần dính đáy màn hình che câu hỏi. */
+.quiz-bar--static {
+  position: static;
+  padding-inline: 0;
+  background: none;
+  border-top: 0;
+}
+
+.quiz-bar--warn {
+  background: var(--warn-wash);
+  color: var(--warn-ink);
+}
+
+.review-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+}
+
+.quiz-save-row {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gap-3);
+}
+
+.answer-save {
+  margin-top: var(--gap-4);
+}
+
+/* Ba ô trên hàng công cụ sổ tay thẳng mép trên và cao bằng nhau. Bỏ margin mà
+   quy tắc chung `.field + .field` thêm vào — ở đây các ô nằm ngang, không xếp dọc. */
+.note-tools {
+  align-items: flex-start;
+}
+.note-tools > *,
+.note-tools > .field + .field {
+  margin: 0;
+}
+.note-tools .btn {
+  height: 2.625rem; /* bằng chiều cao `.field__input` */
+}
+
+/* Khối ngày cố định bề rộng: "7" và "23" chiếm cùng một ô, tên môn các dòng thẳng cột. */
+.plan-row__date {
+  width: 3.5rem;
+  min-width: 0;
+  flex: none;
+  padding-inline: 0;
+}
+
+/* Điểm + "Đúng a/b" là một cụm bên trái; hàng ô số câu bên phải. */
+.quiz-result__summary {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Vòng 4 — bố cục hai cột cho khu học tập
+
+   Sáu trang học tập chuyển từ khung hẹp `shell--read` sang khung mặc định
+   1440px + `.page-grid`: bề rộng thêm dùng cho CỘT PHỤ (thông tin hữu ích),
+   KHÔNG kéo dài dòng chữ. Khối này chỉ dùng biến có sẵn và nằm ở cuối tệp
+   để không đụng CSS chung phía trên.
+   ======================================================================== */
+
+/* Tiêu đề nhỏ của các khối cột phụ. */
+.aside-h {
+  margin: 0 0 var(--gap-3);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ------------------------------------------------------------- làm bài */
+
+/* Ô số điều hướng: đang làm — đã chọn tô pen-wash, chưa chọn viền mảnh. */
+.quiz-cell--on {
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+}
+.quiz-cell--off {
+  background: none;
+  border: 1px solid var(--rule-faint);
+  color: var(--ink-faint);
+}
+
+/* Cột phụ làm bài: lưới 5 ô/hàng, nút + xác nhận inline. */
+.quiz-aside {
+  display: grid;
+  gap: var(--gap-4);
+  align-content: start;
+}
+
+.quiz-aside__count {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+.quiz-aside__count strong {
+  color: var(--ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.quiz-aside .quiz-result__map {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--gap-2);
+  justify-content: stretch;
+}
+.quiz-aside .quiz-cell {
+  width: 100%;
+}
+
+.quiz-aside__confirm {
+  display: grid;
+  gap: var(--gap-2);
+  padding: var(--gap-3);
+  border-radius: var(--r-md);
+  background: var(--warn-wash);
+  color: var(--warn-ink);
+}
+.quiz-aside__confirm p {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Đã nộp: nút full width xếp dọc. */
+.quiz-aside__actions {
+  display: grid;
+  gap: var(--gap-2);
+}
+
+/* Nhận xét AI trong cột phụ: giữ độ dài dòng đọc được (68ch). */
+.quiz-result-aside .quiz-result__fb {
+  max-width: var(--measure);
+}
+
+/* Thanh dính đáy CHỈ hiện khi màn hẹp (một cột). Có cột phụ thì ẩn —
+   container query theo bề rộng vùng nội dung, đúng ngưỡng hai cột của `.page-grid`. */
+@container main (min-width: 56rem) {
+  .quiz-bar:not(.quiz-bar--static) {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------- ôn tập */
+
+.study-aside {
+  display: grid;
+  gap: var(--gap-3);
+  align-content: start;
+}
+
+/* Số đến hạn lớn + nhãn. */
+.study-aside__due {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-2);
+  margin: 0;
+}
+.study-aside__due strong {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--pen-ink);
+}
+.study-aside__due span {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.study-aside__meta {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+/* Link phụ cuối khối. */
+.study-aside__link {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Danh sách kỳ thi sắp tới: mỗi kỳ một dòng bấm được, tên cắt một dòng. */
+.study-exams {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-1);
+}
+.study-exam {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  width: 100%;
+  padding: var(--gap-2) var(--gap-3);
+  border: 0;
+  border-radius: var(--r-md);
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 130ms var(--ease);
+}
+.study-exam:hover {
+  background: var(--sheet-2);
+}
+.study-exam__body {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.study-exam__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.study-exam__meta {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------- sổ câu sai */
+
+.review-aside {
+  display: grid;
+  gap: var(--gap-5);
+  align-content: start;
+}
+
+/* Ba số tóm tắt: nhãn — số, căn hai đầu. */
+.review-aside__stats {
+  margin: 0;
+  display: grid;
+  gap: var(--gap-2);
+}
+.review-aside__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-3);
+}
+.review-aside__row dt {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+.review-aside__row dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bộ lọc dọc: radio thật, mỗi dòng có số đếm bên phải. */
+.review-aside__filters,
+.radio-list {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: grid;
+  gap: var(--gap-1);
+}
+.review-aside__filters legend,
+.radio-list legend {
+  margin-bottom: var(--gap-2);
+}
+
+.radio-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-2);
+  padding: var(--gap-2) var(--gap-3);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 130ms var(--ease);
+}
+.radio-row:hover {
+  background: var(--sheet-2);
+}
+.radio-row input {
+  accent-color: var(--pen);
+  margin: 0;
+}
+.radio-row__label {
+  flex: 1;
+  min-width: 0;
+}
+.radio-row__count {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+  font-size: 0.8125rem;
+}
+.radio-row:has(input:checked) {
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+}
+.radio-row:has(input:checked) .radio-row__count {
+  color: var(--pen-ink);
+}
+.radio-row:has(input:focus-visible) {
+  box-shadow: var(--ring);
+}
+
+/* ------------------------------------------------------------- kế hoạch ôn thi */
+
+/* Cột danh sách: dòng đang chọn tô pen-wash, gọn hơn accordion cũ. */
+.plan-row__head {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.plan-row--open > .plan-row__head {
+  background: var(--pen-wash);
+}
+.plan-row--open > .plan-row__head:hover {
+  background: var(--pen-wash);
+}
+
+/* Chi tiết trong cột phải: giấy đầy đủ, không thụt lề kiểu accordion. */
+.plan-detail {
+  padding: var(--gap-5);
+}
+.plan-detail__title {
+  margin: 0 0 var(--gap-3);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.plan-detail__info {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+/* Hàng số liệu: ba cụm nhãn — số. */
+.plan-detail__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-4);
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+.plan-detail__stats strong {
+  color: var(--ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-detail__actions {
+  display: flex;
+  gap: var(--gap-2);
+  flex-wrap: wrap;
+  padding-top: var(--gap-3);
+  border-top: 1px solid var(--rule-faint);
+}
+
+/* Bản inline (màn hẹp): giữ hành vi accordion cũ — thụt lề dưới khối ngày. */
+.plan-detail--inline {
+  padding: 0 var(--gap-5) var(--gap-5) calc(3.5rem + var(--gap-4) + var(--gap-5));
+}
+
+/* Màn rộng: ẩn bản inline; màn hẹp: ẩn bản cột phải. */
+@container main (min-width: 56rem) {
+  .plan-detail--inline {
+    display: none;
+  }
+  .page-grid--aside-left .page-grid__main > .plan-detail {
+    display: grid;
+    gap: var(--gap-4);
+    padding: var(--gap-6);
+  }
+}
+@container main (max-width: 55.99rem) {
+  .page-grid--aside-left .page-grid__main > .plan-detail {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------- sổ tay */
+
+.note-aside {
+  display: grid;
+  gap: var(--gap-4);
+  align-content: start;
+}
+
+/* ------------------------------------------------------------- trang chủ học viên */
+
+.home-aside {
+  display: grid;
+  gap: var(--gap-3);
+  align-content: start;
+}
+.home-aside__list {
+  margin: 0;
+  display: grid;
+  gap: var(--gap-4);
+}
+.home-aside__row {
+  display: grid;
+  gap: var(--gap-1);
+}
+.home-aside__row dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+.home-aside__row dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  display: grid;
+  gap: 0.15rem;
+  align-content: start;
+}
+.home-aside__row dd strong {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--pen-ink);
+}
+.home-aside__row dd a {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------- chỉnh sau review vòng 4 */
+
+/* Kết quả ở cột phụ: các phần cách đều nhau, hàng ô số câu thẳng mép trái. */
+.quiz-result-aside {
+  display: grid;
+  gap: var(--gap-4);
+}
+.quiz-result-aside .aside-h {
+  margin: 0;
+}
+.quiz-result-aside .quiz-result__map {
+  justify-content: flex-start;
+}
+.quiz-result-aside .quiz-result__fb {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  padding-top: var(--gap-4);
+  border-top: 1px solid var(--rule-faint);
+}
+
+/* Làm bài, màn hẹp: khối Tiến độ (đã xuống cuối nhờ `page-grid--aside-last`)
+   dính đáy màn hình và thu gọn còn một hàng "Đã chọn a/b" + nút Nộp bài —
+   học viên không phải cuộn ngược lên đầu trang để nộp. */
+@container main (max-width: 55.99rem) {
+  .quiz-taking > .page-grid__aside {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+  }
+  .quiz-taking .quiz-aside {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-3);
+    padding: var(--gap-3) var(--gap-4);
+    border-radius: var(--r-md) var(--r-md) 0 0;
+  }
+  .quiz-taking .quiz-aside .aside-h,
+  .quiz-taking .quiz-aside .quiz-result__map {
+    display: none;
+  }
+  .quiz-taking .quiz-aside .btn--block {
+    width: auto;
+  }
+  .quiz-taking .quiz-aside__confirm {
+    flex-basis: 100%;
+  }
+}
+
+/* Trang chủ: kỳ thi gần nhất — tên môn, ngày thi, liên kết, mỗi thứ một dòng. */
+.home-aside__exam {
+  display: grid;
+  gap: var(--gap-1);
+  margin: 0;
+}
+.home-aside__exam-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.home-aside__exam-when {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+

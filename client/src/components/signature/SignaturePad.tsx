@@ -141,7 +141,7 @@ function DrawPad({ busy, onSave }: SignaturePadProps) {
     ctx.lineJoin = 'round';
     // Đọc từ token thay vì ghi cứng. Nét ký được xuất thẳng ra PNG rồi chèn
     // vào đơn in trên giấy trắng, nên token này cố ý KHÔNG đổi theo chế độ tối
-    // — xem ghi chú ở `--signature-ink` trong globals.css.
+    // — xem ghi chú ở `--signature-ink` trong styles/.
     ctx.strokeStyle =
       getComputedStyle(document.documentElement).getPropertyValue('--signature-ink').trim() ||
       '#12213a';

@@ -1,5 +1,5 @@
 /* ============================================================ lịch học viên — tab "Lịch thi"
-   (components ExamTermPanel + ExamTable). Tiền tố `term-`; chỉ dùng biến trong globals.css, an toàn theme tối. */
+   (components ExamTermPanel + ExamTable). Tiền tố `term-`; chỉ dùng biến trong styles/, an toàn theme tối. */
 
 /* Dòng tên môn + giảng viên, khoảng ngày (dùng cho bảng và thẻ). */
 .term-course {
@@ -55,7 +55,7 @@
 
 
 /* ============================================================ tab "Lịch thi"
-   (component ExamTable). Tiền tố `term-exam-`; chỉ dùng biến trong globals.css. */
+   (component ExamTable). Tiền tố `term-exam-`; chỉ dùng biến trong styles/. */
 
 /* Hai cách hiển thị: bảng (màn rộng) và thẻ (màn hẹp). Mặc định hiện bảng. */
 .term-exam-grid {

@@ -15,7 +15,7 @@ React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► Postg
 ```
 
 - `client/` — React 19 + Vite 6 + TypeScript (strict) SPA, plain CSS in `client/src/styles/`
-  (`globals.css` + one file per feature area). Three workspaces by role (`utils/roles.ts`):
+  (split by area: `base`, `layout`, `shell`, `chat`, `dashboard`, `study`, `staff-admin`, `polish`, then one file per feature). Three workspaces by role (`utils/roles.ts`):
   `sinh-vien` (STUDENT), `can-bo` (ACADEMIC_MANAGER / LECTURER / APPROVER / DEPARTMENT_HEAD),
   `quan-tri` (ADMIN). Shared building blocks: `PageHeader`, `Tabs`/`TabPanel`, `Breadcrumb`,
   `Metrics` in `components/shared/`.

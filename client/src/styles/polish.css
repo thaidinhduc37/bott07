@@ -1,0 +1,852 @@
+/* ---------------------------------------------- chỉnh sau review vòng 5 */
+
+/* Dòng danh sách có cột hành động (tài liệu, tài khoản): lưới hai cột thay cho
+   flex-wrap. Với flex-wrap, dòng thông tin dài (nhiều vai trò, tên tệp dài) đẩy
+   cụm nút xuống hàng riêng ở dòng này nhưng không ở dòng kia — các nút không còn
+   thẳng cột. Lưới giữ cột phải cố định; thông tin tự xuống dòng bên trái. */
+.acct-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+.acct-row__side {
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+.doc-row__bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+.doc-row__actions {
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+/* Cột chính hẹp (laptop 1280px: ~38rem; điện thoại): hành động xuống dưới thông
+   tin, căn trái. Đo theo bề rộng của CỘT CHÍNH (container `col`), không theo cả
+   vùng nội dung — có cột phụ thì cột chính hẹp hơn nhiều so với vùng nội dung. */
+.page-grid__main {
+  container: col / inline-size;
+}
+.acct-row__meta,
+.doc-row__meta {
+  overflow-wrap: anywhere;
+}
+@container col (max-width: 45.99rem) {
+  .acct-row,
+  .doc-row__bottom {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .acct-row__side,
+  .doc-row__actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+/* Tổng quan tài khoản: vai trò là các dòng nhãn–số như trạng thái, không phải
+   một cột chữ nhỏ căn phải lệch khỏi phần còn lại của khối. */
+.acct-idx__row--sub {
+  display: grid;
+  /* Quy tắc gốc `.acct-idx__row` có `justify-content: space-between`; trong grid
+     nó làm cột co theo nội dung (số đếm không chạm mép phải). */
+  justify-content: stretch;
+  gap: var(--gap-2);
+  padding-top: var(--gap-3);
+  border-top: 1px solid var(--rule-faint);
+}
+.acct-idx__row--sub dd {
+  display: grid;
+  gap: var(--gap-2);
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+.acct-idx__row--sub dd span {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gap-3);
+}
+
+/* Trang chủ quản trị: thẻ cao theo nội dung của chính nó, không kéo giãn bằng
+   thẻ bên cạnh (tránh mảng trống lớn trong thẻ ít nội dung). */
+.dash-grid {
+  align-items: start;
+}
+
+/* Số đếm vai trò căn phải thẳng hàng với số đếm trạng thái phía trên. */
+.acct-idx__row--sub dd,
+.acct-idx__row--sub dd span {
+  width: 100%;
+}
+
+/* ---- chi tiết lịch */
+
+/* Khối buổi học/ca thi thành nút bấm khi có `onSelect`: reset style mặc định
+   của `<button>`, giữ nguyên giao diện `.timetable-block`, thêm vòng focus. */
+.timetable-block--click {
+  display: block;
+  width: auto;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.timetable-block--click:focus-visible {
+  box-shadow: var(--ring);
+  z-index: 3;
+}
+/* Khối đang mở chi tiết: viền mực. */
+.timetable-block--selected {
+  border-color: var(--pen);
+  border-left-color: var(--pen);
+  z-index: 2;
+}
+/* Dấu "có yêu cầu của giảng viên" trên khối: icon bút 12px + nhãn sr-only. */
+.timetable-block__note {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ink-soft);
+}
+
+/* Nhóm chọn phần ở đầu trang cán bộ. */
+.teach-seg {
+  align-self: flex-start;
+}
+
+/* Bảng chi tiết — drawer bên phải. `<dialog>` gốc: nền mờ bằng backdrop,
+   không blur, không shadow trang trí. */
+.entry-dlg {
+  width: min(26rem, 100%);
+  max-width: 100%;
+  max-height: 100dvh;
+  margin: 0;
+  border: 0;
+  border-left: 1px solid var(--rule-faint);
+  border-radius: 0;
+  background: var(--sheet);
+  color: var(--ink);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.entry-dlg::backdrop {
+  background: color-mix(in oklab, var(--ink) 32%, transparent);
+}
+.entry-dlg__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--rule-faint);
+  flex: none;
+}
+.entry-dlg__body {
+  padding: 1rem;
+  overflow-y: auto;
+  display: grid;
+  gap: var(--gap-5);
+  align-content: start;
+}
+.entry-dlg__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.entry-dlg__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* Danh sách nhãn–giá trị. */
+.entry-dl {
+  margin: 0;
+  display: grid;
+  gap: var(--gap-3);
+}
+.entry-dl__row {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: var(--gap-3);
+  align-items: baseline;
+}
+.entry-dl__row dt {
+  color: var(--ink-faint);
+}
+.entry-dl__row dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Khối "Yêu cầu của giảng viên" — nổi bật nhất: nền --pen-wash, bo --r-md,
+   không viền trái. */
+.entry-note {
+  background: var(--pen-wash);
+  border-radius: var(--r-md);
+  padding: var(--gap-4);
+  display: grid;
+  gap: var(--gap-3);
+}
+.entry-note__head {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.entry-note__text {
+  margin: 0;
+  white-space: pre-line;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.entry-note__meta {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+.entry-note__none {
+  margin: 0;
+  color: var(--ink-faint);
+  font-size: 0.875rem;
+}
+.entry-note__edit {
+  display: grid;
+  gap: var(--gap-3);
+}
+.entry-note__input {
+  width: 100%;
+  resize: vertical;
+}
+.entry-note__count {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  text-align: right;
+}
+.entry-note__notify {
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+.entry-note__actions {
+  flex-wrap: wrap;
+  gap: var(--gap-2);
+}
+.entry-note__confirm {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+/* Ghi chú của phòng đào tạo — chữ nhỏ. */
+.entry-note__training {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+/* Cột phụ trang lịch giảng dạy: số đếm tuần. */
+.teach-stats {
+  margin: 0;
+  display: grid;
+  gap: var(--gap-2);
+}
+.teach-stats__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-3);
+}
+.teach-stats__row dt {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+.teach-stats__row dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Điện thoại: bảng chi tiết chiếm trọn màn hình. */
+@media (max-width: 640px) {
+  .entry-dlg {
+    width: 100%;
+    max-height: 100dvh;
+  }
+}
+
+/* Hộp chi tiết buổi học / ca thi: đặt GIỮA màn hình (theo yêu cầu người dùng),
+   thay cho ngăn kéo bám mép phải. `margin: auto` + inset mặc định của <dialog>
+   modal là cách canh giữa cả hai chiều; nội dung dài cuộn bên trong thân hộp. */
+.entry-dlg {
+  margin: auto;
+  width: min(36rem, calc(100% - 2rem));
+  max-height: min(88dvh, 52rem);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-md);
+}
+@media (max-width: 640px) {
+  .entry-dlg {
+    width: calc(100% - 1.5rem);
+    max-height: 92dvh;
+  }
+}
+
+/* ------------------------------------------------ bảng nhập liệu trong đơn
+
+   Trường kiểu bảng (vd "Các học phần xin học/thi cải thiện": STT · Tên học phần ·
+   Số tín chỉ · Điểm đã đạt). Đo theo bề rộng khung chứa, không theo màn hình:
+   cùng một bảng nằm trong cột nhập liệu hẹp của trang lập đơn hay trong trang
+   rộng hơn. */
+.form-table {
+  container: ftable / inline-size;
+}
+.form-table__table {
+  width: 100%;
+}
+.form-table__table .field__input {
+  width: 100%;
+  min-width: 0;
+}
+.form-table__no,
+.form-table__del {
+  width: 3rem;
+}
+
+@container ftable (max-width: 34rem) {
+  .form-table__table,
+  .form-table__table tbody,
+  .form-table__table tr,
+  .form-table__table td {
+    display: block;
+    width: 100%;
+  }
+  .form-table__table thead {
+    /* Ẩn khỏi mắt nhưng giữ cho trình đọc màn hình — mỗi ô đã có aria-label. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .form-table__table tr {
+    position: relative;
+    display: grid;
+    gap: var(--gap-2);
+    padding: var(--gap-3) var(--gap-3) var(--gap-4);
+    border: 1px solid var(--rule-faint);
+    border-radius: var(--r-md);
+    background: var(--sheet);
+  }
+  .form-table__table tr + tr {
+    margin-top: var(--gap-3);
+  }
+  .form-table__table td {
+    padding: 0;
+    border: 0;
+  }
+  /* Nhãn cột đứng trên ô nhập. */
+  .form-table__table td[data-label]:not(.form-table__no)::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  /* Số thứ tự thành tiêu đề khối: "Dòng 1". */
+  .form-table__no {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+  .form-table__no::before {
+    content: attr(data-label) " ";
+  }
+  /* Cùng độ ưu tiên với `.form-table__table td` (đặt width: 100%) nên phải
+     nhắc lại đủ chuỗi chọn — không thì ô xóa giãn hết bề ngang, nút × nằm đè
+     lên tiêu đề "Dòng 1". */
+  .form-table__table td.form-table__del {
+    position: absolute;
+    top: var(--gap-2);
+    right: var(--gap-2);
+    left: auto;
+    width: auto;
+  }
+  .form-table__table td.form-table__no {
+    padding-right: 2.5rem;
+  }
+  /* Tô nền khi rê chuột của bảng dữ liệu vô nghĩa ở dạng khối (che tiêu đề). */
+  .form-table__table tr:hover td,
+  .form-table__table tr:hover {
+    background: var(--sheet);
+  }
+}
+
+/* Trang lập đơn / chi tiết đơn: cột nhập liệu 24rem cố định quá hẹp cho trường
+   kiểu bảng trên màn rộng. Nới theo tỷ lệ (tối đa 32rem), vẫn 24rem trên laptop. */
+.doc-layout {
+  grid-template-columns: minmax(0, 1fr) clamp(24rem, 34%, 32rem);
+}
+@media (max-width: 60rem) {
+  .doc-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---- ôn tập: hai tab */
+
+/* Nhóm tab "Ôn tập / Kế hoạch ôn thi" — dùng `.seg` nhưng là tab đúng chuẩn
+   WAI-ARIA (role=tablist/tab). Khoảng cách xuống nội dung; vòng focus cho nút
+   tab vì đây là `<button>` trần, không có `<input>` bên trong để `.seg__opt`
+   dựa vào `:has(input:focus-visible)`. */
+.study-tabs {
+  margin-bottom: var(--gap-5);
+}
+
+.study-tabs .seg__opt:focus-visible {
+  box-shadow: var(--ring);
+}
+
+/* Chấm số kỳ thi còn ≤ 14 ngày ở tab Kế hoạch — nhỏ, không phá nhịp nút. */
+.study-tabs__count {
+  margin-left: var(--gap-1);
+  font-size: 0.6875rem;
+  line-height: 1;
+  padding: 0.15rem 0.4rem;
+}
+
+/* "Tạo đề ôn" trong timeline giờ là `<button>`: reset để trông như liên kết. */
+button.plan-timeline__link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--pen-ink);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* "Xem kế hoạch ôn thi" ở cột phụ là <button> (đổi tab, không điều hướng) nhưng phải
+   trông như liên kết "Mở sổ câu sai" ngay bên trên: trình duyệt mặc định căn giữa và
+   tô chữ đen cho <button>. */
+button.study-aside__link {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  color: var(--pen-ink);
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+}
+button.study-aside__link:hover {
+  text-decoration: underline;
+}
+button.study-aside__link:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-radius: var(--r-sm);
+}
+
+/* Cuộn tới một kỳ thi (liên kết #id từ thông báo) không được để hàng nằm dưới thanh trên
+   cùng đang dính (cao 3.5rem). */
+.plan-row {
+  scroll-margin-top: calc(3.5rem + var(--gap-4));
+}
+
+/* Chi tiết kỳ thi mở ngay dưới dòng (màn hẹp): dòng đã ghi tên môn rồi, không lặp lại. */
+.plan-detail--inline .plan-detail__title {
+  display: none;
+}
+
+/* ---- breadcrumb ở đầu trang con */
+.crumbs { margin-bottom: var(--gap-2); }
+.crumbs__list { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-2); margin: 0; padding: 0; list-style: none; font-size: 0.875rem; color: var(--ink-soft, var(--ink)); }
+.crumbs__link { color: var(--pen-ink); text-decoration: underline; text-underline-offset: 3px; }
+.crumbs__link:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: var(--r-sm, 2px); }
+.crumbs__sep { color: var(--rule-faint); }
+
+/* ---- trang chủ: số liệu, tiến trình theo môn, hôm nay, lối tắt */
+.metrics {
+  list-style: none;
+  /* không đặt `margin-block`: khoảng cách trên là của `.stack > * + *` */
+  margin-inline: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--gap-4);
+}
+.metric__body {
+  display: grid;
+  gap: var(--gap-1);
+  align-content: start;
+  height: 100%;
+  padding: var(--gap-4) var(--gap-5);
+  background: var(--sheet);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-lg);
+  color: var(--ink);
+  text-decoration: none;
+}
+.metric__body--link:hover {
+  border-color: var(--rule);
+}
+.metric__body--link:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+.metric__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+.metric__value {
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.metric__value--warn {
+  color: var(--warn-ink);
+}
+.metric__value--ok {
+  color: var(--ok-ink);
+}
+.metric__hint {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  margin-bottom: var(--gap-3);
+}
+.section-head .aside-h {
+  margin: 0;
+}
+.section-head__link,
+.section-head__note {
+  font-size: 0.8125rem;
+}
+.section-head__note {
+  color: var(--ink-faint);
+}
+
+.prog {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-5);
+}
+.prog__row {
+  display: grid;
+  gap: var(--gap-2);
+}
+.prog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+}
+.prog__name {
+  font-weight: 600;
+  min-width: 0;
+}
+.prog__track {
+  height: 0.5rem;
+  border-radius: var(--r-pill);
+  background: var(--rule-faint);
+  overflow: hidden;
+}
+.prog__fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--pen);
+}
+.prog__fill--ok {
+  background: var(--ok);
+}
+.prog__fill--warn {
+  background: var(--warn);
+}
+.prog__meta {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.bars {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--gap-2);
+  height: 7.5rem;
+  align-items: end;
+}
+.bars__col {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 100%;
+  gap: var(--gap-1);
+  align-items: end;
+  justify-items: center;
+}
+.bars__bar {
+  width: 100%;
+  max-width: 1.5rem;
+  background: var(--pen-wash);
+  border-radius: var(--r-xs);
+  align-self: end;
+}
+.bars__bar--empty {
+  background: var(--rule-faint);
+}
+.bars__bar--today {
+  background: var(--pen);
+}
+.bars__tick {
+  font-size: 0.6875rem;
+  min-height: 1em;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.today {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-4);
+}
+.today__item {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: var(--gap-3);
+}
+.today__time {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  padding-top: 0.1rem;
+}
+.today__body {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.today__title {
+  font-weight: 600;
+}
+.today__meta {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  display: flex;
+  gap: var(--gap-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.home-aside__empty {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+.home-aside__more {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.quick__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.quick__link {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  padding: var(--gap-2) 0;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: var(--r-md);
+}
+.quick__link:hover {
+  color: var(--pen-ink);
+}
+.quick__link:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+.quick__note {
+  margin: var(--gap-3) 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+/* ---- tình hình học tập (giáo viên) + lịch dạy hôm nay */
+.insight-course {
+  display: grid;
+  gap: 0.2rem;
+  width: 100%;
+  padding: var(--gap-3) var(--gap-4);
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule-faint);
+  cursor: pointer;
+}
+.insight-course:last-child {
+  border-bottom: 0;
+}
+.insight-course:hover {
+  background: var(--paper);
+}
+.insight-course:focus-visible {
+  outline: none;
+  box-shadow: inset var(--ring);
+}
+.insight-course--on {
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+}
+.insight-course__name {
+  font-weight: 600;
+}
+.insight-course__meta {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+.insight-course--on .insight-course__meta {
+  color: inherit;
+}
+.insight-course__loading {
+  padding: var(--gap-4);
+  margin: 0;
+}
+
+.hard {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.hard__item {
+  display: grid;
+  gap: var(--gap-1);
+  padding: var(--gap-4) 0;
+  border-bottom: 1px solid var(--rule-faint);
+}
+.hard__item:first-child {
+  padding-top: 0;
+}
+.hard__item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.hard__q {
+  margin: 0;
+  font-weight: 600;
+}
+.hard__a {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ok-ink);
+}
+.hard__meta {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.today--wide .today__item {
+  grid-template-columns: 7rem 1fr;
+}
+.today__class {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.today__cta {
+  font-weight: 600;
+}
+@media (max-width: 30rem) {
+  .today__item,
+  .today--wide .today__item {
+    grid-template-columns: 1fr;
+    gap: var(--gap-1);
+  }
+}
+
+/* ---- trang chủ quản trị: danh sách cần chú ý */
+.attn {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.attn__item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  padding: var(--gap-3) 0;
+  border-bottom: 1px solid var(--rule-faint);
+}
+.attn__item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.attn__go {
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Số liệu trong từng khối dashboard: luôn hai cột đều nhau, không tuỳ nội dung mà rớt dòng lệch nhau. */
+.dash-grid .home-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-5);
+}
+
+/* Màn hẹp: ô số liệu xếp hai cột thay vì mỗi ô một hàng (bốn ô xếp dọc chiếm hơn nửa màn hình). */
+@media (max-width: 30rem) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-3);
+  }
+  .metric__body {
+    padding: var(--gap-3);
+  }
+  .metric__value {
+    font-size: 1.375rem;
+  }
+}
+
+/* Bảng trường dạng bảng trong khung "Thông tin chi tiết" của đơn: khung hẹp nên tiêu đề cột được phép
+   xuống dòng và ô gọn lại, để cả bốn cột vừa khung mà không phải cuộn ngang. */
+.form-detail-table th {
+  white-space: normal;
+  line-height: 1.25;
+}
+.form-detail-table th,
+.form-detail-table td {
+  padding: 0.5rem 0.6rem;
+}
+.form-detail-table th:first-child,
+.form-detail-table td:first-child {
+  width: 2.75rem;
+  padding-left: 0.75rem;
+}

@@ -1,0 +1,506 @@
+/* ============================================================== thanh bên
+
+   Điều hướng là thanh bên dọc.
+
+   Lý do là số đo, không phải sở thích: khu vực học viên có bảy mục, và trên dải
+   ngang 1180px chúng vừa đủ chật để phải `overflow-x: auto`. Một thanh điều
+   hướng phải cuộn ngang là thanh điều hướng có mục người dùng không bao giờ
+   thấy. Xếp dọc thì bảy mục là thoải mái, và còn chỗ cho biểu tượng.
+
+   Dưới 60rem, thanh bên thành **ngăn kéo trượt từ trái kèm tấm phủ mờ**, mở từ
+   một thanh trên cùng. Bản trước để nó xổ xuống đè lên nội dung; ngăn kéo tốt
+   hơn ở hai điểm cụ thể: nó giữ nguyên thứ tự dọc của các mục (menu xổ xuống
+   phải nén lại), và tấm phủ cho người dùng một chỗ bấm để đóng ở bất kỳ đâu
+   trên màn hình thay vì phải quay lại đúng cái nút đã mở nó.
+   ========================================================================= */
+
+.shell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+}
+
+.rail {
+  border-right: 1px solid var(--rule-faint);
+  background: var(--sheet);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.rail__head {
+  padding: var(--gap-2) var(--gap-2) var(--gap-1);
+}
+
+.rail__brand {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: var(--gap-3);
+  /* Canh theo đỉnh chứ không theo giữa: tên đơn vị xuống hai dòng trên khung
+     16rem, và canh giữa sẽ đẩy ô định danh xuống ngang dòng thứ hai — trông như
+     nó bị rơi. */
+  align-items: start;
+  padding: var(--gap-2);
+  border-radius: var(--r-md);
+  text-decoration: none;
+  color: var(--ink);
+  transition: background-color 130ms var(--ease);
+}
+
+.rail__brand:hover {
+  background: var(--sheet-2);
+}
+
+/* Ô định danh. Hai chữ cái, không phải hình vẽ: đây là hệ thống nội bộ của một
+   đơn vị, và một logo giả sẽ trông giống chỗ chưa làm xong hơn là một thương
+   hiệu. */
+.rail__sigil {
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
+}
+
+.rail__product {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  display: block;
+}
+
+.rail__org {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  line-height: 1.35;
+  display: block;
+  margin-top: 0.1rem;
+  /* Tên đơn vị không lọt một dòng trong khung 16rem. Cân đều hai dòng thay vì để
+     dòng dưới trơ một chữ "NINH". */
+  text-wrap: balance;
+}
+
+/* Khung bọc phần cuộn được của thanh bên. Trên màn hình rộng nó là một cột co
+   giãn, để `margin-top: auto` của `.rail__foot` đẩy được khối danh tính xuống
+   đáy. */
+.rail__panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.rail__section {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: var(--gap-4) var(--gap-4) var(--gap-2);
+  margin: 0;
+}
+
+.rail__nav {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--gap-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Mục điều hướng là một viên bo góc, không phải một dòng có nẹp trái.
+
+   Nẹp trái là cách của bản trước và nó có một nhược điểm thật: nét 2px ở mép
+   trái nằm sát mép thanh bên, nên ở đuôi mắt nó lẫn với đường viền của chính
+   thanh bên. Nền viên thì không lẫn với gì cả. */
+.rail__link {
+  display: grid;
+  grid-template-columns: 1.125rem minmax(0, 1fr);
+  gap: var(--gap-3);
+  align-items: center;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--r-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background-color 130ms var(--ease), color 130ms var(--ease);
+}
+
+.rail__link:hover {
+  background: var(--sheet-2);
+  color: var(--ink);
+}
+
+.rail__link[aria-current='page'] {
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+  font-weight: 600;
+  /* Nẹp phải màu primary — mô-típ "mục đang mở" của mockup. `box-shadow` thay
+     vì `border-right` để không cộng thêm bề rộng, tránh các mục cạnh nhau
+     lệch nhau vài pixel khi chỉ một mục đang mở. */
+  box-shadow: inset -3px 0 0 var(--pen);
+}
+
+.rail__link--blocked {
+  color: var(--ink-faint);
+  cursor: default;
+  opacity: 0.75;
+}
+
+.rail__link--blocked:hover {
+  background: transparent;
+  color: var(--ink-faint);
+}
+
+/* Một dải NGANG duy nhất: danh tính bên trái (co giãn, cắt chữ khi chật),
+   ba nút icon (thông báo/giao diện/đăng xuất) bên phải, cố định bề rộng.
+   Trước đây đây là ba dòng riêng xếp chồng — `rail__me` rồi hai nút
+   `btn--sm` đầy chiều rộng — trông như ba viên bo tròn rời rạc chứ không
+   phải một khối có trật tự. `justify-content: space-between` + `min-width: 0`
+   trên danh tính là hai điều bắt buộc để dải không vỡ dòng ở khung 16rem. */
+.rail__foot {
+  margin-top: auto;
+  padding: var(--gap-3);
+  border-top: 1px solid var(--rule-faint);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-2);
+}
+
+/* Danh tính người dùng nằm ở chân thanh bên chứ không ở góc trên bên phải. */
+.rail__me {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: var(--gap-3);
+  align-items: center;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: var(--gap-2);
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  color: var(--ink);
+  transition: background-color 130ms var(--ease);
+}
+
+/* Ba nút icon đứng cùng một hàng, không chiếm hết bề rộng như `btn--sm`
+   trước đây — mẫu dải icon của top app bar trong mockup. */
+.rail__foot-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-1);
+  flex: none;
+}
+
+.rail__me:hover {
+  background: var(--sheet-2);
+}
+
+.rail__initials {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--r-pill);
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.rail__name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail__role {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--ink-faint);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Thanh trên cùng và tấm phủ chỉ tồn tại dưới 60rem. */
+.topbar {
+  display: none;
+}
+
+.scrim {
+  display: none;
+}
+
+@media (max-width: 60rem) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    /* Hai hàng khai báo rõ: thanh trên vừa đủ cao, nội dung ăn hết phần còn lại.
+       Không khai báo thì cả hai hàng đều là `auto`, và `align-content: stretch`
+       mặc định của lưới chia đều chỗ thừa cho **cả hàng của thanh trên** — thanh
+       trên vẫn cao 3.5rem nhưng hàng chứa nó phình ra, đẩy nội dung xuống giữa
+       màn hình với một mảng trắng phía trên. */
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  /* Dưới 60rem, `.topbar` (hamburger + thương hiệu) đã là thanh trên cùng —
+     một `.content-topbar` thứ hai ngay bên dưới sẽ thành hai thanh ngang
+     chồng nhau. Gộp cụm hành động vào `.topbar` thay vì hiện cả hai. */
+  .content-topbar {
+    display: none;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2);
+    height: 3.5rem;
+    padding: 0 var(--gap-3);
+    background: color-mix(in oklab, var(--sheet) 88%, transparent);
+    /* Làm mờ nền phía sau để chữ của thanh không lẫn vào nội dung cuộn qua dưới
+       nó. Trình duyệt không hỗ trợ vẫn có nền 88% đục, đủ đọc. */
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule-faint);
+  }
+
+  .topbar .rail__head {
+    padding: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    width: min(19rem, 84vw);
+    height: 100dvh;
+    border-right: 1px solid var(--rule-faint);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(-100%);
+
+    /* Ngăn kéo đóng phải biến mất khỏi **cả** khung nhìn lẫn thứ tự Tab.
+       `transform` một mình chỉ đẩy nó ra ngoài màn hình: bảy liên kết vẫn nhận
+       được tiêu điểm và trình đọc màn hình vẫn đọc chúng, nên người dùng bàn
+       phím phải Tab qua một menu vô hình trước khi tới nội dung.
+
+       `visibility: hidden` xử lý cả hai, và độ trễ 240ms đúng bằng thời gian
+       trượt để nó không biến mất giữa chừng khi đang đóng lại. */
+    visibility: hidden;
+    transition: transform 240ms var(--ease), visibility 0s linear 240ms;
+  }
+
+  .rail--open {
+    transform: none;
+    visibility: visible;
+    transition: transform 240ms var(--ease), visibility 0s;
+  }
+
+  .scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    border: 0;
+    padding: 0;
+    background: rgba(8, 14, 22, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 240ms var(--ease);
+  }
+
+  .scrim--on {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* ------------------------------------------------------- danh sách gọn
+
+   Dòng mỏng có icon nhỏ + tiêu đề + mã, thay cho ô "bento" lớn — dùng trong
+   modal chọn biểu mẫu, nơi bảy dòng cần đọc hết trong một màn hình vừa mắt. */
+
+.picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--rule-faint);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.picker-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  padding: 0.65rem var(--gap-4);
+  background: var(--sheet);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 120ms var(--ease);
+}
+a.picker-row:hover {
+  background: var(--sheet-2);
+}
+.picker-row--off {
+  opacity: 0.6;
+}
+
+.picker-row__icon {
+  flex-shrink: 0;
+  color: var(--pen-ink);
+}
+
+.picker-row__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+}
+
+.picker-row__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.picker-row__desc {
+  flex-basis: 100%;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.picker-row__go {
+  flex-shrink: 0;
+  color: var(--ink-faint);
+}
+
+/* ------------------------------------------------------------- chip gợi ý
+
+   Câu hỏi mẫu bấm được. Không phải trang trí: hạn chế đã biết của hệ thống là
+   truy vấn gõ không dấu sẽ trượt truy xuất, và một câu hỏi mẫu bấm được là cách
+   chắc chắn nhất để người dùng lần đầu gõ đúng.
+   ------------------------------------------------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-pill);
+  background: var(--sheet-2);
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 130ms var(--ease), color 130ms var(--ease),
+    background-color 130ms var(--ease);
+}
+
+.chip:hover:not(:disabled) {
+  border-color: color-mix(in oklab, var(--pen) 45%, transparent);
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+}
+
+.chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------- nút chọn nhóm
+
+   Hai lựa chọn loại trừ nhau, đứng cạnh nhau trong một khung lõm. Thay cho hai
+   thẻ radio viền dày của bản trước, thứ chiếm gần một phần ba màn hình đầu tiên
+   của trang hỏi đáp để hỏi một câu có hai đáp án.
+
+   Vẫn là `<input type="radio">` thật bên dưới, chỉ ẩn đi — bàn phím, trình đọc
+   màn hình và việc gửi biểu mẫu đều không đổi.
+   ------------------------------------------------------------------------- */
+
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: var(--r-md);
+  background: var(--sheet-2);
+  border: 1px solid var(--rule-faint);
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.seg__opt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  padding: 0.4rem 0.9rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 130ms var(--ease), color 130ms var(--ease),
+    box-shadow 130ms var(--ease);
+}
+
+.seg__opt input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  margin: 0;
+  cursor: inherit;
+}
+
+.seg__opt:hover:not(.seg__opt--off) {
+  color: var(--ink);
+}
+
+.seg__opt--on {
+  background: var(--sheet);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.seg__opt--off {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Ô chọn đang được điều khiển bằng bàn phím: vòng focus phải đi theo ô, không
+   theo `<input>` bị ẩn. */
+.seg__opt:has(input:focus-visible) {
+  box-shadow: var(--ring);
+}
+

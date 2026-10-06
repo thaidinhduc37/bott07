@@ -52,7 +52,7 @@ export default function LoginPage() {
         </div>
 
         {/* Mỗi năng lực là một `<span>` riêng — xem `.login__what` trong
-            globals.css: đó là cách duy nhất buộc dòng chỉ ngắt ở giữa hai mục. */}
+            styles/: đó là cách duy nhất buộc dòng chỉ ngắt ở giữa hai mục. */}
         <p className="login__what">
           <span>Hỏi đáp quy chế có trích dẫn</span>{' '}
           <span>Lịch học – lịch thi</span>{' '}
