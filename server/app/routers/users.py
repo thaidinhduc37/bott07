@@ -8,7 +8,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles
 from app.models.enums import RoleCode, UserStatus
 from app.schemas.users import (
     CreateUserRequest,
@@ -16,7 +16,7 @@ from app.schemas.users import (
     UpdateUserRolesRequest,
     UpdateUserStatusRequest,
 )
-from app.services.users_service import UsersService
+from app.services.accounts.users_service import UsersService
 
 users_router = APIRouter(prefix="/users", tags=["users"])
 admin_users_router = APIRouter(prefix="/admin/users", tags=["admin-users"])

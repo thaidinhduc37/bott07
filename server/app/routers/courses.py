@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles
 from app.models.academic import Course, Schedule, StudyClass
 from app.models.enums import RoleCode
 from app.models.users import StudentProfile, User

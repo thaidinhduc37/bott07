@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, rate_limit
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit
 from app.models.users import StudentProfile, User, UserRole
 from app.schemas.auth import (
     AuthenticatedUserOut,
@@ -18,8 +18,8 @@ from app.schemas.auth import (
     RefreshResponse,
     SetSignaturePinRequest,
 )
-from app.security import clear_auth_cookies, set_auth_cookies
-from app.services.auth_service import AuthService
+from app.core.security import clear_auth_cookies, set_auth_cookies
+from app.services.accounts.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

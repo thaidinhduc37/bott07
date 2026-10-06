@@ -29,7 +29,7 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "server" / "rag-service"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "server"))
 
 for stream in (sys.stdout, sys.stderr):
     stream.reconfigure(encoding="utf-8", errors="replace")

@@ -12,11 +12,11 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, Upl
 from fastapi.responses import FileResponse, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
 from app.models.enums import RoleCode, SubmissionStatus
 from app.schemas.forms import CreateSubmissionDto, SignSubmissionDto, UpdateSubmissionDto
-from app.services.forms_service import FormsService
-from app.services.signatures_service import SignaturesService
+from app.services.forms.forms_service import FormsService
+from app.services.forms.signatures_service import SignaturesService
 
 router = APIRouter(tags=["forms"])
 

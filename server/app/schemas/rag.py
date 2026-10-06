@@ -1,10 +1,7 @@
-"""Pydantic mirrors of `server/rag-service/app/schemas.py` — the FIXED contract
-of the rag-service. These are internal-only shapes (not exposed directly to
-the client via CamelModel aliasing): `rag_client.py` builds/parses them in
-snake_case exactly as rag-service expects on the wire.
+"""Internal payload/result shapes of the RAG pipeline.
 
-Do not import `CamelModel` here — rag-service speaks snake_case JSON, not
-camelCase, and this module must serialize/deserialize byte-for-byte with it.
+Not exposed directly to the client (no `CamelModel` aliasing): `rag_client.py` builds and
+parses them in snake_case. Do not import `CamelModel` here.
 """
 
 from __future__ import annotations

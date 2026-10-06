@@ -5,10 +5,10 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles
 from app.models.enums import RoleCode
 from app.schemas.rooms import CreateRoomDto, UpdateRoomDto
-from app.services.rooms_service import RoomsService
+from app.services.academic.rooms_service import RoomsService
 
 router = APIRouter(prefix="/rooms", tags=["rooms"])
 

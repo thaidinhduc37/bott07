@@ -7,7 +7,7 @@ from sqlalchemy import ForeignKey, Index, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db import Base
+from app.core.db import Base
 from app.models.common import created_at_col, uuid_pk
 
 

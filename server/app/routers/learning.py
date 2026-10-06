@@ -8,17 +8,17 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import get_settings
-from app.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
+from app.core.config import get_settings
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
 from app.models.enums import RoleCode
 from app.schemas.learning import CreateQuizDto, CreateReviewDto, SubmitQuizDto
 from app.schemas.notes import CreateNoteDto, NoteFromSourceDto, UpdateNoteDto
-from app.services.exam_plan_service import ExamPlanService
-from app.services.feedback_service import FeedbackService
-from app.services.insights_service import InsightsService
-from app.services.progress_service import ProgressService
-from app.services.learning_service import LearningService
-from app.services.notes_service import NotesService
+from app.services.learning.exam_plan_service import ExamPlanService
+from app.services.learning.feedback_service import FeedbackService
+from app.services.learning.insights_service import InsightsService
+from app.services.learning.progress_service import ProgressService
+from app.services.learning.learning_service import LearningService
+from app.services.learning.notes_service import NotesService
 
 router = APIRouter(prefix="/learning", tags=["learning"])
 

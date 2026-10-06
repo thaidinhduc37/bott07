@@ -14,7 +14,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db
+from app.core.deps import AuthenticatedUser, get_current_user, get_db
 from app.models.forms import FormTemplate
 
 router = APIRouter(prefix="/support", tags=["support"])

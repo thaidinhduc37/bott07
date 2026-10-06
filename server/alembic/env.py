@@ -8,14 +8,14 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-# Make `app.*` importable when alembic is invoked from server/api-py/.
+# Make `app.*` importable when alembic is invoked from server/.
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.config import get_settings  # noqa: E402
-from app.db import Base, to_asyncpg_dsn  # noqa: E402
+from app.core.config import get_settings  # noqa: E402
+from app.core.db import Base, to_asyncpg_dsn  # noqa: E402
 from app import models  # noqa: E402  (imports every model module -> populates Base.metadata)
 
 config = context.config

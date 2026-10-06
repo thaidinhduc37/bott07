@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "server"))
 sys.path.insert(0, str(Path(__file__).parent))
 
 from doc_titles import display_title  # noqa: E402
-from app.rag_container import get_rag_container
+from app.pipeline.container import get_rag_container
 
 
 async def main():

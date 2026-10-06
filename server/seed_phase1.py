@@ -16,11 +16,11 @@ import asyncio
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db import AsyncSessionLocal
+from app.core.db import AsyncSessionLocal
 from app.models.academic import StudyClass
 from app.models.enums import RoleCode
 from app.models.users import Role, StudentProfile, User, UserRole
-from app.security import hash_password
+from app.core.security import hash_password
 
 DEMO_PASSWORD = "Demo@2026"
 DEMO_PIN = "135790"

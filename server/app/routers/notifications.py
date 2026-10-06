@@ -14,7 +14,7 @@ from pydantic import Field
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db
+from app.core.deps import AuthenticatedUser, get_current_user, get_db
 from app.models.notifications import Notification
 from app.schemas.base import CamelModel
 

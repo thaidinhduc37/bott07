@@ -1,15 +1,8 @@
-"""Port of `health/health.controller.ts`.
+"""Health endpoints.
 
-`/api/health` is public and deliberately terse (just enough for Docker to know
-the container is alive). `/api/health/detail` is ADMIN-only and reports RAG
-pipeline health.
-
-Originally this called a separate `rag-service` HTTP process. Now that the
-pipeline runs in-process (see `app/rag_container.py`,
-`app/services/rag_client.py`), this just calls `RagClientService.health()`
-directly in Python — no HTTP hop, and "unreachable" is no longer a possible
-failure mode (a Chroma outage still shows up via `chroma.ok` inside the
-result).
+`/api/health` is public and deliberately terse (just enough for Docker to know the container
+is alive). `/api/health/detail` is ADMIN-only and reports RAG pipeline health through
+`RagClientService.health()` (a Chroma outage shows up via `chroma.ok` inside the result).
 """
 
 from __future__ import annotations
@@ -20,12 +13,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import get_db, require_roles
+from app.core.deps import get_db, require_roles
 from app.models.documents import DocumentVersion
 from app.models.enums import IndexStatus, RoleCode
 from app.models.forms import FormSubmission
 from app.models.users import User
-from app.services.rag_client import get_rag_client
+from app.services.chat.rag_client import get_rag_client
 
 router = APIRouter(prefix="/health", tags=["health"])
 

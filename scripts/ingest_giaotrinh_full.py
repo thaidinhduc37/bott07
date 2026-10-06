@@ -45,15 +45,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "server"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from doc_titles import display_title  # noqa: E402
-from app.config import get_settings  # noqa: E402
-from app.db import AsyncSessionLocal  # noqa: E402
+from app.core.config import get_settings  # noqa: E402
+from app.core.db import AsyncSessionLocal  # noqa: E402
 from app.models.academic import Course  # noqa: E402
 from app.models.documents import Document, DocumentVersion  # noqa: E402
 from app.models.enums import DocumentType, IndexStatus  # noqa: E402
 from app.models.users import User, UserRole  # noqa: E402
 from app.pipeline.indexing import IndexingService  # noqa: E402
-from app.rag_container import get_rag_container  # noqa: E402
-from app.services.storage_service import StorageService  # noqa: E402
+from app.pipeline.container import get_rag_container  # noqa: E402
+from app.services.documents.storage_service import StorageService  # noqa: E402
 from sqlalchemy import select  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")

@@ -1,18 +1,16 @@
-"""FastAPI app entrypoint — the unified `server/app`.
+"""FastAPI entrypoint (one process, one `python main.py`).
 
-Merges what used to be two processes:
+Layout of `server/app/`:
 
-  * `server/api-py` — auth, users, audit, health, chat, documents (web/DB layer)
-  * `server/rag-service` — hybrid retrieval, rerank, abstention, groundedness,
-    Gemini→HF LLM fallback (RAG pipeline)
+  * `core/`      settings, database session, auth dependencies, security helpers
+  * `models/`    SQLAlchemy models        * `schemas/`  Pydantic request/response shapes
+  * `routers/`   HTTP + RBAC only         * `services/` business logic, grouped by domain
+                                            (academic, accounts, chat, documents, forms, learning)
+  * `pipeline/`  the RAG pipeline (retrieval, rerank, grading, generation, groundedness),
+                 built once at startup by `app.pipeline.container.get_rag_container()` and
+                 called in-process from `services/chat/rag_client.py`.
 
-into one FastAPI app, one process, one `python main.py`. The RAG pipeline is
-built once at startup (`app.rag_container.get_rag_container()`) and called
-directly in Python from `app/services/rag_client.py` — no more HTTP hop to
-`localhost:8000`, no `X-Internal-Token`.
-
-Mirrors api-py's original `main.py`: global `/api` prefix, cookie-based auth,
-CORS (env-driven), Nest-shaped `{message, code}` JSON error bodies.
+Global `/api` prefix, cookie-based auth, CORS (env-driven), `{message, code}` JSON error bodies.
 """
 
 from __future__ import annotations
@@ -24,8 +22,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.config import get_settings
-from app.rag_container import get_rag_container
+from app.core.config import get_settings
+from app.pipeline.container import get_rag_container
 from app.routers.approvals import router as approvals_router
 from app.routers.auth import router as auth_router
 from app.routers.chat import router as chat_router
@@ -43,8 +41,8 @@ from app.routers.learning import router as learning_router
 from app.routers.notifications import router as notifications_router
 from app.routers.schedules import router as schedules_router
 from app.routers.users import admin_audit_router, admin_users_router, users_router
-from app.services import study_reminders
-from app.services.rag_client import get_rag_client
+from app.services.learning import study_reminders
+from app.services.chat.rag_client import get_rag_client
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("server")

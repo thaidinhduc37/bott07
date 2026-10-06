@@ -1,7 +1,7 @@
 """Import every model module so SQLAlchemy's declarative registry can resolve
 cross-file string relationship targets (e.g. `User.taught_courses` -> `Course`
 in academic.py) at mapper-configuration time. Import this module (or anything
-that imports it, like `app.db` consumers / alembic's `env.py`) before calling
+that imports it, like `app.core.db` consumers / alembic's `env.py`) before calling
 `Base.metadata.create_all` or `configure_mappers()`.
 """
 

@@ -27,12 +27,12 @@ import asyncio
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "server" / "rag-service"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "server"))
 
 for stream in (sys.stdout, sys.stderr):
     stream.reconfigure(encoding="utf-8", errors="replace")
 
-from app.config import Settings  # noqa: E402
+from app.core.config import Settings  # noqa: E402
 from app.pipeline.orchestrator import Orchestrator  # noqa: E402
 from app.pipeline.retrieval import Hit  # noqa: E402
 

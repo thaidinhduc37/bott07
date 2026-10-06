@@ -8,15 +8,15 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import get_settings
-from app.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
+from app.core.config import get_settings
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
 from app.models.enums import RoleCode
 from app.schemas.chat import AskDto, FeedbackDto
-from app.services.admin_dashboard_service import AdminDashboardService
-from app.services.chat_service import ChatService
-from app.services.documents_service import DocumentsService
-from app.services.feedback_service import FeedbackService
-from app.services.forms_service import FormsService
+from app.services.accounts.admin_dashboard_service import AdminDashboardService
+from app.services.chat.chat_service import ChatService
+from app.services.documents.documents_service import DocumentsService
+from app.services.learning.feedback_service import FeedbackService
+from app.services.forms.forms_service import FormsService
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 

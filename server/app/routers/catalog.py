@@ -10,7 +10,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles
 from app.models.enums import RoleCode
 from app.schemas.catalog import (
     AssignStudentsDto,
@@ -20,7 +20,7 @@ from app.schemas.catalog import (
     UpdateClassDto,
     UpdateCourseDto,
 )
-from app.services.catalog_service import CatalogService
+from app.services.academic.catalog_service import CatalogService
 
 router = APIRouter(prefix="/catalog", tags=["catalog"])
 

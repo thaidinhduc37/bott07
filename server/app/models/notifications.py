@@ -7,7 +7,7 @@ from sqlalchemy import Enum as SAEnum, ForeignKey, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db import Base
+from app.core.db import Base
 from app.models.common import TIMESTAMPTZ, created_at_col, uuid_pk
 from app.models.enums import NotificationType
 

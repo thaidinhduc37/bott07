@@ -12,7 +12,7 @@ import uuid
 from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles
 from app.models.enums import RoleCode
 from app.schemas.schedules import (
     CreateExamDto,
@@ -22,8 +22,8 @@ from app.schemas.schedules import (
     UpdateExamDto,
     UpdateScheduleDto,
 )
-from app.services.terms_service import TermsService
-from app.services.schedules_service import SchedulesService
+from app.services.academic.terms_service import TermsService
+from app.services.academic.schedules_service import SchedulesService
 
 router = APIRouter(prefix="/schedules", tags=["schedules"])
 

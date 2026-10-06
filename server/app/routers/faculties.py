@@ -8,10 +8,10 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles
 from app.models.enums import RoleCode
 from app.schemas.faculty import AssignCourseLecturerDto, CreateFacultyDto, UpdateFacultyDto
-from app.services.faculty_service import FacultyService
+from app.services.academic.faculty_service import FacultyService
 
 router = APIRouter(prefix="/faculties", tags=["faculties"])
 

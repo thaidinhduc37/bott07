@@ -32,9 +32,9 @@ from doc_titles import KNOWN_FIXES, display_title  # noqa: E402
 from sqlalchemy import select, text  # noqa: E402
 
 import app.models  # noqa: E402,F401  (đăng ký mọi model cho SQLAlchemy)
-from app.db import AsyncSessionLocal  # noqa: E402
+from app.core.db import AsyncSessionLocal  # noqa: E402
 from app.models.documents import Document, DocumentVersion  # noqa: E402
-from app.rag_container import get_rag_container  # noqa: E402
+from app.pipeline.container import get_rag_container  # noqa: E402
 
 CORPUS_DIR = ROOT / "data" / "corpus" / "giao-trinh"
 

@@ -19,9 +19,10 @@ React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► Postg
   `sinh-vien` (STUDENT), `can-bo` (ACADEMIC_MANAGER / LECTURER / APPROVER / DEPARTMENT_HEAD),
   `quan-tri` (ADMIN). Shared building blocks: `PageHeader`, `Tabs`/`TabPanel`, `Breadcrumb`,
   `Metrics` in `components/shared/`.
-- `server/` — FastAPI + SQLAlchemy 2 (async) + Alembic. `app/routers` (HTTP + RBAC), `app/services`
-  (logic), `app/models`, `app/schemas` (Pydantic, camelCase via `CamelModel`), `app/pipeline`
-  (the RAG pipeline: hybrid retrieval → rerank → abstention gate → grade/rewrite → cited generation
+- `server/` — FastAPI + SQLAlchemy 2 (async) + Alembic. `app/core` (settings, DB session, auth deps, security),
+  `app/routers` (HTTP + RBAC), `app/services/<domain>/` (logic, grouped: `academic`, `accounts`, `chat`,
+  `documents`, `forms`, `learning`), `app/models`, `app/schemas` (Pydantic, camelCase via `CamelModel`), `app/pipeline`
+  (the RAG pipeline + `container.py` that builds it once at startup + the Chroma store: hybrid retrieval → rerank → abstention gate → grade/rewrite → cited generation
   → groundedness check). Entry point `server/main.py`.
 - `scripts/` — Python maintenance scripts (`ingest_giaotrinh*.py`, `check_*.py`, `doc_titles.py`,
   `fix_document_titles.py`) and `scripts/test/` (HTTP acceptance tests; see below).

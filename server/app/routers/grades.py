@@ -6,10 +6,10 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, Upl
 from pydantic import Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles
 from app.models.enums import RoleCode
 from app.schemas.base import CamelModel
-from app.services.grades_service import GradesService
+from app.services.academic.grades_service import GradesService
 
 router = APIRouter(prefix="/grades", tags=["grades"])
 

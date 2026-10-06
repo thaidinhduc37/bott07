@@ -11,10 +11,10 @@ import uuid
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, Query, Request, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_db, require_roles
+from app.core.deps import AuthenticatedUser, get_db, require_roles
 from app.models.enums import DocumentType, RoleCode
 from app.schemas.documents import UploadDocumentDto
-from app.services.documents_service import DocumentsService
+from app.services.documents.documents_service import DocumentsService
 
 # Same role gate as every route below (via the per-route `require_roles`
 # dependency that also yields the AuthenticatedUser) — kept as one constant so

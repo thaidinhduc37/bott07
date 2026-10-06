@@ -13,9 +13,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.deps import AuthenticatedUser, get_current_user, get_db, rate_limit
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit
 from app.schemas.forms import ApprovalActionDto
-from app.services.approvals_service import ApprovalsService
+from app.services.forms.approvals_service import ApprovalsService
 
 router = APIRouter(prefix="/approvals", tags=["approvals"])
 

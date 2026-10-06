@@ -92,8 +92,9 @@ services:
       CHROMA_PORT: 8000
       HF_HOME: /models
     volumes:
-      # Bind-mount cả server/ (gồm .env, data, storage). REPO_ROOT = /app.
+      # Bind-mount server/ (gồm .env, storage) và data/ (nguồn, corpus, support.json). REPO_ROOT = /app.
       - ./server:/app/server
+      - ./data:/app/data:ro
       - models:/models
     depends_on:
       postgres:
@@ -106,81 +107,6 @@ services:
       resources:
         limits:
           memory: 6g
-
-  rag-service:
-    build:
-      context: .
-      dockerfile: server/rag-service/Dockerfile
-      target: dev
-    container_name: sa-rag-dev
-    restart: unless-stopped
-    environment:
-      CHROMA_HOST: chroma
-      CHROMA_PORT: 8000
-      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-latest}
-      RAG_INTERNAL_TOKEN: ${RAG_INTERNAL_TOKEN:-change_me_internal_token}
-      ANSWER_THRESHOLD: ${ANSWER_THRESHOLD:-0.050}
-      CANDIDATES_K: ${CANDIDATES_K:-12}
-      QUANTIZE_RERANKER: ${QUANTIZE_RERANKER:-1}
-    volumes:
-      - models:/models
-      # Bind-mount mã nguồn thật — sửa file trên host, uvicorn --reload nạp
-      # lại ngay bên trong container.
-      - ./server/rag-service/app:/app/app
-      - ./server/rag-service/var:/app/var
-      - ./server/data:/server/data:ro
-      - ./server/storage:/server/storage:ro
-    depends_on:
-      - chroma
-    ports:
-      - "${RAG_PORT:-8000}:8000"
-    deploy:
-      resources:
-        limits:
-          memory: 3g
-
-  api:
-    build:
-      context: .
-      dockerfile: server/api/Dockerfile
-      target: dev
-    container_name: sa-api-dev
-    restart: unless-stopped
-    environment:
-      NODE_ENV: development
-      PORT: 5000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-student_assistant}:${POSTGRES_PASSWORD:-change_me_in_production}@postgres:5432/${POSTGRES_DB:-student_assistant}?schema=public
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?bat buoc phai dat JWT_ACCESS_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?bat buoc phai dat JWT_REFRESH_SECRET}
-      JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-15m}
-      JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-7d}
-      RAG_SERVICE_URL: http://rag-service:8000
-      RAG_INTERNAL_TOKEN: ${RAG_INTERNAL_TOKEN:-change_me_internal_token}
-      # "*" mac dinh o dev: SSH-forward tu may khac hay dung origin localhost
-      # khac 5173 la chuyen thuong, gio cho phep tat (ma van giu duoc cookie
-      # nho reflect Origin thay vi CORS wildcard that). Sieu chat trong prod
-      # xem docker-compose.prod.yml.
-      CORS_ORIGIN: ${CORS_ORIGIN:-*}
-    volumes:
-      # Bind-mount mã nguồn thật. Hai dòng node_modules là volume NẶC DANH:
-      # giữ nguyên node_modules đã cài trong image, không để bind-mount ở
-      # trên đè mất (và node_modules cài trên Windows host có addon native
-      # như argon2 không chạy được trong container Linux).
-      - ./server/api:/app/server/api
-      - /app/server/api/node_modules
-      - /app/node_modules
-      - ./server/storage:/app/server/storage
-      - ./server/data:/app/server/data:ro
-    depends_on:
-      postgres:
-        condition: service_healthy
-    ports:
-      - "${API_PORT:-5000}:5000"
-    deploy:
-      resources:
-        limits:
-          memory: 1536m
 
   web:
     build:
@@ -200,7 +126,7 @@ services:
       - /app/client/node_modules
       - /app/node_modules
     depends_on:
-      - api
+      - server
     ports:
       - "${WEB_PORT:-5173}:5173"
     deploy:
