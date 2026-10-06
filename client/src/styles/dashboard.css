@@ -224,8 +224,7 @@
   right: 3px;
   overflow: hidden;
   background: var(--sheet);
-  border: 1px solid var(--rule-faint);
-  border-left: 3px solid var(--pen);
+  border: 1px solid var(--pen);
   border-radius: var(--r-sm);
   padding: 0.35rem 0.5rem;
   box-shadow: var(--shadow-sm);

@@ -853,11 +853,10 @@ select.field__input {
 
 /* Khối *bằng chứng*: câu trả lời có trích dẫn, tờ đơn đang chờ duyệt.
 
-   Thay cho bốn dấu bắt góc của bản trước. Nẹp trái làm đúng việc mà dấu bắt góc
-   định làm — tách khối này khỏi các thẻ khác — nhưng bằng một nét duy nhất thay
-   vì bốn, và nó không chọi với góc bo. */
+   Tách khối này khỏi các thẻ khác bằng viền màu mực bao đủ bốn cạnh (không dùng
+   nẹp một bên: quy ước giao diện cấm viền màu một phía). */
 .sheet--evidence {
-  border-left: 3px solid var(--pen);
+  border-color: var(--pen);
 }
 
 /* Thẻ bấm được. Nhấc nhẹ khi rê chuột: 2px là đủ để tay biết nó bấm được, và

@@ -807,18 +807,12 @@
 
 .skeleton {
   border-radius: var(--r-sm);
-  background: linear-gradient(
-    90deg,
-    var(--sheet-2) 25%,
-    color-mix(in oklab, var(--sheet-2) 55%, var(--rule)) 37%,
-    var(--sheet-2) 63%
-  );
-  background-size: 400% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
+  background: var(--sheet-2);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
-@keyframes shimmer {
-  from { background-position: 100% 0; }
-  to   { background-position: 0 0; }
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
 }
 
