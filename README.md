@@ -37,8 +37,7 @@ mọi trang.
 React/Vite (5173) ──► NestJS API (5000) ──┬──► PostgreSQL (5433)
                                           ├──► storage/ trên đĩa
                                           └──► FastAPI RAG (8000) ──┬──► Qdrant (6333)
-                                                                    └──► LLM (chuỗi dự phòng)
-                                                                           Gemini → Hugging Face
+                                                                    └──► LLM (Gemini)
 ```
 
 RAG service là bản port CPU của [`notebooks/rag-pipeline-2026.ipynb`](notebooks/rag-pipeline-2026.ipynb):
@@ -58,7 +57,7 @@ hybrid retrieval (BGE-M3 dense ∥ BM25 + pyvi → RRF) → cross-encoder rerank
 Yêu cầu: Docker Desktop đang chạy, Node.js ≥ 22.19, Python 3.11.
 
 ```bash
-cp .env.example .env       # rồi điền GEMINI_API_KEY và/hoặc HF_API_KEY
+cp .env.example .env       # rồi điền GEMINI_API_KEY
 npm install                # workspace client và server/api
 npm run infra:up           # PostgreSQL + Qdrant
 npm run db:migrate         # tạo schema
@@ -222,20 +221,9 @@ scripts/              Phân tích, chuẩn hóa corpus, sao lưu, khôi phục, 
 **Cổng 5433.** PostgreSQL map ra 5433 ở phía host vì 5432 thường đã bị một PostgreSQL khác chiếm.
 Bên trong Docker network vẫn là `postgres:5432`.
 
-**Hạn mức mô hình ngôn ngữ.** Khóa miễn phí của bất kỳ nhà cung cấp nào cũng chỉ đủ vài truy vấn
-mỗi ngày, nên `LLM_PROVIDER=chain` (mặc định) thử Gemini trước rồi tự chuyển sang Hugging Face khi
-cạn hạn mức. Việc chuyển làn được ghi vào `trace` của truy vấn — nó là thay đổi quan sát được với
-câu trả lời, không phải chi tiết nội bộ.
-
-Thứ tự Gemini trước là có chủ ý: hạn mức Gemini tính theo ngày và tự phục hồi lúc nửa đêm, còn tín
-dụng Hugging Face tính theo tháng. Tiêu cái phục hồi nhanh trước là cách giữ cái phục hồi chậm lâu
-nhất.
-
-Khi **mọi** nhà cung cấp đều cạn, dịch vụ RAG mở ngắt mạch 15 phút và **vẫn chạy**: truy xuất, xếp
-hạng và cổng từ chối hoạt động bình thường, chỉ mất phần sinh câu trả lời. Trang *Trạng thái dịch
-vụ* tách riêng hai đèn này, và `/health` liệt kê từng mắt xích kèm cầu dao riêng.
-
-Chạy `python scripts/probe_hf.py` để đo hạn mức thật của khóa Hugging Face thay vì tin trang giá.
+**Hạn mức mô hình ngôn ngữ.** Chỉ dùng Gemini. Khóa miễn phí chỉ đủ vài truy vấn mỗi ngày; khi cạn,
+dịch vụ RAG mở ngắt mạch 15 phút và **vẫn chạy**: truy xuất, xếp hạng và cổng từ chối hoạt động
+bình thường, chỉ mất phần sinh câu trả lời. Hạn mức Gemini tự phục hồi lúc nửa đêm.
 
 **Gõ tiếng Việt không dấu.** Corpus có dấu đầy đủ, nên truy vấn không dấu sẽ trượt truy xuất và bị
 cổng abstention từ chối. Đây là hạn chế đã biết, chưa xử lý trong MVP.

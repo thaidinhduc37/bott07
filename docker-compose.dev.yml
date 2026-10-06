@@ -117,12 +117,8 @@ services:
     environment:
       CHROMA_HOST: chroma
       CHROMA_PORT: 8000
-      LLM_PROVIDER: ${LLM_PROVIDER:-chain}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-latest}
-      HF_API_KEY: ${HF_API_KEY:-}
-      HF_MODEL: ${HF_MODEL:-Qwen/Qwen2.5-72B-Instruct}
-      HF_BASE_URL: ${HF_BASE_URL:-https://router.huggingface.co/v1}
       RAG_INTERNAL_TOKEN: ${RAG_INTERNAL_TOKEN:-change_me_internal_token}
       ANSWER_THRESHOLD: ${ANSWER_THRESHOLD:-0.050}
       CANDIDATES_K: ${CANDIDATES_K:-12}

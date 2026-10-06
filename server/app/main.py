@@ -136,8 +136,7 @@ async def on_startup() -> None:
 
     if not c.reader.available:
         logger.warning(
-            "Chưa cấu hình khóa cho nhà cung cấp mô hình ngôn ngữ nào (GEMINI_API_KEY "
-            "hoặc HF_API_KEY). Truy xuất vẫn chạy, nhưng định tuyến, chấm căn cứ, "
+            "Chưa cấu hình GEMINI_API_KEY. Truy xuất vẫn chạy, nhưng định tuyến, chấm căn cứ, "
             "sinh câu trả lời và kiểm chứng đều sẽ báo lỗi."
         )
 

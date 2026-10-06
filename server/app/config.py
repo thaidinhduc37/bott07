@@ -93,18 +93,10 @@ class Settings(BaseSettings):
     quantize_encoder: bool = True
 
     # ------------------------------------------------------------ rag: reader
-    llm_provider: str = "chain"       # gemini | huggingface | chain
-
     gemini_api_key: str = ""
     gemini_model: str = "gemini-2.5-flash"
     gemini_timeout_s: int = 60
     gemini_max_retries: int = 2
-
-    hf_api_key: str = ""
-    hf_base_url: str = "https://router.huggingface.co/v1"
-    hf_model: str = "Qwen/Qwen2.5-72B-Instruct"
-    hf_timeout_s: int = 90
-    hf_max_retries: int = 2
 
     llm_batch_concurrency: int = 4
 

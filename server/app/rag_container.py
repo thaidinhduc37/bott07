@@ -16,7 +16,7 @@ from pathlib import Path
 
 from app.config import Settings, get_settings
 from app.pipeline.indexing import IndexingService
-from app.pipeline.llm import BaseReader, ChainReader, GeminiReader, HuggingFaceReader
+from app.pipeline.llm import BaseReader, GeminiReader
 from app.pipeline.models import ModelRegistry
 from app.pipeline.orchestrator import Orchestrator
 from app.pipeline.retrieval import Retriever
@@ -26,50 +26,20 @@ log = logging.getLogger("rag.container")
 
 
 def build_reader(settings: Settings) -> BaseReader:
-    """Dựng reader theo `LLM_PROVIDER`. Xem rag-service/app/deps.py cho lý do
-    thứ tự Gemini trước Hugging Face và vì sao loại nhà cung cấp chưa cấu hình
-    ngay tại đây thay vì để hỏng lúc chạy."""
-    provider = settings.llm_provider.strip().lower()
-
-    def gemini() -> GeminiReader:
-        return GeminiReader(
-            api_key=settings.gemini_api_key,
-            model=settings.gemini_model,
-            timeout_s=settings.gemini_timeout_s,
-            max_retries=settings.gemini_max_retries,
-            concurrency=settings.llm_batch_concurrency,
-        )
-
-    def huggingface() -> HuggingFaceReader:
-        return HuggingFaceReader(
-            api_key=settings.hf_api_key,
-            model=settings.hf_model,
-            base_url=settings.hf_base_url,
-            timeout_s=settings.hf_timeout_s,
-            max_retries=settings.hf_max_retries,
-            concurrency=settings.llm_batch_concurrency,
-        )
-
-    if provider == "gemini":
-        return gemini()
-    if provider in ("huggingface", "hf"):
-        return huggingface()
-    if provider != "chain":
-        log.warning("LLM_PROVIDER=%r không nhận ra, dùng 'chain'", settings.llm_provider)
-
-    members = [r for r in (gemini(), huggingface()) if r.available]
-    if not members:
+    """Dựng reader Gemini — nhà cung cấp mô hình ngôn ngữ duy nhất."""
+    reader = GeminiReader(
+        api_key=settings.gemini_api_key,
+        model=settings.gemini_model,
+        timeout_s=settings.gemini_timeout_s,
+        max_retries=settings.gemini_max_retries,
+        concurrency=settings.llm_batch_concurrency,
+    )
+    if not reader.available:
         log.warning(
-            "Chưa cấu hình khóa cho nhà cung cấp mô hình ngôn ngữ nào. "
+            "Chưa cấu hình GEMINI_API_KEY. "
             "Truy xuất và cổng từ chối vẫn chạy; phần sinh câu trả lời sẽ báo lỗi."
         )
-        return gemini()
-    if len(members) == 1:
-        log.info("Chỉ có khóa cho %s — bỏ chuỗi dự phòng", members[0].provider)
-        return members[0]
-
-    log.info("Chuỗi mô hình ngôn ngữ: %s", " → ".join(r.provider for r in members))
-    return ChainReader(members)
+    return reader
 
 
 class RagContainer:

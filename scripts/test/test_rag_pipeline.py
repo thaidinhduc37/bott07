@@ -113,8 +113,6 @@ def main() -> int:
         f"dense={col.get('dense_points')} bm25={col.get('sparse_documents')}",
     )
 
-    # Khóa `llm` chứ không phải `gemini`: nhà cung cấp giờ là cấu hình, và với
-    # `LLM_PROVIDER=chain` thì không có *một* nhà cung cấp nào để đặt tên.
     llm_dep = health["dependencies"]["llm"]
     llm_ready = llm_dep["ok"] and not args.no_llm
     if not llm_ready:

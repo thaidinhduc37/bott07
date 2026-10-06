@@ -18,7 +18,7 @@ Ba điều được giữ nguyên từ notebook vì chúng ảnh hưởng tới 
    rõ ràng thành `False` sẽ âm thầm biến lỗi phân tích thành "không đủ căn cứ".
 
 --------------------------------------------------------------------------------
-Cấu trúc: một lớp cơ sở, hai nhà cung cấp, một chuỗi dự phòng
+Cấu trúc: một lớp cơ sở, một nhà cung cấp (Gemini)
 --------------------------------------------------------------------------------
 
 `BaseReader` giữ toàn bộ phần khó: cầu dao, lùi-thử-lại theo `retryDelay` của nhà
@@ -30,9 +30,7 @@ hàm `_generate()`.
 Viết lại nó cho mỗi nhà cung cấp là cách chắc chắn để hai đường đi hành xử khác
 nhau dưới áp lực — và áp lực chính là lúc ta cần chúng giống nhau.
 
-`ChainReader` nối nhiều reader lại: khi cầu dao của cái đầu mở, nó chuyển sang
-cái sau và **ghi lại việc chuyển làn**. Hết hạn mức khi đó không còn là mất chức
-năng mà là một sự kiện nhìn thấy được.
+Hiện chỉ còn Gemini; muốn thêm nhà cung cấp khác thì kế thừa `BaseReader` và cài `_generate()`.
 """
 
 from __future__ import annotations
@@ -57,18 +55,12 @@ _RETRY_DELAY_RE = re.compile(r"retryDelay['\"]?\s*[:=]\s*['\"]?(\d+)s")
 
 # Dấu hiệu hết hạn mức hẳn, khác với bị chặn tốc độ trong một cửa sổ ngắn.
 #
-# Bốn dấu hiệu đầu là của Google. Ba dấu hiệu cuối là của Hugging Face Inference
-# Providers: tài khoản miễn phí có định mức tín dụng theo tháng, và khi cạn thì
-# router trả 402 kèm "exceeded your monthly included credits" — không phải 429.
-# Coi nó là chặn tốc độ sẽ khiến hệ thống ngồi thử lại cho tới đầu tháng sau.
+# Các dấu hiệu của Google API khi khóa hết hạn mức (không phải 429 tạm thời).
 _HARD_QUOTA_MARKERS = (
     "exceeded your current quota",
     "check your plan and billing",
     "billing details",
     "quota_exceeded",
-    "monthly included credits",
-    "payment required",
-    "insufficient credits",
 )
 
 
@@ -483,225 +475,3 @@ class GeminiReader(BaseReader):
             config=config,
         )
         return response.text or ""
-
-
-# =============================================================================
-#  Hugging Face Inference Providers
-# =============================================================================
-
-
-class HuggingFaceReader(BaseReader):
-    """Router của Hugging Face, giao thức tương thích OpenAI.
-
-    Dùng `httpx` thẳng thay vì thêm SDK. Endpoint `/v1/chat/completions` của
-    router ổn định và đã tương thích OpenAI, nên một SDK chỉ thêm phụ thuộc mà
-    không thêm gì về mặt ngữ nghĩa — trong khi phần thực sự khó (cầu dao, thử
-    lại) đã nằm ở `BaseReader` rồi.
-
-    Model mặc định thuộc họ Qwen là có chủ ý: notebook gốc dùng Qwen2.5-7B, nên
-    chạy Qwen qua router giữ hệ thống gần bản tham chiếu hơn là đổi hẳn họ model.
-
-    Router chuyển tiếp tới nhiều nhà cung cấp phía sau (Together, Fireworks,
-    Nebius, Groq…). Chúng trả mã lỗi khác nhau cho cùng một tình huống, nên phần
-    đọc lỗi bên dưới lấy cả `message` lẫn `error` từ thân phản hồi thay vì chỉ
-    dựa vào mã trạng thái.
-    """
-
-    provider = "huggingface"
-
-    DEFAULT_BASE_URL = "https://router.huggingface.co/v1"
-
-    def __init__(
-        self,
-        api_key: str,
-        model: str,
-        base_url: str = DEFAULT_BASE_URL,
-        timeout_s: int = 90,
-        max_retries: int = 2,
-        concurrency: int = 4,
-    ):
-        super().__init__(
-            model=model,
-            timeout_s=timeout_s,
-            max_retries=max_retries,
-            concurrency=concurrency,
-            enabled=bool(api_key),
-        )
-        self._api_key = api_key
-        self._base_url = base_url.rstrip("/")
-        self._client = None
-
-    def _unconfigured_message(self) -> str:
-        return (
-            "Chưa cấu hình HF_API_KEY. Mọi bước cần mô hình ngôn ngữ "
-            "(định tuyến, chấm căn cứ, sinh câu trả lời, kiểm chứng) đều "
-            "không chạy được."
-        )
-
-    def _get_client(self):
-        if self._client is None:
-            import httpx
-
-            self._client = httpx.AsyncClient(
-                base_url=self._base_url,
-                headers={"Authorization": f"Bearer {self._api_key}"},
-                # Timeout thật nằm ở `asyncio.wait_for` của BaseReader; đặt ở
-                # đây cao hơn một chút để lớp ngoài là lớp quyết định, tránh hai
-                # đồng hồ đếm ngược tranh nhau báo lỗi khác kiểu.
-                timeout=self.timeout_s + 15,
-            )
-        return self._client
-
-    async def aclose(self) -> None:
-        if self._client is not None:
-            await self._client.aclose()
-            self._client = None
-
-    async def _generate(
-        self,
-        prompt: str,
-        *,
-        system: str | None,
-        max_output_tokens: int,
-        temperature: float,
-    ) -> str:
-        client = self._get_client()
-
-        messages: list[dict] = []
-        if system:
-            messages.append({"role": "system", "content": system})
-        messages.append({"role": "user", "content": prompt})
-
-        response = await client.post(
-            "/chat/completions",
-            json={
-                "model": self.model,
-                "messages": messages,
-                "temperature": temperature,
-                "max_tokens": max_output_tokens,
-                "stream": False,
-            },
-        )
-
-        if response.status_code >= 400:
-            raise RuntimeError(
-                f"HTTP {response.status_code} từ router Hugging Face: "
-                f"{self._error_detail(response)}"
-            )
-
-        data = response.json()
-        choices = data.get("choices") or []
-        if not choices:
-            # Một số nhà cung cấp trả 200 kèm `error` trong thân phản hồi. Coi đó
-            # là thành công sẽ biến lỗi hạn mức thành câu trả lời rỗng, và các
-            # stage chấm điểm sẽ lặng lẽ trả về None.
-            raise RuntimeError(
-                f"Router Hugging Face không trả lựa chọn nào: {self._error_detail(response)}"
-            )
-
-        return choices[0].get("message", {}).get("content") or ""
-
-    @staticmethod
-    def _error_detail(response) -> str:
-        """Rút phần người đọc được từ thân lỗi, dù nhà cung cấp gói kiểu gì."""
-        try:
-            body = response.json()
-        except (ValueError, json.JSONDecodeError):
-            return response.text[:300]
-
-        if isinstance(body, dict):
-            error = body.get("error")
-            if isinstance(error, dict):
-                return str(error.get("message") or error)[:300]
-            if error:
-                return str(error)[:300]
-            if body.get("message"):
-                return str(body["message"])[:300]
-        return str(body)[:300]
-
-
-# =============================================================================
-#  Chuỗi dự phòng
-# =============================================================================
-
-
-class ChainReader(BaseReader):
-    """Thử lần lượt nhiều reader; chuyển làn khi cầu dao của cái trước mở.
-
-    Vì sao cần: hạn mức miễn phí của bất kỳ nhà cung cấp nào cũng đủ nhỏ để cạn
-    giữa buổi trình bày. Với một reader duy nhất, cạn hạn mức nghĩa là mất hẳn
-    phần sinh câu trả lời. Với chuỗi, nó là một dòng trong trace.
-
-    Lớp này cố tình **không** kế thừa logic thử lại của `BaseReader`: mỗi reader
-    con đã tự thử lại rồi. Chồng thêm một vòng nữa sẽ nhân số lần gọi lên và làm
-    độ trễ khi hỏng trở nên khó lường.
-    """
-
-    provider = "chain"
-
-    def __init__(self, readers: list[BaseReader]):
-        if not readers:
-            raise ValueError("ChainReader cần ít nhất một reader")
-        # Không gọi super().__init__: mọi trạng thái đều nằm ở reader con.
-        self.readers = readers
-        self.usage = LlmUsage()
-        self.model = " → ".join(f"{r.provider}:{r.model}" for r in readers)
-        #: Nhà cung cấp đã phục vụ lời gọi gần nhất — orchestrator ghi vào trace.
-        self.last_provider: str = ""
-        self.last_model: str = ""
-
-    @property
-    def available(self) -> bool:
-        return any(r.available for r in self.readers)
-
-    @property
-    def circuit_open(self) -> bool:
-        return not self.available
-
-    @property
-    def circuit_reason(self) -> str:
-        if self.available:
-            return ""
-        reasons = [f"{r.provider}: {r.circuit_reason or 'chưa cấu hình'}" for r in self.readers]
-        return "Mọi nhà cung cấp đều không dùng được — " + "; ".join(reasons)
-
-    def reset_circuit(self) -> None:
-        for r in self.readers:
-            r.reset_circuit()
-
-    def status(self) -> dict:
-        return {
-            "provider": "chain",
-            "model": self.model,
-            "configured": any(r._enabled for r in self.readers),
-            "available": self.available,
-            "circuit_open": self.circuit_open,
-            "circuit_reason": self.circuit_reason,
-            "last_used": self.last_provider,
-            "members": [r.status() for r in self.readers],
-        }
-
-    async def chat(self, prompt: str, **kwargs) -> str:
-        errors: list[str] = []
-        for reader in self.readers:
-            if not reader.available:
-                errors.append(f"{reader.provider}: {reader.circuit_reason or 'chưa cấu hình'}")
-                continue
-            try:
-                text = await reader.chat(prompt, **kwargs)
-                if self.last_provider and self.last_provider != reader.provider:
-                    log.warning(
-                        "Chuyển nhà cung cấp mô hình ngôn ngữ: %s → %s",
-                        self.last_provider,
-                        reader.provider,
-                    )
-                self.last_provider = reader.provider
-                self.last_model = reader.model
-                self.usage.calls[kwargs.get("tag", "misc")] += 1
-                return text
-            except LlmUnavailable as e:
-                errors.append(f"{reader.provider}: {e}")
-                self.usage.failures[f"{reader.provider}:unavailable"] += 1
-                log.warning("Reader %s không dùng được, thử cái tiếp theo", reader.provider)
-
-        raise LlmUnavailable("Không nhà cung cấp nào trả lời được — " + "; ".join(errors))

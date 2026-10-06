@@ -11,7 +11,7 @@ administration (faculties, classes, courses, rooms, timetable editing).
 React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► PostgreSQL (5433, Docker)
                        RAG pipeline runs in-process  ├──► ChromaDB (8001, Docker)
                                                      ├──► storage/ on disk
-                                                     └──► LLM fallback chain: Gemini → Hugging Face
+                                                     └──► LLM: Gemini
 ```
 
 - `client/` — React 19 + Vite 6 + TypeScript (strict) SPA, plain CSS in `client/src/styles/`
@@ -43,7 +43,7 @@ React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► Postg
 ## Commands
 
 ```bash
-cp server/.env.example server/.env   # fill in GEMINI_API_KEY and/or HF_API_KEY; never commit .env
+cp server/.env.example server/.env   # fill in GEMINI_API_KEY; never commit .env
 npm install                          # client workspace
 npm run infra:up                     # PostgreSQL + ChromaDB via Docker
 npm run db:migrate                   # alembic upgrade head
