@@ -2,13 +2,13 @@
 rem Bat Tro ly ao: Docker (PostgreSQL + ChromaDB + backend) + giao dien web, roi mo trinh duyet.
 cd /d "%~dp0"
 
-docker info >nul 2>&1
+docker version --format "{{.Server.Version}}" >nul 2>&1
 if not errorlevel 1 goto docker_san_sang
 echo Dang bat Docker Desktop...
 start "" "%LOCALAPPDATA%\Programs\DockerDesktop\Docker Desktop.exe"
 :cho_docker
 timeout /t 5 /nobreak >nul
-docker info >nul 2>&1
+docker version --format "{{.Server.Version}}" >nul 2>&1
 if errorlevel 1 goto cho_docker
 
 :docker_san_sang
