@@ -61,6 +61,20 @@ _NATION_LINE_2 = "Độc lập - Tự do - Hạnh phúc"
 # Độ dài gạch chân xấp xỉ 1/3-1/2 độ dài dòng chữ phía trên, theo thể thức.
 _AGENCY_UNDERLINE = "_" * 18
 
+# Dấu phiên bản của bộ dựng, ghi vào thuộc tính tệp (Comments). Đổi giá trị này mỗi khi định dạng đơn thay đổi:
+# đơn CHƯA KÝ có tệp mang dấu cũ sẽ được dựng lại khi mở xem (xem `FormsService.file_of`); đơn đã ký thì không
+# bao giờ bị dựng lại vì tệp đã gắn với chữ ký.
+RENDERER_VERSION = "nd30-2026-10-06"
+
+
+def docx_renderer_version(path) -> str | None:
+    """Dấu phiên bản của một tệp .docx do hệ thống dựng; None nếu không đọc được hoặc không có dấu."""
+    try:
+        return Document(str(path)).core_properties.comments or None
+    except Exception:
+        return None
+
+
 OWNER_SIGNATURE_TITLE = "HỌC VIÊN VIẾT ĐƠN"
 _SIGNATURE_CAPTION = "(Ký và ghi rõ họ tên)"
 
@@ -96,6 +110,24 @@ def _set_default_font(document: Document) -> None:
     style.paragraph_format.line_spacing = LINE_SPACING
     style.paragraph_format.space_before = Pt(0)
     style.paragraph_format.space_after = Pt(0)
+
+
+def _page_numbers(document: Document) -> None:
+    """Đánh số trang từ trang 2 (Nghị định 30, Phụ lục I): chữ số Ả Rập, 13–14pt, đứng, canh giữa theo chiều
+    ngang trong lề trên; trang đầu không hiện số. Đơn một trang thì phần này không xuất hiện gì."""
+    section = document.sections[0]
+    section.different_first_page_header_footer = True
+    p = section.header.paragraphs[0]
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run = _run(p, "", size=FONT_SIZE)
+    for kind, text in (("begin", None), (None, " PAGE "), ("end", None)):
+        if kind:
+            el = run._r.makeelement(qn("w:fldChar"), {qn("w:fldCharType"): kind})
+        else:
+            el = run._r.makeelement(qn("w:instrText"), {})
+            el.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+            el.text = text
+        run._r.append(el)
 
 
 def _set_margins(document: Document) -> None:
@@ -223,8 +255,9 @@ def _masthead(document: Document, submission_date: datetime) -> None:
         p = left.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         _run(p, line, bold=True, size=MASTHEAD_SIZE)
-    # Đường kẻ dưới tên cơ quan: ngắn (khoảng 1/3 – 1/2 độ dài dòng tên).
-    _rule(left, left_cm, 3.2)
+    # Đường kẻ dưới tên cơ quan: dài 1/3 – 1/2 độ dài dòng tên (Nghị định 30, Phụ lục I); dòng "VÀ CÔNG NGHỆ AN NINH"
+    # dài khoảng 5,3 cm ở 13pt nên lấy 2,4 cm.
+    _rule(left, left_cm, 2.4)
 
     p1 = right.paragraphs[0]
     p1.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -393,6 +426,36 @@ def _body(document: Document, layout: FormLayout, data: dict) -> None:
 
 # ------------------------------------------------------------- signatures
 
+_BOLD_FONT_CANDIDATES = (
+    "C:/Windows/Fonts/timesbd.ttf",                                            # Windows: Times New Roman Bold
+    "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf",           # Linux: số đo giống Times New Roman
+    "/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman_Bold.ttf",
+)
+
+
+def _bold_text_width_cm(text: str, size_pt: float) -> float | None:
+    """Bề rộng (cm) của `text` in đậm ở cỡ `size_pt`, đo bằng phông Times thật; None nếu máy không có phông nào."""
+    try:
+        from PIL import ImageFont
+    except ImportError:
+        return None
+    for path in _BOLD_FONT_CANDIDATES:
+        try:
+            font = ImageFont.truetype(path, 100)
+        except OSError:
+            continue
+        return font.getlength(text) / 100 * size_pt / 72 * 2.54
+    return None
+
+
+def _title_wraps(title: str, cell_width_cm: float) -> bool:
+    """Tiêu đề cột ký có xuống hai dòng trong ô rộng `cell_width_cm` không (trừ lề ô mặc định 0,19 cm mỗi bên)?"""
+    width = _bold_text_width_cm(title, MASTHEAD_SIZE.pt)
+    if width is None:
+        return len(title) > 17   # không đo được: ước lượng theo số ký tự
+    return width > cell_width_cm - 0.38
+
+
 def _signature_table(document: Document, slots: list[SignatureSlot]) -> None:
     if not slots:
         return
@@ -406,11 +469,17 @@ def _signature_table(document: Document, slots: list[SignatureSlot]) -> None:
     tr_pr = table.rows[0]._tr.get_or_add_trPr()
     tr_pr.append(tr_pr.makeelement(qn("w:cantSplit"), {}))
 
+    # Tiêu đề dài (vd "LĐ PHÒNG QLĐT&BDNC") xuống hai dòng trong cột 5,5 cm. Khi đó các tiêu đề ngắn được đẩy xuống một dòng để dòng
+    # "(Ký và ghi rõ họ tên)" và vùng chữ ký của mọi cột vẫn thẳng hàng.
+    title_wraps = any(_title_wraps(slot.title, TEXT_WIDTH_CM / max(len(slots), 1)) for slot in slots)
+
     for cell, slot in zip(table.rows[0].cells, slots):
         cell.width = col_width
         p_title = cell.paragraphs[0]
         p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p_title.paragraph_format.keep_with_next = True
+        if title_wraps and not _title_wraps(slot.title, TEXT_WIDTH_CM / max(len(slots), 1)):
+            p_title.paragraph_format.space_before = Pt(16)
         _run(p_title, slot.title, bold=True, size=MASTHEAD_SIZE)
 
         p_caption = cell.add_paragraph()
@@ -452,8 +521,10 @@ def render_form(
     submission_date: datetime | None = None,
 ) -> bytes:
     document = Document()
+    document.core_properties.comments = RENDERER_VERSION
     _set_default_font(document)
     _set_margins(document)
+    _page_numbers(document)
 
     # Ngày ghi trên đơn là ngày theo giờ Việt Nam (22h giờ Việt Nam vẫn là ngày hôm đó, không phải ngày UTC).
     submission_date = (submission_date or datetime.now(timezone.utc)).astimezone(ZoneInfo("Asia/Ho_Chi_Minh"))

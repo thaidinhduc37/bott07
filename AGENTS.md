@@ -85,6 +85,11 @@ Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `kho
   generator will read. Eval set and results live in `docs/danh-gia/` — re-run `run_eval.py` after
   touching the pipeline; scoring is by keyword + manual review, one run each, so treat small
   differences as noise.
+- Printed forms (`server/app/services/docx_renderer.py`) follow Nghị định 30/2020/NĐ-CP Phụ lục I (A4, margins
+  20/20/30/15 mm, Times New Roman 13–14, justified body with 1 cm first-line indent and ≥ 6 pt paragraph gap,
+  page numbers from page 2). "Đơn" is not one of the 29 document types in the decree, so only its general rules
+  apply. When you change the layout, bump `RENDERER_VERSION`: unsigned drafts whose file carries an older stamp are
+  re-rendered when opened; signed files are never re-rendered (the signature is bound to their hash).
 - E-signatures are internal (hash + audit log), not legally-binding digital certificates — the UI
   states this on every relevant page; don't imply otherwise in copy or docs.
 - Approval flow is fixed in code + JSON config per form type — there is no dynamic workflow
