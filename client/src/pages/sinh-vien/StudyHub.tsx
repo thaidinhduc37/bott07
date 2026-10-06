@@ -4,12 +4,7 @@ import { Icon } from '@/components/shared/Icon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { ApiError } from '@/services/api';
 import { chatApi, type CourseRef } from '@/services/chat-api';
-import {
-  learningApi,
-  type ExamPlanItem,
-  type QuizSummary,
-  type ReviewOverview,
-} from '@/services/learning-api';
+import { learningApi, type ExamPlanItem, type QuizSummary, type ReviewOverview } from '@/services/learning-api';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { TabPanel, Tabs } from '@/components/shared/Tabs';
 import { ExamPlanPanel } from '@/components/study/ExamPlanPanel';
@@ -17,6 +12,9 @@ import { QuizComposer, type QuizDraft } from '@/components/study/QuizComposer';
 import { dayLabel, READINESS_TAG, viScore } from '@/components/study/format';
 
 const DATE = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'short' });
+
+/** Điểm (thang 10) → màu chữ: từ 8 là tốt, dưới 5 cần chú ý. */
+const scoreClass = (s: number) => (s >= 8 ? ' oh-score--ok' : s < 5 ? ' oh-score--warn' : '');
 
 type Tab = 'on-tap' | 'ke-hoach';
 
@@ -54,9 +52,18 @@ export default function StudyHubPage() {
   const [focusTick, setFocusTick] = useState(0);
 
   useEffect(() => {
-    void chatApi.courses().then((r) => setCourses(r.items)).catch(() => setCourses([]));
-    void learningApi.sessions().then((r) => setHistory(r.items)).catch(() => setHistory([]));
-    void learningApi.reviewItems().then(setReview).catch(() => setReview(null));
+    void chatApi
+      .courses()
+      .then((r) => setCourses(r.items))
+      .catch(() => setCourses([]));
+    void learningApi
+      .sessions()
+      .then((r) => setHistory(r.items))
+      .catch(() => setHistory([]));
+    void learningApi
+      .reviewItems()
+      .then(setReview)
+      .catch(() => setReview(null));
     // Một lần gọi duy nhất, dùng chung cho cột phụ "Kỳ thi sắp tới" và tab Kế hoạch.
     void learningApi
       .examPlan()
@@ -152,19 +159,17 @@ export default function StudyHubPage() {
 
       {tab === 'on-tap' ? (
         <TabPanel idPrefix="on-tap" tab="on-tap">
-          <div className="page-grid">
+          <div className="page-grid oh-grid">
             <div className="page-grid__main">
-              <QuizComposer
-                courses={courses}
-                draft={draft}
-                onDraftChange={setDraft}
-                topicInputRef={topicInputRef}
-              />
+              <QuizComposer courses={courses} draft={draft} onDraftChange={setDraft} topicInputRef={topicInputRef} />
 
-              <section className="stack">
-                <h2 className="display" style={{ fontSize: '1.15rem', margin: 0 }}>
-                  Các lượt đã làm
-                </h2>
+              <section className="sheet oh-hist">
+                <div className="oh-hist__head">
+                  <h2 className="aside-h">Các lượt đã làm</h2>
+                  {history !== null && history.length > 0 && (
+                    <span className="section-head__note">{Math.min(history.length, 10)} lượt gần nhất</span>
+                  )}
+                </div>
 
                 {history === null ? (
                   <p className="eyebrow">Đang tải…</p>
@@ -177,7 +182,7 @@ export default function StudyHubPage() {
                     <p>Tạo đề đầu tiên ở trên.</p>
                   </div>
                 ) : (
-                  <div className="sheet action-list">
+                  <div className="action-list oh-hist__list">
                     {history.slice(0, 10).map((s) => (
                       <Link key={s.id} to={`/sinh-vien/on-tap/${s.id}`} className="action-row study-hist">
                         <span className="action-row__body">
@@ -190,7 +195,7 @@ export default function StudyHubPage() {
                         </span>
                         <span className="study-hist__score">
                           {s.status === 'SUBMITTED' ? (
-                            <span>{viScore(s.score ?? 0)}</span>
+                            <span className={`oh-score${scoreClass(s.score ?? 0)}`}>{viScore(s.score ?? 0)}</span>
                           ) : (
                             <span className="tag tag--warn">Đang làm</span>
                           )}
@@ -207,7 +212,7 @@ export default function StudyHubPage() {
                 <h2 className="aside-h">Sổ câu sai</h2>
                 {review ? (
                   <>
-                    <p className="study-aside__due">
+                    <p className={`study-aside__due oh-due${review.due > 0 ? ' oh-due--on' : ''}`}>
                       <strong>{review.due}</strong>
                       <span>câu đến hạn</span>
                     </p>
@@ -245,6 +250,10 @@ export default function StudyHubPage() {
                             className="study-exam"
                             onClick={() => startQuizFromPlan({ courseId: e.course.id })}
                           >
+                            <span className="oh-date" aria-hidden="true">
+                              <span className="oh-date__day">{e.examDate.slice(8, 10)}</span>
+                              <span className="oh-date__month">Th{Number(e.examDate.slice(5, 7))}</span>
+                            </span>
                             <span className="study-exam__body">
                               <span className="study-exam__title">
                                 <span className="mono">{e.course.code}</span> — {e.course.name}
@@ -252,8 +261,8 @@ export default function StudyHubPage() {
                               <span className="study-exam__meta">
                                 {dayLabel(e.examDate)} · còn {e.daysLeft} ngày
                               </span>
+                              <span className={`tag ${r.cls} oh-exam__tag`}>{r.label}</span>
                             </span>
-                            <span className={`tag ${r.cls}`}>{r.label}</span>
                           </button>
                         </li>
                       );
@@ -269,11 +278,7 @@ export default function StudyHubPage() {
         </TabPanel>
       ) : (
         <TabPanel idPrefix="on-tap" tab="ke-hoach">
-          <ExamPlanPanel
-            plan={examPlan}
-            error={examPlanError}
-            onStartQuiz={startQuizFromPlan}
-          />
+          <ExamPlanPanel plan={examPlan} error={examPlanError} onStartQuiz={startQuizFromPlan} />
         </TabPanel>
       )}
     </div>

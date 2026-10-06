@@ -1,0 +1,112 @@
+/* Trang Ôn tập (tiền tố oh-): lượt đã làm trong một thẻ, ô "câu đến hạn" nổi bật, kỳ thi có khối ngày. */
+
+/* ---------------------------------------------------------- lượt đã làm */
+
+.oh-hist {
+  padding: 0;
+  overflow: hidden;
+}
+
+.oh-hist__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  padding: var(--gap-4) var(--gap-5);
+  border-bottom: 1px solid var(--rule-faint);
+}
+
+.oh-hist__head .aside-h {
+  margin: 0;
+}
+
+.oh-hist__list {
+  margin: 0;
+}
+
+.oh-hist .empty {
+  margin: var(--gap-5);
+}
+
+.oh-score {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.oh-score--ok {
+  color: var(--ok-ink);
+}
+
+.oh-score--warn {
+  color: var(--warn-ink);
+}
+
+/* ------------------------------------------------------- sổ câu sai (cột phụ) */
+
+/* Khi có câu đến hạn: khối nền xanh nhạt để mắt dừng ở đây trước tiên. */
+.oh-due {
+  padding: var(--gap-3) var(--gap-4);
+  background: var(--sheet-2);
+  border-radius: var(--r-md);
+}
+
+.oh-due--on {
+  background: var(--pen-wash);
+}
+
+.oh-due strong {
+  font-size: 2.25rem;
+}
+
+/* ----------------------------------------------------------- kỳ thi sắp tới */
+
+.study-exam {
+  align-items: flex-start;
+  gap: var(--gap-3);
+  border: 1px solid var(--rule-faint);
+}
+
+.study-exams {
+  gap: var(--gap-2);
+}
+
+.oh-date {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  padding: var(--gap-1) 0;
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+  border-radius: var(--r-md);
+  line-height: 1.1;
+}
+
+.oh-date__day {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.oh-date__month {
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.study-exam__body {
+  flex: 1;
+  gap: var(--gap-1);
+}
+
+.oh-exam__tag {
+  justify-self: start;
+  margin-top: var(--gap-1);
+}
+
+/* Màn hẹp: form tạo đề (hành động chính) lên trước, cột phụ xuống sau. */
+@media (max-width: 60rem) {
+  .page-grid.oh-grid .page-grid__aside {
+    order: 1;
+  }
+}
