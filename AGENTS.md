@@ -108,6 +108,10 @@ Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `kho
 - Faculty is an entity (`faculties`); `classes.faculty` (string) is kept in sync with
   `classes.faculty_id` for older readers. A DEPARTMENT_HEAD only sees and assigns inside the
   faculty whose `head_id` is theirs (other faculties answer 404).
+- Big services are split into mixins next to the main file (`schedules_service.py` + `schedule_import.py`/
+  `schedule_exams.py`, `catalog_*`, `forms_*`), with shared helpers in `<name>_common.py`. The public class and
+  its method signatures stay in the main file (`class FormsService(ValidationMixin, FilesMixin, ...)`), so routers
+  and tests don't change. Keep a service file under ~500 lines; add a new mixin rather than growing one.
 - Async SQLAlchemy: load relationships explicitly (`selectinload`) and read ORM attributes into
   locals before `commit()`; lazy loads raise `MissingGreenlet` (a 500).
 - CSS: only existing tokens (`--ink`, `--pen`, `--gap-*`, …), dark-theme safe, no gradients,
