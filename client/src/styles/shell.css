@@ -144,10 +144,6 @@
   background: var(--pen-wash);
   color: var(--pen-ink);
   font-weight: 600;
-  /* Nẹp phải màu primary — mô-típ "mục đang mở" của mockup. `box-shadow` thay
-     vì `border-right` để không cộng thêm bề rộng, tránh các mục cạnh nhau
-     lệch nhau vài pixel khi chỉ một mục đang mở. */
-  box-shadow: inset -3px 0 0 var(--pen);
 }
 
 .rail__link--blocked {

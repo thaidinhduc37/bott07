@@ -208,13 +208,15 @@
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  text-align: center;
-  color: #ffffff;
-  background: #006d77;
+  text-align: left;
+  color: var(--ink-soft);
+  background: var(--sheet-2);
+  border-bottom: 1px solid var(--rule-faint);
   cursor: pointer;
 }
 .chat-history__section-title:hover {
-  background: #00565d;
+  background: var(--pen-wash);
+  color: var(--pen-ink);
 }
 
 .chat-history__section + .chat-history__section {
@@ -609,7 +611,7 @@
   gap: var(--gap-4);
   padding: 0.85rem clamp(1rem, 3vw, 2rem);
   background: var(--pen);
-  color: #fff;
+  color: var(--on-pen);
 }
 
 .composer__bar-text {
@@ -632,7 +634,7 @@
   display: flex;
   background: none;
   border: 0;
-  color: #fff;
+  color: var(--on-pen);
   opacity: 0.85;
   cursor: pointer;
   padding: 0.2rem;

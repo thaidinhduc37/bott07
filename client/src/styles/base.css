@@ -510,7 +510,7 @@ a {
   width: 100%;
   border: 1px solid var(--rule);
   border-radius: var(--r-sm);
-  background: var(--sheet-2);
+  background: var(--sheet);
   padding: 0.55rem 0.75rem;
   font: inherit;
   font-size: 0.9375rem;
@@ -647,7 +647,7 @@ select.field__input {
 }
 .switch input:checked ~ .switch__track .switch__thumb {
   transform: translateX(1rem);
-  background: #fff;
+  background: var(--on-pen);
 }
 .switch input:focus-visible ~ .switch__track {
   box-shadow: 0 0 0 3px var(--pen-wash);

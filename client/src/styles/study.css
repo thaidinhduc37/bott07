@@ -997,7 +997,7 @@
 }
 .study-exam {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--gap-3);
   width: 100%;
@@ -1022,9 +1022,8 @@
 .study-exam__title {
   font-size: 0.875rem;
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 .study-exam__meta {
   font-size: 0.75rem;
