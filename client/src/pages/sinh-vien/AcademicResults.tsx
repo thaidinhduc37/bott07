@@ -106,7 +106,7 @@ export default function AcademicResults() {
       .catch((e) => setError(e instanceof ApiError ? e.message : 'Không tải được kết quả học tập'));
   }, []);
 
-  const terms = data?.terms ?? [];
+  const terms = useMemo(() => data?.terms ?? [], [data]);
   const visible = useMemo(
     () => (termFilter === ALL ? terms : terms.filter((t) => `${t.academicYear}|${t.semester}` === termFilter)),
     [terms, termFilter],

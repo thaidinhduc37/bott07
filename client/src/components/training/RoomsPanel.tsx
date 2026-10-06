@@ -290,6 +290,12 @@ function RoomFormDialog({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  // Đóng hộp thoại (gỡ khỏi cây) thì trả focus về nút đã mở nó.
+  useEffect(() => {
+    const opener = openRef.current;
+    return () => opener?.focus();
+  }, [openRef]);
+
   const dialogRef = useRef<HTMLDialogElement>(null);
   const editing = initial != null;
   const locked = editing && (initial?.usageCount ?? 0) > 0;

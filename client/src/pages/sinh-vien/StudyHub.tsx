@@ -38,7 +38,7 @@ export default function StudyHubPage() {
   const [examPlan, setExamPlan] = useState<{ today: string; exams: ExamPlanItem[]; reason?: 'NO_CLASS' } | null>(null);
   const [examPlanError, setExamPlanError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   // Form "Tạo đề" do trang cha giữ (controlled) để các nút "Tạo đề ôn" ở tab
   // Kế hoạch có thể điền sẵn môn/chủ đề rồi chuyển sang tab Ôn tập.

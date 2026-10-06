@@ -23,6 +23,7 @@ from __future__ import annotations
 import io
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
@@ -402,6 +403,8 @@ def _signature_table(document: Document, slots: list[SignatureSlot]) -> None:
                 ts = slot.signed_at
                 if ts.tzinfo is None:
                     ts = ts.replace(tzinfo=timezone.utc)
+                # Giờ ký theo giờ Việt Nam (trước đây in giờ UTC: 09:23 thay vì 16:23).
+                ts = ts.astimezone(ZoneInfo("Asia/Ho_Chi_Minh"))
                 _run(p_time, f"Ký lúc {ts.strftime('%H:%M %d/%m/%Y')}", italic=True, size=Pt(11))
 
 

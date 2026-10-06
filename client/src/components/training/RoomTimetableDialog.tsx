@@ -19,6 +19,12 @@ export function RoomTimetableDialog({
   openRef: React.RefObject<HTMLElement | null>;
   onClose: () => void;
 }) {
+  // Đóng hộp thoại (gỡ khỏi cây) thì trả focus về nút đã mở nó.
+  useEffect(() => {
+    const opener = openRef.current;
+    return () => opener?.focus();
+  }, [openRef]);
+
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   // Khoảng mặc định: hôm nay → +14 ngày (giờ Việt Nam).

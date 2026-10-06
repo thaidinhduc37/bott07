@@ -67,3 +67,6 @@ backups/
 /nul
 
 !client/public/logo.png
+
+# tệp khóa tạm của Word/Office
+~$*

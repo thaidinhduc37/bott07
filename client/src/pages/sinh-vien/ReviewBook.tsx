@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/components/shared/Icon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
