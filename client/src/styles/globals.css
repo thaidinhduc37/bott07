@@ -5960,3 +5960,17 @@ button.study-aside__link:focus-visible {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--gap-5);
 }
+
+/* Màn hẹp: ô số liệu xếp hai cột thay vì mỗi ô một hàng (bốn ô xếp dọc chiếm hơn nửa màn hình). */
+@media (max-width: 30rem) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-3);
+  }
+  .metric__body {
+    padding: var(--gap-3);
+  }
+  .metric__value {
+    font-size: 1.375rem;
+  }
+}

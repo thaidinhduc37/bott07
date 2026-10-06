@@ -22,7 +22,7 @@ function totalCell(c: GradeCourse) {
 
 function TermSheet({ term }: { term: GradeTerm }) {
   return (
-    <section className="sheet sheet--pad">
+    <section className="sheet sheet--pad grd-term-sheet">
       <div className="section-head">
         <h2 className="aside-h">
           {term.semester} — Năm học {term.academicYear}
@@ -37,10 +37,21 @@ function TermSheet({ term }: { term: GradeTerm }) {
 
       <div className="table-wrap">
         <table className="data-table grd-table">
+          <colgroup>
+            <col className="grd-c-stt grd-col-stt" />
+            <col className="grd-c-code grd-col-code" />
+            <col />
+            <col className="grd-c-tc" />
+            <col className="grd-c-part grd-col-part" />
+            <col className="grd-c-part grd-col-part" />
+            <col className="grd-c-part grd-col-part" />
+            <col className="grd-c-part grd-col-part" />
+            <col className="grd-c-total" />
+          </colgroup>
           <thead>
             <tr>
-              <th className="num">STT</th>
-              <th>Mã môn</th>
+              <th className="num grd-col-stt">STT</th>
+              <th className="grd-col-code">Mã môn</th>
               <th>Tên môn</th>
               <th className="num">TC</th>
               <th className="num grd-col-part">TH</th>
@@ -53,9 +64,12 @@ function TermSheet({ term }: { term: GradeTerm }) {
           <tbody>
             {term.courses.map((c, i) => (
               <tr key={c.courseId}>
-                <td className="num">{i + 1}</td>
-                <td className="mono">{c.code}</td>
-                <td>{c.name}</td>
+                <td className="num grd-col-stt">{i + 1}</td>
+                <td className="mono grd-col-code">{c.code}</td>
+                <td>
+                  <span className="mono grd-code-inline">{c.code}</span>
+                  {c.name}
+                </td>
                 <td className="num">{c.credits}</td>
                 <td className="num grd-col-part">{scoreCell(c.practice)}</td>
                 <td className="num grd-col-part">{scoreCell(c.process)}</td>
@@ -68,10 +82,10 @@ function TermSheet({ term }: { term: GradeTerm }) {
         </table>
       </div>
 
-      <p className="grd-term-gpa">
-        Điểm trung bình học kỳ:{' '}
+      <div className="grd-term-foot">
+        <span>Điểm trung bình học kỳ</span>
         <strong>{term.gpa === null ? '—' : viScore(term.gpa)}</strong>
-      </p>
+      </div>
     </section>
   );
 }
@@ -136,7 +150,6 @@ export default function AcademicResults() {
               },
             ]}
           />
-          <p className="grd-note">Thang điểm 10. Điểm học phần do giảng viên / phòng đào tạo nhập.</p>
 
           {terms.length === 0 ? (
             <div className="empty">
@@ -145,7 +158,7 @@ export default function AcademicResults() {
             </div>
           ) : (
             <>
-              <div className="grd-filter">
+              <div className="field grd-filter">
                 <label className="field__label" htmlFor="grd-term">
                   Học kỳ
                 </label>
@@ -167,6 +180,11 @@ export default function AcademicResults() {
               {visible.map((t) => (
                 <TermSheet key={`${t.academicYear}|${t.semester}`} term={t} />
               ))}
+
+              <p className="grd-note">
+                Thang điểm 10, đạt từ {viScore(data.passScore)}. Điểm học phần do giảng viên hoặc phòng đào tạo nhập;
+                hệ thống không tự tính từ các điểm thành phần.
+              </p>
             </>
           )}
         </>

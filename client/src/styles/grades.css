@@ -1,6 +1,6 @@
 /* grades — trang "Kết quả học tập" của học viên (tiền tố grd-) */
 
-/* Thẻ trên cùng tiêu đề học kỳ: hai thẻ nhỏ nằm ngang, xuống hàng khi hẹp. */
+/* Thẻ cạnh tiêu đề học kỳ: nằm ngang, xuống hàng khi hẹp. */
 .grd-term-tags {
   display: flex;
   flex-wrap: wrap;
@@ -12,46 +12,110 @@
   color: var(--ink-faint);
 }
 
-/* Điểm học phần: chữ thường khi chưa có điểm, thẻ khi đã chấm. */
 .grd-total {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
-/* Điểm trung bình học kỳ, dòng cuối khối. */
-.grd-term-gpa {
-  margin: var(--gap-4) 0 0;
-  font-size: 0.875rem;
+/* ---------------------------------------------------------------- bảng điểm
+   Cột cố định bề rộng để tiêu đề và giá trị thẳng hàng giữa các học kỳ; cột số căn giữa. */
+.grd-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.grd-table th.num,
+.grd-table td.num {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.grd-table td:nth-child(3) {
+  overflow-wrap: anywhere;
+}
+
+.grd-c-stt {
+  width: 3.75rem;
+}
+.grd-c-code {
+  width: 6.5rem;
+}
+.grd-c-tc {
+  width: 4rem;
+}
+.grd-c-part {
+  width: 4.5rem;
+}
+.grd-c-total {
+  width: 6.5rem;
+}
+
+/* Dòng điểm trung bình học kỳ: nhãn trái, số phải — nằm ngay dưới bảng, cùng khung. */
+.grd-term-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-4);
+  margin-top: var(--gap-3);
+  padding: var(--gap-3) var(--gap-4) 0;
+  border-top: 1px solid var(--rule-faint);
+  font-size: 0.9375rem;
   color: var(--ink-soft);
 }
 
-/* Chú thích nhỏ dưới khối tổng kết. */
+.grd-term-foot strong {
+  font-size: 1.125rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Chú thích cuối trang. Không đặt margin-top: khoảng cách trên là của `.stack`. */
 .grd-note {
-  margin: 0;
-  font-size: 0.75rem;
+  margin-inline: 0;
+  margin-bottom: 0;
+  font-size: 0.8125rem;
   color: var(--ink-faint);
+  max-width: var(--measure);
 }
 
-/* Bộ lọc học kỳ: nhãn + select bề rộng vừa phải. */
+/* Bộ lọc học kỳ: không kéo giãn hết chiều ngang. */
 .grd-filter {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--gap-3);
+  max-width: 22rem;
 }
 
-.grd-filter .field__label {
-  margin: 0 0 var(--gap-2);
+/* Mã môn in ngay trước tên môn: chỉ dùng khi cột Mã môn bị ẩn (màn hẹp). */
+.grd-code-inline {
+  display: none;
 }
 
-.grd-filter select.field__input {
-  width: auto;
-  min-width: 14rem;
-  max-width: 100%;
-}
-
-/* Màn hẹp (< 40rem): ẩn cột điểm thành phần, chỉ giữ Mã môn, Tên, Tín chỉ, Điểm. */
+/* Màn hẹp (< 40rem): chỉ giữ Tên môn (kèm mã môn ở dòng trên), Tín chỉ, Điểm — tên môn mới đủ chỗ. */
 @media (max-width: 40rem) {
-  .grd-col-part {
+  .grd-col-part,
+  .grd-col-stt,
+  .grd-col-code {
     display: none;
+  }
+
+  .grd-code-inline {
+    display: block;
+    margin-bottom: 0.1rem;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+  }
+
+  /* Thẻ học kỳ ít lề hơn để bảng có thêm chỗ. */
+  .grd-term-sheet.sheet--pad {
+    padding: var(--gap-4) var(--gap-3);
+  }
+
+  .grd-c-tc {
+    width: 3rem;
+  }
+  .grd-c-total {
+    width: 4.75rem;
+  }
+
+  .grd-term-foot {
+    padding-inline: var(--gap-2);
   }
 }
