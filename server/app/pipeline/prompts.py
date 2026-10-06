@@ -40,7 +40,11 @@ không đánh số, không bình luận. Giữ nguyên ngôn ngữ gốc."""
 
 REWRITE_SYSTEM = """Lần tìm kiếm vừa rồi không trả về gì hữu ích. Hãy viết lại câu hỏi thành một
 truy vấn tìm kiếm tốt hơn: dùng từ đồng nghĩa và thuật ngữ chuyên ngành, bỏ các
-từ đệm trong hội thoại, giữ nguyên ngôn ngữ gốc. Chỉ trả về truy vấn đã viết lại."""
+từ đệm trong hội thoại, giữ nguyên ngôn ngữ gốc.
+
+Ràng buộc: giữ nguyên mọi tên riêng, tên học phần, mã học phần, con số và số điều
+có trong câu hỏi. KHÔNG thêm tên cơ quan, đơn vị, ngành hay thông tin nào không có
+trong câu hỏi gốc (kể cả khi bạn đoán được). Chỉ trả về truy vấn đã viết lại."""
 
 CHITCHAT_SYSTEM = """Bạn là trợ lý hỏi đáp tài liệu của Học viện. Trả lời một câu ngắn bằng ngôn
 ngữ của người dùng, và nói rõ bạn chỉ trả lời được các câu hỏi về những tài liệu
@@ -87,7 +91,9 @@ GRADE_QUESTION = """Ngữ cảnh:
 ---
 Câu hỏi: {question}
 
-Các đoạn văn trên có chứa đủ thông tin để trả lời câu hỏi không?"""
+Các đoạn văn trên có chứa đủ thông tin để trả lời câu hỏi không?
+Lưu ý: một đoạn văn nêu rõ rằng điều được hỏi là "không có" hay "không" (ví dụ
+"Học phần tiên quyết: Không") cũng là thông tin đủ để trả lời."""
 
 
 # ----------------------------------------------------------------- từ chối

@@ -44,6 +44,10 @@ log = logging.getLogger("rag.orchestrator")
 
 CITE_RE = re.compile(r"\[(\d+)\]")
 
+# Số ký tự tối đa của mỗi đoạn văn đưa vào bước chấm đủ căn cứ (một chunk thường
+# dài 1000-1600 ký tự).
+GRADE_CHARS_PER_HIT = 1800
+
 # Mật độ dấu tiếng Việt, dùng để chọn ngôn ngữ của lời từ chối. Được huấn luyện
 # trên chuỗi năm-mười từ như câu hỏi thực tế thì đáng tin hơn các bộ nhận diện
 # ngôn ngữ thống kê (vd. `langdetect`), vốn cần văn bản dài hơn để ổn định.
@@ -141,7 +145,11 @@ class Orchestrator:
     # -------------------------------------------------- §18 chấm bằng chứng
 
     async def grade_sufficiency(self, question: str, hits: list[Hit]) -> bool:
-        ctx = "\n\n".join(h.text[:900] for h in hits[:3])
+        # Chấm trên cùng bộ đoạn văn mà bước sinh sẽ đọc, không cắt cụt. Trước đây
+        # chỉ lấy 3 đoạn đầu, mỗi đoạn 900 ký tự: đoạn chứa đáp án nằm ở hạng 1
+        # nhưng câu "Một tín chỉ bằng 15 giờ giảng… kèm 30 giờ tự học" bị cắt ngang
+        # nên bước chấm kết luận "thiếu" và hệ thống từ chối một câu hỏi có đáp án.
+        ctx = "\n\n".join(h.text[:GRADE_CHARS_PER_HIT] for h in hits)
         verdict = await self.reader.yes_no(
             prompts.GRADE_QUESTION.format(context=ctx, question=question), tag="grade"
         )

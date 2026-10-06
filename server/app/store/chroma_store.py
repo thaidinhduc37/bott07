@@ -68,6 +68,7 @@ class ChromaStore:
             settings=chromadb.config.Settings(anonymized_telemetry=False),
         )
         self.dim = dim
+        self._titles_cache: dict[str, tuple[int, dict[str, str]]] = {}
 
     # -------------------------------------------------------------- collection
 
@@ -114,18 +115,47 @@ class ChromaStore:
 
     # ------------------------------------------------------------------ search
 
+    def document_titles(self, collection: str) -> dict[str, str]:
+        """{document_id: title} của mọi tài liệu trong collection.
+
+        Dùng để nhận ra tài liệu mà câu hỏi nhắc tên. Đọc metadata của cả
+        collection nên được nhớ lại theo số điểm hiện có: nạp thêm hay xóa tài
+        liệu đổi số điểm thì lần gọi sau tự đọc lại.
+        """
+        if not self._exists(collection):
+            return {}
+        col = self.client.get_collection(name=collection, embedding_function=None)
+        count = col.count()
+        cached = self._titles_cache.get(collection)
+        if cached and cached[0] == count:
+            return cached[1]
+        got = col.get(include=["metadatas"], limit=max(count, 1))
+        titles: dict[str, str] = {}
+        for meta in got.get("metadatas") or []:
+            doc_id, title = meta.get("document_id"), meta.get("title")
+            if doc_id and title:
+                titles[doc_id] = title
+        self._titles_cache[collection] = (count, titles)
+        return titles
+
     def search(
         self,
         collection: str,
         vector,
         limit: int,
         course_id: str | None = None,
+        document_ids: list[str] | None = None,
     ) -> list[tuple[dict, float]]:
         if not self._exists(collection):
             return []
         col = self.client.get_collection(name=collection, embedding_function=None)
 
-        where = {"course_id": course_id} if course_id else None
+        clauses = []
+        if course_id:
+            clauses.append({"course_id": course_id})
+        if document_ids:
+            clauses.append({"document_id": {"$in": list(document_ids)}})
+        where = None if not clauses else clauses[0] if len(clauses) == 1 else {"$and": clauses}
         res = col.query(
             query_embeddings=[vector.tolist()],
             n_results=limit,
