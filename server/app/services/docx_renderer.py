@@ -5,8 +5,8 @@ code against a `FormLayout` from `form_layouts.py`.
 
 Layout follows Nghị định 30/2020/NĐ-CP formatting conventions (Phụ lục I,
 Mẫu 1.1) and the original forms in `server/data/thutuchanhchinh`: A4, margins
-top 20mm / bottom 20mm / left 30mm / right 20mm, Times New Roman 14pt body text
-(13pt for the masthead), line spacing 1.15, body lines justified with a 1.27cm
+top 20mm / bottom 20mm / left 30mm / right 15mm, Times New Roman 14pt body text
+(13pt for the masthead and signature block), line spacing 1.15, body lines justified with a 1.27cm
 first-line indent.
 
 Entry point: `render_form(layout, data, slots)` -> raw .docx bytes.
@@ -37,19 +37,19 @@ from app.services.form_layouts import BodyLine, FormLayout, Seg, TableBlock
 
 FONT_NAME = "Times New Roman"
 FONT_SIZE = Pt(14)
-# Quốc hiệu 12 để nằm gọn MỘT dòng trong cột 10 cm; tiêu ngữ và địa danh 13 (Nghị định 30: quốc hiệu 12–13, tiêu ngữ 13–14).
-MASTHEAD_SIZE = Pt(12)
+# Phần đầu văn bản (tên cơ quan, quốc hiệu, tiêu ngữ, địa danh) đều 13pt — đúng tệp mẫu đã chỉnh; Nghị định 30: 12–14.
+MASTHEAD_SIZE = Pt(13)
 MOTTO_SIZE = Pt(13)
 CAPTION_SIZE = Pt(11)
 # Giãn dòng đơn; giữa các đoạn cách 6pt; dòng đầu đoạn thụt 1 cm (Nghị định 30: thụt 1–1,27 cm).
 LINE_SPACING = 1.0
 FIRST_LINE_INDENT = Cm(1.0)
 PARA_GAP = Pt(6)
-# "Kính gửi:" thụt 3,25 cm; các nơi nhận gạch đầu dòng thụt sâu thêm 1 cm.
+# "Kính gửi:" thụt 3,25 cm; các nơi nhận gạch đầu dòng thụt 5 cm (đúng vị trí trong tệp mẫu đã chỉnh).
 RECIPIENT_INDENT = Cm(3.25)
-RECIPIENT_ITEM_INDENT = Cm(4.25)
-# Khổ A4; vùng chữ rộng 21 - 3 - 2 = 16 cm.
-TEXT_WIDTH_CM = 16.0
+RECIPIENT_ITEM_INDENT = Cm(5.0)
+# Khổ A4, lề 20/20/30/15 mm (Nghị định 30: trên-dưới 20–25, trái 30–35, phải 15–20); vùng chữ rộng 21 - 3 - 1,5 = 16,5 cm.
+TEXT_WIDTH_CM = 16.5
 
 # Dòng 0 là cơ quan chủ quản trực tiếp (không in đậm); các dòng sau là tên
 # đơn vị ban hành văn bản (in đậm, có gạch chân bên dưới) — đúng thể thức
@@ -106,7 +106,7 @@ def _set_margins(document: Document) -> None:
     section.top_margin = Cm(2.0)
     section.bottom_margin = Cm(2.0)
     section.left_margin = Cm(3.0)
-    section.right_margin = Cm(2.0)
+    section.right_margin = Cm(1.5)
 
 
 def _run(
@@ -206,7 +206,7 @@ def _masthead(document: Document, submission_date: datetime) -> None:
     table = document.add_table(rows=1, cols=2)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     _no_borders(table)
-    left_cm, right_cm = 6.0, 10.0   # tổng = bề rộng vùng chữ A4 (21 - 3 - 2 = 16 cm)
+    left_cm, right_cm = 6.0, 10.5   # tổng = bề rộng vùng chữ A4 (21 - 3 - 1,5 = 16,5 cm); quốc hiệu 13pt cần ≥ 10 cm để nằm một dòng
     left_w, right_w = Cm(left_cm), Cm(right_cm)
     table.columns[0].width = left_w
     table.columns[1].width = right_w
@@ -430,7 +430,7 @@ def _signature_table(document: Document, slots: list[SignatureSlot]) -> None:
         p_name = cell.add_paragraph()
         p_name.alignment = WD_ALIGN_PARAGRAPH.CENTER
         if slot.signed and slot.signed_by:
-            _run(p_name, slot.signed_by, bold=True)
+            _run(p_name, slot.signed_by, bold=True, size=MASTHEAD_SIZE)
             if slot.signed_at:
                 p_time = cell.add_paragraph()
                 p_time.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -455,7 +455,8 @@ def render_form(
     _set_default_font(document)
     _set_margins(document)
 
-    submission_date = submission_date or datetime.now(timezone.utc)
+    # Ngày ghi trên đơn là ngày theo giờ Việt Nam (22h giờ Việt Nam vẫn là ngày hôm đó, không phải ngày UTC).
+    submission_date = (submission_date or datetime.now(timezone.utc)).astimezone(ZoneInfo("Asia/Ho_Chi_Minh"))
 
     _masthead(document, submission_date)
     _title(document, layout, data)
