@@ -288,7 +288,7 @@ a.appr-row:hover {
    quy tắc chung của dự án là mono chỉ cho mã. Phạm vi giới hạn ở `.dash-grid`
    để không đụng `.home-stat` ở các trang chủ khác. */
 .dash-grid .home-stat__value {
-  font-family: var(--font-be-vietnam), system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 /* ------------------------------------------------------------- tài khoản */

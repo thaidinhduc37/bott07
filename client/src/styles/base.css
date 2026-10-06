@@ -59,12 +59,9 @@
 :root {
   color-scheme: light;
 
-  /* Nạp qua thẻ <link> Google Fonts trong index.html (thay cho next/font).
-     Tên biến giữ nguyên `--font-be-vietnam` dù giá trị nay là Plus Jakarta
-     Sans — mọi nơi đã viết `var(--font-be-vietnam)` tiếp tục đúng mà không
-     phải sửa từng chỗ dùng. */
-  --font-be-vietnam: 'Plus Jakarta Sans';
-  --font-jetbrains: 'JetBrains Mono';
+  /* Nạp qua thẻ <link> Google Fonts trong index.html. Một họ chữ duy nhất cho mọi thứ
+     (kể cả giờ, mã, điểm: dùng `tabular-nums` để thẳng cột); chỉ có thêm bộ icon. */
+  --font-sans: 'Be Vietnam Pro';
   --font-icon: 'Material Symbols Outlined';
 
   /* --- mực ---
@@ -293,13 +290,18 @@
   --color-pen: var(--pen);
   --color-seal: var(--seal);
   --color-rule: var(--rule);
-  --font-display: var(--font-be-vietnam);
-  --font-sans: var(--font-be-vietnam);
-  --font-mono: var(--font-jetbrains);
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Một họ chữ duy nhất: đoạn mã cũng dùng chữ của giao diện, không rơi về font đơn cách của trình duyệt. */
+code,
+kbd,
+samp,
+pre {
+  font-family: inherit;
 }
 
 html {
@@ -316,7 +318,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-be-vietnam), system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   /* 16px chứ không phải 15px, và nhịp dòng rộng hơn.
 
      Chữ Việt xếp dấu hai tầng — dấu mũ rồi dấu thanh chồng lên (ế, ộ, ữ) — nên
@@ -339,7 +341,7 @@ body {
    ======================================================================== */
 
 .display {
-  font-family: var(--font-be-vietnam), system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-weight: 600;
   letter-spacing: -0.014em;
   line-height: 1.25;
@@ -362,9 +364,7 @@ body {
 }
 
 .mono {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
-  font-size: 0.8125em;
-  letter-spacing: -0.01em;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 

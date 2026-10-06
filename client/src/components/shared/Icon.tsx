@@ -11,7 +11,7 @@
  * ngữ hình ảnh chủ đạo (cùng họ với Google Fonts đã nạp cho chữ), và ba lý do
  * trên vẫn được giữ nguyên ở đây:
  *
- * 1. Icon giờ tải qua CÙNG domain Google Fonts mà `Plus Jakarta Sans` đã nạp —
+ * 1. Icon giờ tải qua CÙNG domain Google Fonts mà `Be Vietnam Pro` đã nạp —
  *    không thêm một CDN thứ hai.
  * 2. `aria-hidden` vẫn là mặc định: icon luôn đi kèm nhãn chữ trong ứng dụng
  *    này. Đứng một mình thì bắt buộc truyền `title`, lúc đó `role="img"` và

@@ -258,7 +258,7 @@
   padding: 0.05rem 0.4rem;
 }
 .timetable-block__time {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 0.6875rem;
   color: var(--ink-faint);
 }

@@ -726,7 +726,7 @@
 }
 .doc-preview__toolbar-zoom {
   flex-shrink: 0;
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
   color: var(--ink-faint);
 }
 

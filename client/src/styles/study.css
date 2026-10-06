@@ -226,7 +226,7 @@
   width: 2rem;
   height: 2rem;
   border-radius: var(--r-md);
-  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 0.8125rem;
   font-weight: 600;
   text-decoration: none;
