@@ -1,7 +1,7 @@
 """Print specs for the 7 demo administrative forms.
 
 Reconstructed directly from the ORIGINAL source documents at
-`server/data/thutuchanhchinh/*.doc(x)` — extracted verbatim via `antiword`
+`data/nguon/mau-don/*.doc(x)` — extracted verbatim via `antiword`
 (the `.doc` files) and `python-docx` (`don-hoc-cai-thien.docx`) — rather than
 from the (now-deleted) NestJS `form-layouts.ts`, which itself was a port of
 these same source documents. Wording, recipients, and field order below are

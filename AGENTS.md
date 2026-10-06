@@ -26,7 +26,12 @@ React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► Postg
 - `scripts/` — Python maintenance scripts (`ingest_giaotrinh*.py`, `check_*.py`, `doc_titles.py`,
   `fix_document_titles.py`) and `scripts/test/` (HTTP acceptance tests; see below).
 - `notebooks/rag-pipeline-2026.ipynb` — the research notebook the pipeline was ported from.
-- `copus/` — raw source data (schedules, regulations). Not committed.
+- `data/` — every non-code resource, one root:
+  `nguon/` originals (curriculum PDFs, regulations, form templates `mau-don/`, schedule CSV samples),
+  `corpus/` normalised Markdown/CSV the RAG ingest scripts read (`giao-trinh/`, `quy-che-quy-dinh/`,
+  `ctdt/`, `tkb/`), `danh-gia/` RAG eval set + `run_eval.py`, `bao-cao/` report drafts,
+  and `support.json` (FAQ/contacts of the Hỗ trợ page, editable without touching code).
+  Zip archives and local scratch files in `data/corpus/` are not committed.
 
 ### Feature areas (server ↔ client)
 
@@ -82,7 +87,7 @@ Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `kho
   recalibrating τ.
 - Retrieval narrows to a single document when the question names it verbatim (accent/case
   insensitive, `Retriever.scope_documents`); the sufficiency grader reads the same 5 hits the
-  generator will read. Eval set and results live in `docs/danh-gia/` — re-run `run_eval.py` after
+  generator will read. Eval set and results live in `data/danh-gia/` — re-run `run_eval.py` after
   touching the pipeline; scoring is by keyword + manual review, one run each, so treat small
   differences as noise.
 - Printed forms (`server/app/services/docx_renderer.py`) follow Nghị định 30/2020/NĐ-CP Phụ lục I (A4, margins

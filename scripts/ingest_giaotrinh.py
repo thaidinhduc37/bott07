@@ -1,4 +1,4 @@
-"""Ingest all markdown files from copus/hoctap/ into ChromaDB as GIAOTRINH.
+"""Ingest all markdown files from data/corpus/giao-trinh/ into ChromaDB as GIAOTRINH.
 
 This script directly indexes markdown curriculum files into the RAG system
 without creating Document records in PostgreSQL. It's useful for quickly
@@ -29,8 +29,8 @@ async def main():
     container = get_rag_container()
     indexer = container.indexing
 
-    # Find all markdown files in copus/hoctap/
-    corpus_dir = Path(__file__).parent.parent / "copus" / "hoctap"
+    # Find all markdown files in data/corpus/giao-trinh/
+    corpus_dir = Path(__file__).parent.parent / "data" / "corpus" / "giao-trinh"
     if not corpus_dir.exists():
         print(f"ERROR: Directory not found: {corpus_dir}")
         return

@@ -1,7 +1,7 @@
 """Trang Hỗ trợ của học viên: hướng dẫn thủ tục (dựng từ các mẫu đơn đang bật), nơi liên hệ và câu hỏi thường gặp.
 
 Phần thủ tục luôn khớp với hệ thống vì lấy thẳng từ `form_templates` (luồng duyệt, các ô phải điền). Nơi liên hệ và
-câu hỏi thường gặp nằm ở `server/data/support.json` để người quản trị sửa mà không cần đụng mã; đọc lại tệp mỗi
+câu hỏi thường gặp nằm ở `data/support.json` để người quản trị sửa mà không cần đụng mã; đọc lại tệp mỗi
 lần gọi (tệp nhỏ) nên sửa xong chỉ cần tải lại trang.
 """
 
@@ -19,7 +19,7 @@ from app.models.forms import FormTemplate
 
 router = APIRouter(prefix="/support", tags=["support"])
 
-_DATA = Path(__file__).resolve().parents[2] / "data" / "support.json"
+_DATA = Path(__file__).resolve().parents[3] / "data" / "support.json"
 
 
 def _load() -> dict:

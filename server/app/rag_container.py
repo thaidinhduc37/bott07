@@ -91,12 +91,12 @@ def repo_root() -> Path:
 
 def resolve_under_repo(relative: str) -> Path:
     """Giải một đường dẫn tương đối, buộc nó nằm trong server/storage/ hoặc
-    server/data/. Port của `rag-service/app/deps.py:resolve_under_repo` — vẫn
+    data/. Port của `rag-service/app/deps.py:resolve_under_repo` — vẫn
     cần dù giờ chạy trong cùng process, vì `file_path` vẫn tới từ dữ liệu
     người dùng (tên tệp đã lưu qua `StorageService`), không phải mã nguồn tin
     cậy."""
     root = repo_root().resolve()
-    allowed_roots = [(root / "server" / "storage").resolve(), (root / "server" / "data").resolve()]
+    allowed_roots = [(root / "server" / "storage").resolve(), (root / "data").resolve()]
     candidate = (root / relative).resolve()
     if not any(candidate.is_relative_to(allowed) for allowed in allowed_roots):
         raise ValueError(f"Đường dẫn nằm ngoài phạm vi cho phép: {relative}")

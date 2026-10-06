@@ -4,7 +4,7 @@ any — `server/storage/templates/` is empty); every form is built purely in
 code against a `FormLayout` from `form_layouts.py`.
 
 Layout follows Nghị định 30/2020/NĐ-CP formatting conventions (Phụ lục I,
-Mẫu 1.1) and the original forms in `server/data/thutuchanhchinh`: A4, margins
+Mẫu 1.1) and the original forms in `data/nguon/mau-don`: A4, margins
 top 20mm / bottom 20mm / left 30mm / right 15mm, Times New Roman 14pt body text
 (13pt for the masthead and signature block), line spacing 1.15, body lines justified with a 1.27cm
 first-line indent.

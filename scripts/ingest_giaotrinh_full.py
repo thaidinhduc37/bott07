@@ -1,4 +1,4 @@
-"""Nạp đầy đủ giáo trình / đề cương từ copus/hoctap/ vào RAG, có gắn môn học
+"""Nạp đầy đủ giáo trình / đề cương từ data/corpus/giao-trinh/ vào RAG, có gắn môn học
 và có bản ghi tài liệu trong PostgreSQL.
 
 Vì sao có tệp này: `scripts/ingest_giaotrinh.py` (bản cũ) chỉ ghi vector vào
@@ -59,7 +59,7 @@ from sqlalchemy import select  # noqa: E402
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("ingest_giaotrinh_full")
 
-CORPUS_DIR = Path(__file__).resolve().parent.parent / "copus" / "hoctap"
+CORPUS_DIR = Path(__file__).resolve().parent.parent / "data" / "corpus" / "giao-trinh"
 
 # Cán bộ quản lý đào tạo — người "nạp" tài liệu (uploaded_by_id).
 MANAGER_EMAIL = "qldt@hvktcnan.edu.vn"

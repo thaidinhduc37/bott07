@@ -136,7 +136,7 @@ def fix_line_breaks(input_file, output_file=None):
 def main():
     """Xử lý 4 file cần sửa."""
 
-    corpus_dir = Path('D:/projects/bott07/copus/hoctap')
+    corpus_dir = Path(__file__).resolve().parent.parent / 'data' / 'corpus' / 'giao-trinh'
 
     problem_files = [
         '1.giao_trinh_triet_hoc_mac_lenin.md',

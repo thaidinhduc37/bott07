@@ -36,7 +36,7 @@ from app.db import AsyncSessionLocal  # noqa: E402
 from app.models.documents import Document, DocumentVersion  # noqa: E402
 from app.rag_container import get_rag_container  # noqa: E402
 
-CORPUS_DIR = ROOT / "copus" / "hoctap"
+CORPUS_DIR = ROOT / "data" / "corpus" / "giao-trinh"
 
 
 def new_title_for(old_title: str, filename: str | None) -> str:

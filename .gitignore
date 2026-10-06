@@ -74,3 +74,9 @@ backups/
 # công cụ cục bộ
 .qwen/
 .kilo/
+
+# kho dữ liệu: bản nén và tệp tạm không đưa vào git
+data/corpus/*.zip
+data/corpus/lich-hoc-thi/
+data/corpus/ctdt/
+data/nguon/mau-don/DON-*-da-ky.docx

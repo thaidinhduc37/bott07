@@ -37,19 +37,19 @@ def analyze_file(filepath):
         return None
 
 def main():
-    corpus_dir = Path('D:/projects/bott07/copus')
+    corpus_dir = Path(__file__).resolve().parent.parent / 'data' / 'corpus'
 
     results = []
 
     # Phân tích các file trong hoctap
-    hoctap_dir = corpus_dir / 'hoctap'
+    hoctap_dir = corpus_dir / 'giao-trinh'
     for filepath in sorted(hoctap_dir.glob('*.md')):
         stats = analyze_file(filepath)
         if stats:
             results.append((filepath.name, stats))
 
     # Phân tích các file trong quyche_quydinh
-    quyche_dir = corpus_dir / 'quyche_quydinh'
+    quyche_dir = corpus_dir / 'quy-che-quy-dinh'
     for filepath in sorted(quyche_dir.glob('*.md')):
         stats = analyze_file(filepath)
         if stats:

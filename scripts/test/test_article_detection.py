@@ -53,7 +53,7 @@ check("Văn bản kiểu PDF (không mục lục), tiêu đề kết thúc bằn
 check("Tiêu đề in đậm", labels("**Điều 1.** Phạm vi áp dụng\nabc\n**Điều 2.** Đối tượng áp dụng"), ["Điều 1", "Điều 2"])
 check("Tham chiếu chéo không thành tiêu đề", labels("Điều 5. Học phí\nĐiều 2 nêu trên quy định\nĐiều 6. Hiệu lực"), ["Điều 5", "Điều 6"])
 
-real = ROOT / "copus" / "quyche" / "QuyCheDaoTaoDanSu_Trinh_ky.md"
+real = ROOT / "data" / "corpus" / "ctdt" / "QuyCheDaoTaoDanSu_Trinh_ky.md"
 if real.exists():
     text = real.read_text(encoding="utf-8")
     found = find_articles(text)
