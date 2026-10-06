@@ -21,6 +21,7 @@ the approval flow + owner) — see `SignatureSlot` below.
 from __future__ import annotations
 
 import io
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
@@ -36,11 +37,17 @@ from app.services.form_layouts import BodyLine, FormLayout, Seg, TableBlock
 
 FONT_NAME = "Times New Roman"
 FONT_SIZE = Pt(14)
-MASTHEAD_SIZE = Pt(13)
-CAPTION_SIZE = Pt(13)
-LINE_SPACING = 1.15
-FIRST_LINE_INDENT = Cm(1.27)
+# Quốc hiệu 12 để nằm gọn MỘT dòng trong cột 10 cm; tiêu ngữ và địa danh 13 (Nghị định 30: quốc hiệu 12–13, tiêu ngữ 13–14).
+MASTHEAD_SIZE = Pt(12)
+MOTTO_SIZE = Pt(13)
+CAPTION_SIZE = Pt(11)
+# Giãn dòng đơn; giữa các đoạn cách 6pt; dòng đầu đoạn thụt 1 cm (Nghị định 30: thụt 1–1,27 cm).
+LINE_SPACING = 1.0
+FIRST_LINE_INDENT = Cm(1.0)
 PARA_GAP = Pt(6)
+# "Kính gửi:" thụt 3,25 cm; các nơi nhận gạch đầu dòng thụt sâu thêm 1 cm.
+RECIPIENT_INDENT = Cm(3.25)
+RECIPIENT_ITEM_INDENT = Cm(4.25)
 # Khổ A4; vùng chữ rộng 21 - 3 - 2 = 16 cm.
 TEXT_WIDTH_CM = 16.0
 
@@ -55,7 +62,7 @@ _NATION_LINE_2 = "Độc lập - Tự do - Hạnh phúc"
 _AGENCY_UNDERLINE = "_" * 18
 
 OWNER_SIGNATURE_TITLE = "HỌC VIÊN VIẾT ĐƠN"
-_SIGNATURE_CAPTION = "(Ký, ghi rõ họ tên)"
+_SIGNATURE_CAPTION = "(Ký và ghi rõ họ tên)"
 
 
 @dataclass
@@ -126,6 +133,26 @@ def _run(
     return r
 
 
+def _rule(cell, cell_width_cm: float, line_width_cm: float) -> None:
+    """Đường kẻ ngang nét liền, căn giữa trong ô, dài `line_width_cm` (Nghị định 30: dưới tên cơ quan ban hành
+    và dưới tiêu ngữ). Là viền dưới của một đoạn rỗng thụt hai bên — không dùng dãy dấu gạch dưới, vì dãy
+    ký tự lệch theo phông và cỡ chữ."""
+    p = cell.add_paragraph()
+    side = Cm(max(cell_width_cm - line_width_cm, 0) / 2)
+    p.paragraph_format.left_indent = side
+    p.paragraph_format.right_indent = side
+    p.paragraph_format.space_before = Pt(3)   # chừa khoảng cách để đường kẻ không áp sát chân chữ
+    p.paragraph_format.space_after = Pt(0)
+    p.paragraph_format.line_spacing = Pt(2)
+    ppr = p._p.get_or_add_pPr()
+    borders = ppr.makeelement(qn("w:pBdr"), {})
+    bottom = borders.makeelement(
+        qn("w:bottom"), {qn("w:val"): "single", qn("w:sz"): "6", qn("w:space"): "1", qn("w:color"): "auto"}
+    )
+    borders.append(bottom)
+    ppr.append(borders)
+
+
 def _no_borders(table: Table) -> None:
     tbl_pr = table._tbl.tblPr
     borders = tbl_pr.makeelement(qn("w:tblBorders"), {})
@@ -135,11 +162,20 @@ def _no_borders(table: Table) -> None:
     tbl_pr.append(borders)
 
 
+_ISO_DATE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})(?:[T ].*)?$")
+
+
+def _vn_date(text: str) -> str:
+    """Ngày dạng ISO ("2005-09-02") in theo thể thức Việt Nam ("02/09/2005"); chuỗi khác giữ nguyên."""
+    m = _ISO_DATE.match(text.strip())
+    return f"{m.group(3)}/{m.group(2)}/{m.group(1)}" if m else text
+
+
 def _resolve_value(field_key: str, data: dict) -> str:
     v = data.get(field_key)
     if v is None:
         return ""
-    return str(v)
+    return _vn_date(str(v))
 
 
 def _seg_line_text_and_multiline(segs: list[Seg], data: dict) -> tuple[list[tuple[str, bool]], list[str]]:
@@ -170,7 +206,8 @@ def _masthead(document: Document, submission_date: datetime) -> None:
     table = document.add_table(rows=1, cols=2)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     _no_borders(table)
-    left_w, right_w = Cm(6.5), Cm(9.5)
+    left_cm, right_cm = 6.0, 10.0   # tổng = bề rộng vùng chữ A4 (21 - 3 - 2 = 16 cm)
+    left_w, right_w = Cm(left_cm), Cm(right_cm)
     table.columns[0].width = left_w
     table.columns[1].width = right_w
 
@@ -186,28 +223,28 @@ def _masthead(document: Document, submission_date: datetime) -> None:
         p = left.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         _run(p, line, bold=True, size=MASTHEAD_SIZE)
-
-    p_agency_underline = left.add_paragraph()
-    p_agency_underline.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _run(p_agency_underline, _AGENCY_UNDERLINE, bold=True, size=MASTHEAD_SIZE)
+    # Đường kẻ dưới tên cơ quan: ngắn (khoảng 1/3 – 1/2 độ dài dòng tên).
+    _rule(left, left_cm, 3.2)
 
     p1 = right.paragraphs[0]
     p1.alignment = WD_ALIGN_PARAGRAPH.CENTER
     _run(p1, _NATION_LINE_1, bold=True, size=MASTHEAD_SIZE)
 
-    # Tiêu ngữ: chữ thường đứng đậm, gạch chân đúng độ dài dòng chữ.
+    # Tiêu ngữ: chữ thường đứng đậm; đường kẻ ngay dưới, dài đúng độ dài dòng chữ.
     p2 = right.add_paragraph()
     p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    _run(p2, _NATION_LINE_2, bold=True, underline=True)
+    _run(p2, _NATION_LINE_2, bold=True, size=MOTTO_SIZE)
+    _rule(right, right_cm, 5.6)
 
-    # Địa danh, ngày tháng năm: chữ nghiêng, cách tiêu ngữ một dòng.
+    # Địa danh, ngày tháng năm: chữ nghiêng, cách đường kẻ một khoảng.
     p3 = right.add_paragraph()
     p3.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p3.paragraph_format.space_before = Pt(10)
+    p3.paragraph_format.space_before = Pt(8)
     _run(
         p3,
         f"Bắc Ninh, ngày {submission_date.day:02d} tháng {submission_date.month:02d} năm {submission_date.year}",
         italic=True,
+        size=MOTTO_SIZE,
     )
 
 
@@ -216,7 +253,7 @@ def _masthead(document: Document, submission_date: datetime) -> None:
 def _title(document: Document, layout: FormLayout, data: dict) -> None:
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.paragraph_format.space_before = Pt(18)
+    p.paragraph_format.space_before = Pt(14)
     p.paragraph_format.space_after = Pt(0 if layout.subtitle else 12)
     p.paragraph_format.keep_with_next = True
     _run(p, layout.title, bold=True)
@@ -239,39 +276,36 @@ def _title(document: Document, layout: FormLayout, data: dict) -> None:
 # -------------------------------------------------------------- recipients
 
 def _recipients(document: Document, layout: FormLayout, data: dict) -> None:
-    """"Kính gửi:" thụt vào, mỗi nơi nhận một dòng gạch đầu dòng; dòng cuối
-    kết thúc bằng dấu chấm, các dòng trước bằng dấu chấm phẩy — như các mẫu
-    gốc."""
+    """"Kính gửi:" (đậm) thụt 3,25 cm; mỗi nơi nhận một dòng gạch đầu dòng thụt sâu thêm 1 cm, không dấu
+    câu cuối dòng — đúng tệp mẫu đã chỉnh."""
 
     p = document.add_paragraph()
-    p.paragraph_format.left_indent = Cm(2.0)
+    p.paragraph_format.left_indent = RECIPIENT_INDENT
     p.paragraph_format.keep_with_next = True
-    _run(p, "Kính gửi:")
+    _run(p, "Kính gửi:", bold=True)
 
     last = len(layout.recipients) - 1
     rp = p
     for i, r in enumerate(layout.recipients):
         rp = document.add_paragraph()
-        rp.paragraph_format.left_indent = Cm(4.0)
-        rp.paragraph_format.first_line_indent = Cm(-0.5)
+        rp.paragraph_format.left_indent = RECIPIENT_ITEM_INDENT
         rp.paragraph_format.keep_with_next = i != last
         _run(rp, "- ")
         if isinstance(r, str):
-            _run(rp, r)
+            _run(rp, r.rstrip(";. "))
         else:
             for seg in r:
                 if seg.t is not None:
                     _run(rp, seg.t)
                 elif seg.f is not None:
                     _run(rp, _resolve_value(seg.f, data), bold=True)
-        _run(rp, "." if i == last else ";")
     rp.paragraph_format.space_after = Pt(12)
 
 
 # -------------------------------------------------------------------- body
 
 def _body_paragraph(document: Document):
-    """Đoạn văn bản chính: căn đều hai bên, dòng đầu thụt 1,27 cm."""
+    """Đoạn văn bản chính: căn đều hai bên, dòng đầu thụt 1 cm, cách đoạn sau 6pt."""
     p = document.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     p.paragraph_format.first_line_indent = FIRST_LINE_INDENT
@@ -405,7 +439,7 @@ def _signature_table(document: Document, slots: list[SignatureSlot]) -> None:
                     ts = ts.replace(tzinfo=timezone.utc)
                 # Giờ ký theo giờ Việt Nam (trước đây in giờ UTC: 09:23 thay vì 16:23).
                 ts = ts.astimezone(ZoneInfo("Asia/Ho_Chi_Minh"))
-                _run(p_time, f"Ký lúc {ts.strftime('%H:%M %d/%m/%Y')}", italic=True, size=Pt(11))
+                _run(p_time, f"Ký lúc {ts.strftime('%H:%M %d/%m/%Y')}", italic=True, size=Pt(10))
 
 
 # --------------------------------------------------------------- entrypoint

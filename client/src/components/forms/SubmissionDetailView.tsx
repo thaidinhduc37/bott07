@@ -73,10 +73,19 @@ export function SubmissionDetailView({
             <dl style={{ margin: 0, display: 'grid', gap: 'var(--gap-3)' }}>
               {s.template.fields.map((f) => {
                 const value = f.autofill ? s.profileSnapshot[f.key] : s.formData[f.key];
+                // Trường dạng bảng xếp dọc (nhãn trên, bảng dưới chiếm cả bề ngang): nhét bảng nhiều cột
+                // vào cột giá trị hẹp bên phải thì bề rộng tối thiểu của bảng đẩy nó ra ngoài khung.
+                const isTable = Array.isArray(value) && value.length > 0;
                 return (
                   <div
                     key={f.key}
-                    style={{ display: 'grid', gridTemplateColumns: 'minmax(9rem, 14rem) 1fr', gap: 'var(--gap-4)', borderBottom: '1px dotted var(--rule)', paddingBottom: '0.4rem' }}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: isTable ? 'minmax(0, 1fr)' : 'minmax(9rem, 14rem) minmax(0, 1fr)',
+                      gap: isTable ? 'var(--gap-2)' : 'var(--gap-4)',
+                      borderBottom: '1px dotted var(--rule)',
+                      paddingBottom: '0.4rem',
+                    }}
                   >
                     <dt style={{ fontSize: '0.8125rem', color: 'var(--ink-soft)' }}>
                       {f.label}
@@ -86,7 +95,7 @@ export function SubmissionDetailView({
                         </span>
                       )}
                     </dt>
-                    <dd style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
+                    <dd style={{ margin: 0, whiteSpace: isTable ? 'normal' : 'pre-wrap', minWidth: 0 }}>
                       {Array.isArray(value) ? (
                         // Trường dạng bảng. Không có nhánh này thì React gặp một
                         // mảng object và trang trắng — lỗi chỉ lộ ra ở đúng đơn
@@ -94,7 +103,8 @@ export function SubmissionDetailView({
                         value.length === 0 ? (
                           '—'
                         ) : (
-                          <table className="data-table" style={{ width: '100%' }}>
+                          <div className="table-wrap" style={{ maxHeight: 'none' }}>
+                          <table className="data-table form-detail-table" style={{ width: "100%" }}>
                             <thead>
                               <tr>
                                 <th scope="col">STT</th>
@@ -116,6 +126,7 @@ export function SubmissionDetailView({
                               ))}
                             </tbody>
                           </table>
+                          </div>
                         )
                       ) : f.type === 'date' && value ? (
                         viDate(`${value}T00:00:00+07:00`)

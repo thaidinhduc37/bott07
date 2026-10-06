@@ -14,7 +14,7 @@ is the single lookup used by `docx_renderer.render_form()`.
 
 Deviations from the literal source, called out explicitly:
 - Every form's signature block is normalised to the shared renderer's fixed
-  "(Ký, ghi rõ họ tên)" caption (the originals vary between "Ký, ghi rõ họ tên"
+  "(Ký và ghi rõ họ tên)" caption (the originals vary between "Ký, ghi rõ họ tên"
   and "Ký và ghi rõ họ tên"; Nghị định 30/2020/NĐ-CP uses the former) — the
   renderer builds one signature row shape for all forms, matching the
   architecture described in the porting notes (signatureTable() is shared

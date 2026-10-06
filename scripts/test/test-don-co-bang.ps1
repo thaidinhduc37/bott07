@@ -166,7 +166,7 @@ foreach ($hp in @('Cơ sở dữ liệu', 'Mạng máy tính', 'An toàn hệ đ
 Check 'Bản in có điểm của dòng thứ hai' ($text.Contains('4.5'))
 Check 'Bản in có lời cam đoan của bản gốc' `
   ($text.Contains('nộp đầy đủ kinh phí học, thi cải thiện theo quy định'))
-$soO = ([regex]::Matches($text, [regex]::Escape('(Ký, ghi rõ họ tên)'))).Count
+$soO = ([regex]::Matches($text, [regex]::Escape('(Ký và ghi rõ họ tên)'))).Count
 Check 'Có đúng ba ô ký' ($soO -eq 3) "$soO ô"
 
 Write-Host "`n=== 6. Bảy biểu mẫu đều đã mở ===" -ForegroundColor Cyan

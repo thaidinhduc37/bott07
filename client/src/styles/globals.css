@@ -5959,3 +5959,19 @@ button.study-aside__link:focus-visible {
     font-size: 1.375rem;
   }
 }
+
+/* Bảng trường dạng bảng trong khung "Thông tin chi tiết" của đơn: khung hẹp nên tiêu đề cột được phép
+   xuống dòng và ô gọn lại, để cả bốn cột vừa khung mà không phải cuộn ngang. */
+.form-detail-table th {
+  white-space: normal;
+  line-height: 1.25;
+}
+.form-detail-table th,
+.form-detail-table td {
+  padding: 0.5rem 0.6rem;
+}
+.form-detail-table th:first-child,
+.form-detail-table td:first-child {
+  width: 2.75rem;
+  padding-left: 0.75rem;
+}
