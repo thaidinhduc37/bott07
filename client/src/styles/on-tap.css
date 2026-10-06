@@ -476,3 +476,16 @@
     justify-self: start;
   }
 }
+
+/* Màn rộng: ẩn bản accordion trong danh sách; màn hẹp: ẩn bản ở cột phải. */
+@container main (min-width: 56rem) {
+  .xp--inline {
+    display: none;
+  }
+}
+
+@container main (max-width: 55.99rem) {
+  .page-grid--aside-left .page-grid__main > .xp {
+    display: none;
+  }
+}

@@ -419,17 +419,6 @@
   padding: 0.15rem 0.4rem;
 }
 
-/* "Tạo đề ôn" trong timeline giờ là `<button>`: reset để trông như liên kết. */
-button.plan-timeline__link {
-  background: none;
-  border: 0;
-  padding: 0;
-  font: inherit;
-  color: var(--pen-ink);
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 /* "Xem kế hoạch ôn thi" ở cột phụ là <button> (đổi tab, không điều hướng) nhưng phải
    trông như liên kết "Mở sổ câu sai" ngay bên trên: trình duyệt mặc định căn giữa và
    tô chữ đen cho <button>. */
