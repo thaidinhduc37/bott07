@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { Icon, type IconName } from '@/components/shared/Icon';
-import { Metrics } from '@/components/shared/Metrics';
-import { PageHeader } from '@/components/shared/PageHeader';
+import { Icon } from '@/components/shared/Icon';
 import { useSession } from '@/components/shared/SessionProvider';
 import { ActivityBars } from '@/components/study/ActivityBars';
 import { viScore } from '@/components/study/format';
@@ -25,13 +23,18 @@ const todayIso = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-const LINKS: { href: string; icon: IconName; label: string }[] = [
-  { href: '/sinh-vien/hoi-dap', icon: 'chat', label: 'Hỏi đáp' },
-  { href: '/sinh-vien/on-tap', icon: 'book', label: 'Ôn tập' },
-  { href: '/sinh-vien/so-tay', icon: 'pencil', label: 'Sổ tay' },
-  { href: '/sinh-vien/lich', icon: 'calendar', label: 'Lịch học & lịch thi' },
-  { href: '/sinh-vien/bieu-mau', icon: 'form', label: 'Lập đơn' },
-];
+const todayLabel = () =>
+  new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).format(
+    new Date(),
+  );
+
+interface Kpi {
+  label: string;
+  value: string | number;
+  hint: ReactNode;
+  to?: string;
+  tone?: 'warn' | 'ok';
+}
 
 /** Điểm (thang 10) → màu thanh: từ 8 là tốt, dưới 5 cần chú ý. */
 const scoreTone = (s: number | null) =>
@@ -56,7 +59,7 @@ export default function StudentHome() {
   }, []);
 
   const due = progress?.review.due ?? 0;
-  const metrics = progress
+  const metrics: Kpi[] = progress
     ? [
         {
           label: 'Chuỗi ngày ôn',
@@ -73,7 +76,7 @@ export default function StudentHome() {
           value: due,
           hint: due > 0 ? 'Ôn ngay' : 'Không có câu nào',
           to: '/sinh-vien/on-tap/so-cau-sai',
-          tone: due > 0 ? ('warn' as const) : undefined,
+          tone: due > 0 ? 'warn' : undefined,
         },
         nextExam
           ? {
@@ -113,27 +116,77 @@ export default function StudentHome() {
       ].sort((a, b) => a.at.localeCompare(b.at))
     : [];
 
+  // Việc nên làm tiếp theo: câu sai đến hạn > kỳ thi sắp tới > tạo đề mới.
+  const next =
+    due > 0
+      ? { label: `Ôn ${due} câu đến hạn`, note: 'Ôn lại đúng lúc để nhớ lâu hơn.', to: '/sinh-vien/on-tap/so-cau-sai' }
+      : nextExam
+        ? {
+            label: `Ôn cho kỳ thi ${nextExam.course.code}`,
+            note: nextExam.daysLeft === 0 ? 'Thi hôm nay.' : `Còn ${nextExam.daysLeft} ngày.`,
+            to: `/sinh-vien/on-tap?tab=ke-hoach#${nextExam.id}`,
+          }
+        : {
+            label: 'Tạo đề ôn mới',
+            note: 'Trắc nghiệm từ giáo trình, tự lưu lại câu sai.',
+            to: '/sinh-vien/on-tap',
+          };
+
   return (
-    <div className="stack">
-      <PageHeader
-        title={`Chào ${user?.fullName ?? ''}`}
-        description={
-          profile ? (
-            <>
+    <div className="stack sh">
+      <header className="sh-hero">
+        <div className="sh-hero__who">
+          <p className="sh-hero__date">{todayLabel()}</p>
+          <h1 className="sh-hero__title">Chào {user?.fullName ?? ''}</h1>
+          {profile && (
+            <p className="sh-hero__meta">
               <span className="mono">{profile.studentCode}</span>
               {profile.studyClass && <> · Lớp {profile.studyClass.code}</>}
               {profile.cohort && <> · Khóa {profile.cohort}</>}
               {profile.trainingSystem && <> · {profile.trainingSystem}</>}
-            </>
-          ) : undefined
-        }
-      />
+            </p>
+          )}
+        </div>
+        {loaded && (
+          <Link to={next.to} className="sh-hero__next">
+            <span className="sh-hero__next-label">Việc tiếp theo</span>
+            <span className="sh-hero__next-title">
+              {next.label}
+              <Icon name="arrow" size={18} />
+            </span>
+            <span className="sh-hero__next-note">{next.note}</span>
+          </Link>
+        )}
+      </header>
 
-      {progress && <Metrics label="Tiến trình ôn tập" items={metrics} />}
+      {progress && (
+        <ul className="sh-kpis" aria-label="Tiến trình ôn tập">
+          {metrics.map((m) => {
+            const inner = (
+              <>
+                <span className="sh-kpi__label">{m.label}</span>
+                <span className={`sh-kpi__value${m.tone ? ` sh-kpi__value--${m.tone}` : ''}`}>{m.value}</span>
+                <span className="sh-kpi__hint">{m.hint}</span>
+              </>
+            );
+            return (
+              <li key={m.label} className="sh-kpi">
+                {m.to ? (
+                  <Link to={m.to} className="sh-kpi__body sh-kpi__body--link">
+                    {inner}
+                  </Link>
+                ) : (
+                  <div className="sh-kpi__body">{inner}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
-      <div className="page-grid">
-        <div className="page-grid__main">
-          <section className="sheet sheet--pad">
+      <div className="sh-grid">
+        <div className="sh-col">
+          <section className="sheet sheet--pad sh-grid__progress">
             <div className="section-head">
               <h2 className="aside-h">Tiến trình theo môn</h2>
               <Link to="/sinh-vien/on-tap" className="section-head__link">
@@ -185,20 +238,10 @@ export default function StudentHome() {
               </ul>
             )}
           </section>
-
-          {progress && (
-            <section className="sheet sheet--pad">
-              <div className="section-head">
-                <h2 className="aside-h">Nhịp ôn 14 ngày</h2>
-                <span className="section-head__note">{progress.totalSessions} lượt từ trước đến nay</span>
-              </div>
-              <ActivityBars data={progress.activity} />
-            </section>
-          )}
         </div>
 
-        <aside className="page-grid__aside">
-          <section className="sheet sheet--pad home-aside">
+        <div className="sh-col">
+          <section className="sheet sheet--pad sh-grid__today home-aside">
             <h2 className="aside-h">Hôm nay</h2>
             {!today ? (
               <p className="home-aside__empty">{loaded ? 'Chưa gắn với lớp nên chưa có lịch.' : 'Đang tải…'}</p>
@@ -227,24 +270,16 @@ export default function StudentHome() {
             </Link>
           </section>
 
-          <nav className="sheet sheet--pad quick" aria-label="Lối tắt">
-            <h2 className="aside-h">Lối tắt</h2>
-            <ul className="quick__list">
-              {LINKS.map((l) => (
-                <li key={l.href}>
-                  <Link to={l.href} className="quick__link">
-                    <Icon name={l.icon} size={18} />
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <p className="quick__note">
-              Lập đơn tự điền thông tin từ <Link to="/ho-so">hồ sơ của bạn</Link>. Sai thông tin thì báo Phòng Quản
-              lý học viên.
-            </p>
-          </nav>
-        </aside>
+          {progress && (
+            <section className="sheet sheet--pad sh-grid__activity">
+              <div className="section-head">
+                <h2 className="aside-h">Nhịp ôn 14 ngày</h2>
+                <span className="section-head__note">{progress.totalSessions} lượt từ trước đến nay</span>
+              </div>
+              <ActivityBars data={progress.activity} />
+            </section>
+          )}
+        </div>
       </div>
     </div>
   );

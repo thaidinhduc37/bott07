@@ -1,0 +1,242 @@
+/* Trang chủ học viên (tiền tố sh-): dải chào + việc tiếp theo, thanh số liệu liền khối, lưới hai hàng canh đều. */
+
+/* ------------------------------------------------------------------ dải chào */
+
+.sh-hero {
+  --sh-hero-bg: var(--pen);
+  --sh-hero-fg: var(--on-pen);
+  --sh-hero-soft: color-mix(in oklab, var(--on-pen) 80%, transparent);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+  align-items: end;
+  gap: var(--gap-6) var(--gap-8);
+  padding: var(--gap-8);
+  background: var(--sh-hero-bg);
+  color: var(--sh-hero-fg);
+  border-radius: var(--r-lg);
+}
+
+.sh-hero__who {
+  display: grid;
+  gap: var(--gap-2);
+  min-width: 0;
+}
+
+.sh-hero__date {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  color: var(--sh-hero-soft);
+}
+
+.sh-hero__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.sh-hero__meta {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--sh-hero-soft);
+}
+
+/* Việc tiếp theo: một khối bấm được, nền sáng đặt trên dải navy để nó là điểm nhìn đầu tiên. */
+.sh-hero__next {
+  display: grid;
+  gap: var(--gap-1);
+  padding: var(--gap-4) var(--gap-5);
+  background: var(--sheet);
+  color: var(--ink);
+  border-radius: var(--r-md);
+  text-decoration: none;
+  transition: background-color 130ms var(--ease);
+}
+
+.sh-hero__next:hover {
+  background: var(--pen-wash);
+}
+
+.sh-hero__next:focus-visible {
+  outline: 2px solid var(--on-pen);
+  outline-offset: 2px;
+}
+
+.sh-hero__next-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+
+.sh-hero__next-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--pen-ink);
+}
+
+.sh-hero__next-note {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+/* Chế độ tối: --pen là xanh nhạt nên dải đặc sẽ chói; dùng nền xanh mực sẫm và viền mảnh. Cùng cách
+   bảo vệ `data-theme` như các khối tối ở base.css. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .sh-hero {
+    --sh-hero-bg: var(--pen-wash);
+    --sh-hero-fg: var(--ink);
+    --sh-hero-soft: var(--ink-soft);
+    border: 1px solid var(--rule-faint);
+  }
+}
+
+:root[data-theme='dark'] .sh-hero {
+  --sh-hero-bg: var(--pen-wash);
+  --sh-hero-fg: var(--ink);
+  --sh-hero-soft: var(--ink-soft);
+  border: 1px solid var(--rule-faint);
+}
+
+/* ------------------------------------------------------------ thanh số liệu */
+
+.sh-kpis {
+  list-style: none;
+  margin-inline: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: var(--sheet);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.sh-kpi + .sh-kpi {
+  border-left: 1px solid var(--rule-faint);
+}
+
+.sh-kpi__body {
+  display: grid;
+  gap: var(--gap-1);
+  align-content: start;
+  height: 100%;
+  padding: var(--gap-5) var(--gap-6);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.sh-kpi__body--link:hover {
+  background: var(--sheet-2);
+}
+
+.sh-kpi__body--link:focus-visible {
+  outline: none;
+  box-shadow: inset var(--ring);
+}
+
+.sh-kpi__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+
+.sh-kpi__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sh-kpi__value--warn {
+  color: var(--warn-ink);
+}
+
+.sh-kpi__value--ok {
+  color: var(--ok-ink);
+}
+
+.sh-kpi__hint {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+/* --------------------------------------------------------- lưới trang chủ */
+
+/* Hàng 1: tiến trình cạnh lịch hôm nay (cao bằng nhau); hàng 2: nhịp ôn trải ngang. Các lớp `.sh-col`
+   chỉ là khung nhóm trong JSX nên không tham gia bố cục. */
+.sh-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-areas:
+    'progress today'
+    'activity activity';
+  gap: var(--gap-5);
+  align-items: stretch;
+}
+
+.sh-col {
+  display: contents;
+}
+
+.sh-grid__progress { grid-area: progress; }
+.sh-grid__today { grid-area: today; }
+.sh-grid__activity { grid-area: activity; }
+
+.sh-grid > *,
+.sh-col > * {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------ màn hình hẹp */
+
+@media (max-width: 60rem) {
+  .sh-hero {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    padding: var(--gap-6);
+  }
+
+  .sh-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sh-kpi:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .sh-kpi:nth-child(n + 3) {
+    border-top: 1px solid var(--rule-faint);
+  }
+
+  .sh-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'today'
+      'progress'
+      'activity';
+  }
+}
+
+@media (max-width: 30rem) {
+  .sh-hero {
+    padding: var(--gap-5);
+  }
+
+  .sh-kpi__body {
+    padding: var(--gap-4);
+  }
+
+  .sh-kpi__value {
+    font-size: 1.375rem;
+  }
+}
