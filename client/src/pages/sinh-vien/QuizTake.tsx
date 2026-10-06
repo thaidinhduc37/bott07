@@ -4,12 +4,11 @@ import { Icon } from '@/components/shared/Icon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { SaveToNotebook } from '@/components/shared/SaveToNotebook';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { viScore } from '@/components/study/format';
 import { ApiError } from '@/services/api';
 import { learningApi, type QuizQuestion, type QuizSession } from '@/services/learning-api';
 
 const LETTERS = ['A', 'B', 'C', 'D'];
-// Điểm dạng Việt: dấu phẩy thập phân ("6,0" thay vì "6.0").
-const viScore = (n: number) => n.toFixed(1).replace('.', ',');
 
 /** Làm bài (chưa nộp) và xem kết quả (đã nộp) — cùng một địa chỉ. */
 export default function QuizTakePage() {

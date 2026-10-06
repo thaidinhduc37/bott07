@@ -150,12 +150,4 @@ export function formatBytes(n: number): string {
   return `${(n / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export function formatDate(iso: string | null): string {
-  if (!iso) return '—';
-  return new Intl.DateTimeFormat('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    timeZone: 'Asia/Ho_Chi_Minh',
-  }).format(new Date(iso));
-}
+export { viDate as formatDate } from './forms-api';

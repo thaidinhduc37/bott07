@@ -4,29 +4,8 @@ import { Field } from '@/components/shared/Field';
 import { useSession } from '@/components/shared/SessionProvider';
 import { SignatureCard } from '@/components/signature/SignatureCard';
 import { ApiError, authApi } from '@/services/api';
+import { viDate, viDateTime } from '@/services/forms-api';
 import { PageHeader } from '@/components/shared/PageHeader';
-
-function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  return new Intl.DateTimeFormat('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    timeZone: 'Asia/Ho_Chi_Minh',
-  }).format(new Date(iso));
-}
-
-function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  return new Intl.DateTimeFormat('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'Asia/Ho_Chi_Minh',
-  }).format(new Date(iso));
-}
 
 /** Hàng dữ liệu chỉ đọc, trình bày như một dòng đã điền sẵn trên biểu mẫu. */
 function ReadOnlyRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
@@ -124,10 +103,10 @@ export default function ProfilePage() {
               <ReadOnlyRow label="Lớp" value={profile.studyClass?.code ?? '—'} />
               <ReadOnlyRow label="Khóa" value={profile.cohort ?? '—'} />
               <ReadOnlyRow label="Hệ đào tạo" value={profile.trainingSystem ?? '—'} />
-              <ReadOnlyRow label="Ngày sinh" value={formatDate(profile.dateOfBirth)} />
+              <ReadOnlyRow label="Ngày sinh" value={viDate(profile.dateOfBirth)} />
             </>
           )}
-          <ReadOnlyRow label="Đăng nhập gần nhất" value={formatDateTime(user.lastLoginAt)} />
+          <ReadOnlyRow label="Đăng nhập gần nhất" value={viDateTime(user.lastLoginAt)} />
         </section>
 
         <form onSubmit={onSave} style={{ marginTop: 'var(--gap-12)' }} noValidate>
