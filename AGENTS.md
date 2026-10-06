@@ -114,8 +114,10 @@ Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `kho
   and tests don't change. Keep a service file under ~500 lines; add a new mixin rather than growing one.
 - Async SQLAlchemy: load relationships explicitly (`selectinload`) and read ORM attributes into
   locals before `commit()`; lazy loads raise `MissingGreenlet` (a 500).
-- CSS: only existing tokens (`--ink`, `--pen`, `--gap-*`, …), dark-theme safe, no gradients,
-  decorative shadows, emoji, uppercase text, coloured side borders or purple. Don't set `margin: 0`
+- CSS: only existing tokens (`--ink`, `--pen`, `--gap-*`, …), dark-theme safe, no gradients
+  (the dotted fill lines in `base.css` are the only exception), decorative shadows, emoji, coloured side borders or
+  purple. Uppercase is allowed only for small labels (eyebrows, rail section titles, table headers, `dt` of fact
+  grids: ≤ 0.6875rem, `letter-spacing`, `--ink-faint`) — never for titles, buttons or body text. Don't set `margin: 0`
   on a direct child of `.stack` (it cancels the vertical rhythm).
 - Source comments and commit messages are written in Vietnamese; match that when editing existing
   files unless told otherwise.
