@@ -22,6 +22,7 @@ from app.schemas.schedules import (
     UpdateExamDto,
     UpdateScheduleDto,
 )
+from app.services.terms_service import TermsService
 from app.services.schedules_service import SchedulesService
 
 router = APIRouter(prefix="/schedules", tags=["schedules"])
@@ -51,6 +52,31 @@ async def my_timetable(
     return await SchedulesService(db).my_timetable(
         user.id, from_=from_, to=to, include_exams=include_exams, course_id=course_id,
     )
+
+
+@router.get("/me/terms")
+async def my_terms(user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    return await TermsService(db).my_terms(user.id)
+
+
+@router.get("/me/enrollments")
+async def my_enrollments(
+    academic_year: str | None = Query(default=None, alias="academicYear"),
+    semester: str | None = Query(default=None),
+    user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await TermsService(db).my_enrollments(user.id, academic_year, semester)
+
+
+@router.get("/me/exam-term")
+async def my_exam_term(
+    academic_year: str | None = Query(default=None, alias="academicYear"),
+    semester: str | None = Query(default=None),
+    user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    return await TermsService(db).my_exams(user.id, academic_year, semester)
 
 
 @router.get("/me/courses")

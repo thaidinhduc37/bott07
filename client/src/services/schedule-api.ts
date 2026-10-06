@@ -256,6 +256,51 @@ export interface ImportResult {
   message: string;
 }
 
+/* ------------------------------------------------- học kỳ & môn đang học (học viên) */
+
+/** Một học kỳ có lịch của học viên. `from`/`to` là chuỗi `YYYY-MM-DD` (giờ địa phương). */
+export interface TermInfo {
+  academicYear: string;
+  semester: string;
+  from: string;
+  to: string;
+  containsToday: boolean;
+}
+
+export interface MyTerms {
+  terms: TermInfo[];
+  current: { academicYear: string; semester: string } | null;
+}
+
+/** Một khung giờ cố định của môn trong học kỳ (đã gom các buổi cùng thứ–giờ). */
+export interface ExamTermItem {
+  id: string;
+  course: { id: string; code: string; name: string; credits: number } | null;
+  lecturer: { id: string; name: string; email: string } | null;
+  examDate: string;
+  startsAt: string;
+  endsAt: string;
+  shift: string | null;
+  durationMinutes: number;
+  room: string;
+  building: string | null;
+  examFormat: string | null;
+  formatLabel: string | null;
+  allowedMaterials: string | null;
+  candidateCount: number | null;
+  status: string;
+  upcoming: boolean;
+}
+
+/** Lịch thi + số liệu tóm tắt của học viên trong một học kỳ. */
+export interface MyExamTerm {
+  term: { academicYear: string; semester: string } | null;
+  examCount: number;
+  totalCredits: number;
+  upcomingCount: number;
+  items: ExamTermItem[];
+}
+
 export const scheduleApi = {
   mine: (params: { from?: string; to?: string; courseId?: string } = {}) => {
     const qs = new URLSearchParams(
@@ -265,6 +310,19 @@ export const scheduleApi = {
   },
 
   myCourses: () => api<{ items: CourseRef[] }>('/schedules/me/courses'),
+
+  /** Danh sách học kỳ có lịch của học viên + học kỳ hiện tại. */
+  myTerms: () => api<MyTerms>('/schedules/me/terms'),
+
+  /** Môn đang học trong học kỳ. Không truyền tham số = backend tự chọn học kỳ hiện tại. */
+
+  /** Lịch thi trong học kỳ. Không truyền tham số = backend tự chọn học kỳ hiện tại. */
+  myExamTerm: (params: { academicYear?: string; semester?: string } = {}) => {
+    const qs = new URLSearchParams(
+      Object.entries(params).filter(([, v]) => v) as [string, string][],
+    ).toString();
+    return api<MyExamTerm>(`/schedules/me/exam-term${qs ? `?${qs}` : ''}`);
+  },
 
   /** Lịch giảng dạy: buổi học + ca thi người gọi được ghi yêu cầu. */
   teaching: (params: { from?: string; to?: string; classId?: string } = {}) => {
@@ -357,6 +415,13 @@ export function dateOf(iso: string): string {
     month: '2-digit',
     timeZone: VN,
   }).format(new Date(iso));
+}
+
+/** Định dạng chuỗi ngày `YYYY-MM-DD` thành `dd/mm/yyyy` theo giờ địa phương.
+ *  KHÔNG dùng `new Date('YYYY-MM-DD')` trần — nó bị hiểu là UTC và lệch múi giờ. */
+export function fmtDay(ymd: string): string {
+  const [y, m, d] = ymd.split('-');
+  return `${d}/${m}/${y}`;
 }
 
 export function weekdayOf(iso: string): string {

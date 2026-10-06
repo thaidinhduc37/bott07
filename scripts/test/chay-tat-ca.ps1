@@ -89,6 +89,7 @@ $learning = @(
   @{ ten = 'Lịch — Sửa lịch và kiểm tra trùng';      tep = 'test_schedule_edit.py' },
   @{ ten = 'Đào tạo — Khoa và phân công';            tep = 'test_faculties.py' },
   @{ ten = 'Đào tạo — Danh mục phòng học';           tep = 'test_rooms.py' },
+  @{ ten = 'Kết quả học tập — Điểm và học kỳ';       tep = 'test_grades.py' },
   @{ ten = 'RAG — Dò số điều trong quy chế';       tep = 'test_article_detection.py' }
 )
 foreach ($s in $learning) {

@@ -23,6 +23,8 @@ import StaffLayout from '@/layout/StaffLayout';
 import StaffHome from '@/pages/can-bo/StaffHome';
 import LearningInsightsPage from '@/pages/can-bo/LearningInsights';
 import TrainingManagementPage from '@/pages/can-bo/TrainingManagement';
+import GradeEntryPage from '@/pages/can-bo/GradeEntry';
+import AcademicResultsPage from '@/pages/sinh-vien/AcademicResults';
 import StaffChatPage from '@/pages/can-bo/StaffChat';
 import StaffSchedulePage from '@/pages/can-bo/StaffSchedule';
 import StaffDocumentsPage from '@/pages/can-bo/StaffDocuments';
@@ -58,6 +60,7 @@ export function App() {
         <Route index element={<StudentHome />} />
         <Route path="hoi-dap" element={<StudentChatPage />} />
         <Route path="lich" element={<StudentSchedulePage />} />
+        <Route path="ket-qua" element={<AcademicResultsPage />} />
         <Route path="on-tap" element={<StudyHubPage />} />
         <Route path="on-tap/so-cau-sai" element={<ReviewBookPage />} />
         <Route path="on-tap/:id" element={<QuizTakePage />} />
@@ -75,6 +78,7 @@ export function App() {
         <Route path="lich" element={<StaffSchedulePage />} />
         <Route path="hoc-tap" element={<LearningInsightsPage />} />
         <Route path="dao-tao" element={<TrainingManagementPage />} />
+        <Route path="nhap-diem" element={<GradeEntryPage />} />
         <Route path="tai-lieu" element={<StaffDocumentsPage />} />
         <Route path="don-cho-xu-ly" element={<ApprovalInboxPage />} />
         <Route path="don-cho-xu-ly/:id" element={<ApprovalDetailPage />} />
@@ -87,6 +91,7 @@ export function App() {
         <Route path="dich-vu" element={<ServicesPage />} />
         <Route path="tai-lieu" element={<AdminDocumentsPage />} />
         <Route path="dao-tao" element={<TrainingManagementPage />} />
+        <Route path="nhap-diem" element={<GradeEntryPage />} />
         <Route path="lich" element={<StaffSchedulePage />} />
       </Route>
     </Routes>

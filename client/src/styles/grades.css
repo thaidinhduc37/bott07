@@ -1,0 +1,57 @@
+/* grades — trang "Kết quả học tập" của học viên (tiền tố grd-) */
+
+/* Thẻ trên cùng tiêu đề học kỳ: hai thẻ nhỏ nằm ngang, xuống hàng khi hẹp. */
+.grd-term-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-2);
+}
+
+/* Điểm chưa nhập: "—" màu nhạt. */
+.grd-dash {
+  color: var(--ink-faint);
+}
+
+/* Điểm học phần: chữ thường khi chưa có điểm, thẻ khi đã chấm. */
+.grd-total {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Điểm trung bình học kỳ, dòng cuối khối. */
+.grd-term-gpa {
+  margin: var(--gap-4) 0 0;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+/* Chú thích nhỏ dưới khối tổng kết. */
+.grd-note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+/* Bộ lọc học kỳ: nhãn + select bề rộng vừa phải. */
+.grd-filter {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--gap-3);
+}
+
+.grd-filter .field__label {
+  margin: 0 0 var(--gap-2);
+}
+
+.grd-filter select.field__input {
+  width: auto;
+  min-width: 14rem;
+  max-width: 100%;
+}
+
+/* Màn hẹp (< 40rem): ẩn cột điểm thành phần, chỉ giữ Mã môn, Tên, Tín chỉ, Điểm. */
+@media (max-width: 40rem) {
+  .grd-col-part {
+    display: none;
+  }
+}

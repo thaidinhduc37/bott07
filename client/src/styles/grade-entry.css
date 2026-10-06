@@ -1,0 +1,210 @@
+/* Trang "Nhập điểm" — giảng viên / phòng đào tạo. Tiền tố `gent-`. */
+
+/* ---- danh sách học phần (cột trái) — cùng kiểu `insight-course` ---- */
+.gent-section {
+  display: grid;
+  gap: 0.2rem;
+  width: 100%;
+  padding: var(--gap-3) var(--gap-4);
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule-faint);
+  cursor: pointer;
+}
+.gent-section:last-child {
+  border-bottom: 0;
+}
+.gent-section:hover {
+  background: var(--paper);
+}
+.gent-section:focus-visible {
+  outline: none;
+  box-shadow: inset var(--ring);
+}
+.gent-section--on {
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+}
+.gent-section__name {
+  font-weight: 600;
+}
+.gent-section__meta {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+.gent-section--on .gent-section__meta {
+  color: inherit;
+}
+.gent-section__loading {
+  padding: var(--gap-4);
+  margin: 0;
+}
+
+/* ---- bảng nhập điểm ---- */
+.gent-table th[scope='col']:nth-child(n + 3):nth-child(-n + 7) {
+  text-align: center;
+}
+.gent-table td:nth-child(n + 3):nth-child(-n + 7) {
+  text-align: center;
+}
+
+/* Ô điểm: rộng ~4.5rem, căn giữa, chữ đẳng khoảng. */
+.gent-cell {
+  width: 4.5rem;
+  padding: 0.35rem 0.4rem;
+  margin: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  background: var(--sheet-2);
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 140ms var(--ease), box-shadow 140ms var(--ease),
+    background-color 140ms var(--ease);
+}
+.gent-cell:hover:not(:disabled) {
+  border-color: var(--ink-faint);
+}
+.gent-cell:focus {
+  border-color: var(--pen);
+  background: var(--sheet);
+  box-shadow: var(--ring);
+}
+/* Ô đã đổi so với giá trị tải về. */
+.gent-cell--changed {
+  background: var(--warn-wash);
+  border-color: var(--warn);
+}
+/* Ô nhập ngoài khoảng 0–10 hoặc không phải số. */
+.gent-cell--invalid,
+.gent-cell--invalid:focus {
+  border-color: var(--seal);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--seal) 20%, transparent);
+}
+
+/* Ô ghi chú: rộng hơn, không căn giữa. */
+.gent-note {
+  width: 100%;
+  min-width: 10rem;
+  padding: 0.35rem 0.5rem;
+  margin: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  background: var(--sheet-2);
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 140ms var(--ease), box-shadow 140ms var(--ease),
+    background-color 140ms var(--ease);
+}
+.gent-note:hover:not(:disabled) {
+  border-color: var(--ink-faint);
+}
+.gent-note:focus {
+  border-color: var(--pen);
+  background: var(--sheet);
+  box-shadow: var(--ring);
+}
+.gent-note::placeholder {
+  color: var(--ink-faint);
+}
+
+/* Hàng nút + đếm ô đã sửa. */
+.gent-actions {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gap-3);
+}
+
+/* ---- hộp thoại xác nhận rời đi ---- */
+.gent-dlg {
+  width: min(24rem, 100%);
+  max-width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--sheet);
+  color: var(--ink);
+  padding: 0;
+}
+.gent-dlg::backdrop {
+  background: color-mix(in oklab, var(--ink) 40%, transparent);
+}
+.gent-dlg__body {
+  padding: var(--gap-8);
+  display: grid;
+  gap: var(--gap-4);
+}
+.gent-dlg__title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.gent-dlg__text {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+.gent-dlg__actions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--gap-3);
+}
+
+/* ---- tab nhập CSV ---- */
+.gent-cols {
+  display: block;
+  padding: var(--gap-3) var(--gap-4);
+  background: var(--sheet-2);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-sm);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  word-break: break-word;
+  color: var(--ink-soft);
+}
+.gent-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-3);
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+.gent-notes li {
+  padding-left: 1rem;
+  position: relative;
+}
+.gent-notes li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: var(--r-pill);
+  background: var(--ink-faint);
+}
+
+/* Ô lưới không co nhỏ hơn nội dung (bảng nhập điểm) nên đẩy cột phải ra ngoài màn hình;
+   cho phép co lại và để bảng tự cuộn ngang trong khung `.table-wrap`. */
+.page-grid > .page-grid__main {
+  min-width: 0;
+}
+.gent-name {
+  white-space: nowrap;
+}
+
+/* Con trực tiếp của cột chính (khối `.stack` chứa bảng) cũng phải được co lại: nếu không, độ rộng tối thiểu
+   của bảng nhập điểm đẩy cả cột ra ngoài màn hình thay vì cuộn trong `.table-wrap`. */
+.page-grid__main > * {
+  min-width: 0;
+}

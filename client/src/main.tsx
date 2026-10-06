@@ -7,6 +7,9 @@ import './styles/training.css';
 import './styles/schedule-edit.css';
 import './styles/rooms.css';
 import './styles/admin-create.css';
+import './styles/grades.css';
+import './styles/grade-entry.css';
+import './styles/schedule-term.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

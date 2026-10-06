@@ -14,6 +14,8 @@ import { TimetableWeek } from '@/components/schedule/TimetableWeek';
 import { EntryDetail } from '@/components/schedule/EntryDetail';
 import { Icon } from '@/components/shared/Icon';
 import { PageHeader } from '@/components/shared/PageHeader';
+import { TabPanel, Tabs } from '@/components/shared/Tabs';
+import { ExamTermPanel } from '@/components/schedule/ExamTermPanel';
 
 export default function StudentSchedulePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -104,6 +106,15 @@ export default function StudentSchedulePage() {
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekStart.getDate() + 6);
 
+  // Hai tab: "Lịch học" (cách xem theo tuần như cũ) và "Lịch thi" (bảng kỳ thi theo học kỳ).
+  type Tab = 'lich-hoc' | 'lich-thi';
+  const tab: Tab = searchParams.get('tab') === 'lich-thi' ? 'lich-thi' : 'lich-hoc';
+  function changeTab(next: Tab) {
+    const p = new URLSearchParams(searchParams);
+    p.set('tab', next);
+    setSearchParams(p, { replace: true });
+  }
+
   const sessions = data?.sessions ?? [];
   const exams = showExams ? (data?.exams ?? []) : [];
 
@@ -113,7 +124,25 @@ export default function StudentSchedulePage() {
         eyebrow="Học vụ"
         title="Lịch học và lịch thi"
         description={data?.class ? `Lớp ${data.class.code} — ${data.class.name}` : undefined}
+        tabs={
+          <Tabs
+            label="Nội dung trang Lịch"
+            idPrefix="lich-hv"
+            value={tab}
+            onChange={changeTab}
+            items={[
+              { id: 'lich-hoc', label: 'Lịch học' },
+              { id: 'lich-thi', label: 'Lịch thi' },
+            ]}
+          />
+        }
       />
+
+      <TabPanel idPrefix="lich-hv" tab={tab}>
+      {tab === 'lich-thi' ? (
+        <ExamTermPanel />
+      ) : (
+      <div className="stack">
 
       {/* ------------------------------------------------------ điều hướng tuần */}
       <div className="sheet" style={{ padding: '0.6rem 0.75rem' }}>
@@ -206,6 +235,10 @@ export default function StudentSchedulePage() {
           </>
         )
       )}
+
+      </div>
+      )}
+      </TabPanel>
 
       {selected && (
         <EntryDetail entry={selected} onClose={() => setSelected(null)} />

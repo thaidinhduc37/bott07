@@ -76,6 +76,7 @@ export const NAV: Record<Workspace, NavItem[]> = {
     { href: '/sinh-vien/on-tap', label: 'Ôn tập', icon: 'book' },
     { href: '/sinh-vien/so-tay', label: 'Sổ tay', icon: 'pencil' },
     { href: '/sinh-vien/lich', label: 'Lịch học & lịch thi', icon: 'calendar' },
+    { href: '/sinh-vien/ket-qua', label: 'Kết quả học tập', icon: 'log' },
     { href: '/sinh-vien/bieu-mau', label: 'Biểu mẫu', icon: 'form' },
     { href: '/thong-bao', label: 'Thông báo', icon: 'bell' },
   ],
@@ -106,6 +107,12 @@ export const NAV: Record<Workspace, NavItem[]> = {
       roles: ['ACADEMIC_MANAGER', 'DEPARTMENT_HEAD'],
     },
     {
+      href: '/can-bo/nhap-diem',
+      label: 'Nhập điểm',
+      icon: 'pencil',
+      roles: ['ACADEMIC_MANAGER', 'LECTURER'],
+    },
+    {
       href: '/can-bo/hoc-tap',
       label: 'Tình hình học tập',
       icon: 'pulse',
@@ -120,6 +127,7 @@ export const NAV: Record<Workspace, NavItem[]> = {
     { href: '/quan-tri/tai-lieu', label: 'Tài liệu', icon: 'folder' },
     { href: '/quan-tri/dao-tao', label: 'Quản lý đào tạo', icon: 'book' },
     { href: '/quan-tri/lich', label: 'Lịch học & lịch thi', icon: 'calendar' },
+    { href: '/quan-tri/nhap-diem', label: 'Nhập điểm', icon: 'pencil' },
     { href: '/quan-tri/nhat-ky', label: 'Nhật ký thao tác', icon: 'log' },
     { href: '/quan-tri/dich-vu', label: 'Trạng thái dịch vụ', icon: 'pulse' },
     { href: '/thong-bao', label: 'Thông báo', icon: 'bell' },

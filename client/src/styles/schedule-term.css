@@ -1,0 +1,130 @@
+/* ============================================================ lịch học viên — tab "Lịch thi"
+   (components ExamTermPanel + ExamTable). Tiền tố `term-`; chỉ dùng biến trong globals.css, an toàn theme tối. */
+
+/* Dòng tên môn + giảng viên, khoảng ngày (dùng cho bảng và thẻ). */
+.term-course {
+  display: grid;
+  gap: 2px;
+}
+
+.term-course__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--gap-2);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.term-course__name .mono {
+  color: var(--pen-ink);
+  font-weight: 600;
+}
+
+.term-course__lec {
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+
+/* Khoảng ngày + số buổi. */
+.term-range {
+  display: grid;
+  gap: 2px;
+}
+
+.term-range__dates {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.term-range__dates strong {
+  color: var(--ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.term-range__count {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+
+.term-dim {
+  color: var(--ink-faint);
+}
+
+
+/* ============================================================ tab "Lịch thi"
+   (component ExamTable). Tiền tố `term-exam-`; chỉ dùng biến trong globals.css. */
+
+/* Hai cách hiển thị: bảng (màn rộng) và thẻ (màn hẹp). Mặc định hiện bảng. */
+.term-exam-grid {
+  display: block;
+}
+
+.term-exam-table-wrap {
+  max-height: none;
+}
+
+.term-exam-cards {
+  display: none;
+}
+
+/* Kỳ thi đã qua: làm nhạt chữ. */
+.term-exam-row--past td,
+.term-exam-card--past {
+  color: var(--ink-faint);
+}
+
+.term-exam-row--past .term-course__name,
+.term-exam-row--past .term-range__dates strong,
+.term-exam-card--past .term-course__name,
+.term-exam-card--past .term-range__dates strong {
+  color: var(--ink-faint);
+}
+
+/* ------------------------------------------------------ thẻ (màn hẹp) */
+.term-exam-card {
+  display: grid;
+  gap: var(--gap-3);
+  padding: var(--gap-4);
+  background: var(--sheet);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-lg);
+}
+
+.term-exam-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--gap-2);
+}
+
+.term-exam-card__row {
+  display: grid;
+  gap: 3px;
+}
+
+.term-exam-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+
+/* Dưới 40rem: chuyển mỗi kỳ thi thành thẻ, ẩn bảng — không cuộn ngang ở 400px. */
+@media (max-width: 40rem) {
+  .term-exam-grid {
+    display: block;
+  }
+
+  .term-exam-table-wrap {
+    display: none;
+  }
+
+  .term-exam-cards {
+    display: grid;
+    gap: var(--gap-3);
+  }
+}
+

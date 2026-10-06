@@ -11,6 +11,7 @@ from app.models import (  # noqa: F401
     chat,
     documents,
     forms,
+    grades,
     learning,
     notes,
     notifications,
