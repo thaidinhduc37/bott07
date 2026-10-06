@@ -80,6 +80,11 @@ Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `kho
   (τ), evidence-sufficiency grading, and post-generation groundedness verification. Don't bypass
   or merge these when touching `server/app/pipeline/orchestrator.py`. Changing the corpus requires
   recalibrating τ.
+- Retrieval narrows to a single document when the question names it verbatim (accent/case
+  insensitive, `Retriever.scope_documents`); the sufficiency grader reads the same 5 hits the
+  generator will read. Eval set and results live in `docs/danh-gia/` — re-run `run_eval.py` after
+  touching the pipeline; scoring is by keyword + manual review, one run each, so treat small
+  differences as noise.
 - E-signatures are internal (hash + audit log), not legally-binding digital certificates — the UI
   states this on every relevant page; don't imply otherwise in copy or docs.
 - Approval flow is fixed in code + JSON config per form type — there is no dynamic workflow
