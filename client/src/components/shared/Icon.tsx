@@ -51,7 +51,8 @@ export type IconName =
   | 'location'
   | 'person'
   | 'plus'
-  | 'pin';
+  | 'pin'
+  | 'help';
 
 /** Tên biểu tượng tương ứng trong bộ Material Symbols Outlined. */
 const SYMBOL: Record<IconName, string> = {
@@ -84,6 +85,7 @@ const SYMBOL: Record<IconName, string> = {
   person: 'person',
   plus: 'add',
   pin: 'push_pin',
+  help: 'help',
 };
 
 export interface IconProps {

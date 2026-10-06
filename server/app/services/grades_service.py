@@ -115,6 +115,17 @@ class GradesService:
                 c.id: c for c in (await self.db.execute(select(Course).where(Course.id.in_(course_ids)))).scalars().all()
             }
 
+        # Lần học của một môn = thứ tự học kỳ (cũ → mới) mà môn đó có điểm; lần chưa đạt = số học kỳ có điểm < ngưỡng
+        # tính đến học kỳ đang xét. Dùng điền sẵn "lần học", "lần thi", "lần thứ" của đơn xin học lại.
+        graded_terms: dict[uuid.UUID, list[tuple[tuple[str, str], bool]]] = {}
+        for (term_key, cid), g in sorted(by_cell.items(), key=lambda kv: _term_sort_key(kv[0][0])):
+            if g.total is not None:
+                graded_terms.setdefault(cid, []).append((term_key, g.total >= PASS_SCORE))
+
+        def attempts(cid: uuid.UUID, term_key: tuple[str, str]) -> tuple[int, int]:
+            seen = [(t, ok) for t, ok in graded_terms.get(cid, []) if _term_sort_key(t) <= _term_sort_key(term_key)]
+            return len(seen), sum(1 for _, ok in seen if not ok)
+
         terms_out = []
         graded_all: list[tuple[float, int]] = []
         graded_passed: list[tuple[float, int]] = []
@@ -131,8 +142,11 @@ class GradesService:
                 g = by_cell.get((term, cid))
                 total = g.total if g else None
                 passed = None if total is None else total >= PASS_SCORE
+                attempt, failed_attempts = attempts(cid, term) if total is not None else (0, 0)
                 items.append(
                     {
+                        "attempt": attempt,
+                        "failedAttempts": failed_attempts,
                         "courseId": str(course.id),
                         "code": course.code,
                         "name": course.name,

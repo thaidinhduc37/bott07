@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { parsePrefill } from '@/components/forms/prefill';
 import { useNewSubmission } from '@/hooks/useNewSubmission';
 import { SubmissionForm } from '@/components/forms/SubmissionForm';
 import { ApprovalFlow } from '@/components/forms/ApprovalFlow';
@@ -19,6 +20,9 @@ export default function NewSubmissionPage() {
   const { code = '' } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>('noi-dung');
+  const location = useLocation();
+  // Chỉ đọc một lần lúc mở trang: sửa trong form không được bị liên kết ghi đè lại.
+  const [prefill] = useState(() => parsePrefill(location.search));
   const { tpl, loading, busy, error, fieldErrors, submit } = useNewSubmission(code, (id) =>
     navigate(`/sinh-vien/don-cua-toi/${id}`),
   );
@@ -60,6 +64,13 @@ export default function NewSubmissionPage() {
             </div>
           )}
 
+          {prefill && (
+            <div className="notice notice--info" role="status">
+              Một số ô đã được điền sẵn từ nơi bạn vừa bấm (ví dụ kết quả học tập). Hãy kiểm tra lại từng ô trước
+              khi lập đơn.
+            </div>
+          )}
+
           <div className="seg" style={{ width: '100%' }}>
             {tabs.map((t) => (
               <label
@@ -79,6 +90,7 @@ export default function NewSubmissionPage() {
                 fields={tpl.fields}
                 templateCode={code}
                 autofill={tpl.autofill}
+                initial={prefill}
                 busy={busy || tpl.missingProfileFields.length > 0}
                 submitLabel="Lập đơn"
                 fieldErrors={fieldErrors}

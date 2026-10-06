@@ -10,6 +10,7 @@ import './styles/admin-create.css';
 import './styles/grades.css';
 import './styles/grade-entry.css';
 import './styles/schedule-term.css';
+import './styles/support.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

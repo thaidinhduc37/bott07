@@ -25,6 +25,7 @@ import LearningInsightsPage from '@/pages/can-bo/LearningInsights';
 import TrainingManagementPage from '@/pages/can-bo/TrainingManagement';
 import GradeEntryPage from '@/pages/can-bo/GradeEntry';
 import AcademicResultsPage from '@/pages/sinh-vien/AcademicResults';
+import SupportPage from '@/pages/sinh-vien/Support';
 import StaffChatPage from '@/pages/can-bo/StaffChat';
 import StaffSchedulePage from '@/pages/can-bo/StaffSchedule';
 import StaffDocumentsPage from '@/pages/can-bo/StaffDocuments';
@@ -61,6 +62,7 @@ export function App() {
         <Route path="hoi-dap" element={<StudentChatPage />} />
         <Route path="lich" element={<StudentSchedulePage />} />
         <Route path="ket-qua" element={<AcademicResultsPage />} />
+        <Route path="ho-tro" element={<SupportPage />} />
         <Route path="on-tap" element={<StudyHubPage />} />
         <Route path="on-tap/so-cau-sai" element={<ReviewBookPage />} />
         <Route path="on-tap/:id" element={<QuizTakePage />} />

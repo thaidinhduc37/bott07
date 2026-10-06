@@ -3,6 +3,10 @@ import { api } from './api';
 /** Một môn trong một học kỳ, kèm điểm thành phần và điểm học phần. */
 export interface GradeCourse {
   courseId: string;
+  /** Lần học của môn tính đến học kỳ này (0 khi chưa có điểm). */
+  attempt: number;
+  /** Số lần chưa đạt của môn tính đến học kỳ này. */
+  failedAttempts: number;
   code: string;
   name: string;
   credits: number;

@@ -1,0 +1,202 @@
+/* Trang Hỗ trợ của học viên (tiền tố sup-) */
+
+.sup-search {
+  max-width: 26rem;
+}
+
+/* Một khối chứa nhiều mục; các mục ngăn nhau bằng đường kẻ, không lồng khung. */
+.sup-list {
+  overflow: hidden;
+}
+
+.sup-item + .sup-item {
+  border-top: 1px solid var(--rule-faint);
+}
+
+.sup-item__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-4);
+  padding: var(--gap-4) var(--gap-5);
+  cursor: pointer;
+  list-style: none;
+}
+
+.sup-item__head::-webkit-details-marker {
+  display: none;
+}
+
+.sup-item__head::after {
+  content: '+';
+  order: 3;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--ink-faint);
+}
+
+.sup-item[open] > .sup-item__head::after {
+  content: '−';
+}
+
+.sup-item__head:hover {
+  background: var(--paper);
+}
+
+.sup-item__head:focus-visible {
+  outline: none;
+  box-shadow: inset var(--ring);
+}
+
+.sup-item__name {
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+
+.sup-item__meta {
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.sup-item__body {
+  display: grid;
+  gap: var(--gap-4);
+  padding: 0 var(--gap-5) var(--gap-5);
+}
+
+.sup-item__desc {
+  margin: 0;
+  max-width: var(--measure);
+  color: var(--ink-soft);
+}
+
+.sup-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-6);
+}
+
+.sup-h {
+  margin: 0 0 var(--gap-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+
+.sup-muted {
+  margin: var(--gap-2) 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+
+.sup-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-2);
+}
+
+.sup-steps__item {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  font-size: 0.9375rem;
+}
+
+.sup-steps__no {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--r-pill);
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.sup-fields {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.9375rem;
+}
+
+.sup-req {
+  margin-left: var(--gap-1);
+  font-size: 0.75rem;
+  color: var(--warn-ink);
+}
+
+.sup-item__actions {
+  display: flex;
+  gap: var(--gap-3);
+}
+
+/* ------------------------------------------------------------------ liên hệ */
+.sup-contacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--gap-4);
+}
+
+.sup-contact {
+  display: grid;
+  gap: var(--gap-2);
+  align-content: start;
+}
+
+.sup-contact__name {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.sup-contact__role {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.sup-contact__rows {
+  margin: var(--gap-2) 0 0;
+  display: grid;
+  gap: var(--gap-2);
+}
+
+.sup-contact__row {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: var(--gap-3);
+  font-size: 0.9375rem;
+}
+
+.sup-contact__row dt {
+  color: var(--ink-faint);
+  font-size: 0.8125rem;
+}
+
+.sup-contact__row dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 40rem) {
+  .sup-cols {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gap-4);
+  }
+
+  .sup-item__head {
+    padding: var(--gap-4);
+    flex-wrap: wrap;
+  }
+
+  .sup-item__body {
+    padding: 0 var(--gap-4) var(--gap-4);
+  }
+}

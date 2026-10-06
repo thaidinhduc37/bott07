@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { formPrefillUrl } from '@/components/forms/prefill';
 import { Metrics } from '@/components/shared/Metrics';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { viScore } from '@/components/study/format';
@@ -18,6 +20,55 @@ function totalCell(c: GradeCourse) {
   if (c.total === null) return <span className="grd-dash">—</span>;
   const cls = c.passed === true ? 'tag--ok' : c.passed === false ? 'tag--seal' : '';
   return <span className={`grd-total${cls ? ` tag ${cls}` : ''}`}>{viScore(c.total)}</span>;
+}
+
+/** Điểm từ mức này trở lên thì không gợi ý "xin cải thiện" nữa. */
+const IMPROVE_BELOW = 8;
+
+/**
+ * Nối điểm với đơn từ: môn không đạt → "Xin học lại"; môn đã đạt nhưng điểm chưa cao → "Xin cải thiện".
+ * Giá trị chỉ điền SẴN vào đơn (người dùng kiểm tra, sửa rồi mới lập đơn), xem `formPrefillUrl`.
+ */
+function actionFor(c: GradeCourse, term: GradeTerm): { to: string; label: string; primary: boolean } | null {
+  if (c.total === null) return null;
+  const score = viScore(c.total);
+  if (c.passed === false) {
+    return {
+      label: 'Xin học lại',
+      primary: true,
+      to: formPrefillUrl('DON_XIN_HOC_LAI', {
+        lanThuMayXinHoc: String(Math.max(c.failedAttempts, 1)),
+        hocPhan: `${c.name} (${c.code})`,
+        lanThi: String(Math.max(c.attempt, 1)),
+        lanHoc: String(Math.max(c.attempt, 1)),
+        diemThi: score,
+      }),
+    };
+  }
+  if (c.passed === true && c.total < IMPROVE_BELOW) {
+    return {
+      label: 'Xin cải thiện',
+      primary: false,
+      to: formPrefillUrl('DON_HOC_CAI_THIEN', {
+        hocKy: term.semester.replace(/\D+/g, '') || term.semester,
+        namHoc: term.academicYear,
+        soHocPhanDaThi: String(term.gradedCount),
+        soHocPhanChuaDat: String(term.courses.filter((x) => x.passed === false).length),
+        hocPhanList: [{ tenHocPhan: `${c.name} (${c.code})`, soTinChi: String(c.credits), diemDaDat: score }],
+      }),
+    };
+  }
+  return null;
+}
+
+function actionLink(c: GradeCourse, term: GradeTerm) {
+  const a = actionFor(c, term);
+  if (!a) return null;
+  return (
+    <Link to={a.to} className={`grd-act${a.primary ? ' grd-act--primary' : ''}`}>
+      {a.label}
+    </Link>
+  );
 }
 
 function TermSheet({ term }: { term: GradeTerm }) {
@@ -47,6 +98,7 @@ function TermSheet({ term }: { term: GradeTerm }) {
             <col className="grd-c-part grd-col-part" />
             <col className="grd-c-part grd-col-part" />
             <col className="grd-c-total" />
+            <col className="grd-c-act grd-col-act" />
           </colgroup>
           <thead>
             <tr>
@@ -59,6 +111,9 @@ function TermSheet({ term }: { term: GradeTerm }) {
               <th className="num grd-col-part">GK</th>
               <th className="num grd-col-part">CK</th>
               <th className="num">Điểm</th>
+              <th className="grd-col-act">
+                <span className="sr-only">Đơn từ</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -69,6 +124,7 @@ function TermSheet({ term }: { term: GradeTerm }) {
                 <td>
                   <span className="mono grd-code-inline">{c.code}</span>
                   {c.name}
+                  <span className="grd-act-inline">{actionLink(c, term)}</span>
                 </td>
                 <td className="num">{c.credits}</td>
                 <td className="num grd-col-part">{scoreCell(c.practice)}</td>
@@ -76,6 +132,7 @@ function TermSheet({ term }: { term: GradeTerm }) {
                 <td className="num grd-col-part">{scoreCell(c.midterm)}</td>
                 <td className="num grd-col-part">{scoreCell(c.finalExam)}</td>
                 <td className="num">{totalCell(c)}</td>
+                <td className="grd-col-act">{actionLink(c, term)}</td>
               </tr>
             ))}
           </tbody>

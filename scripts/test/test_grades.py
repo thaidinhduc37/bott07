@@ -139,6 +139,24 @@ try:
     st, r = sv.req("GET", "/grades/me")
     check("môn không đạt: có điểm trung bình nhưng không tích lũy", r["summary"]["creditsEarned"] == 0 and r["summary"]["gpa"] == 4.5 and r["summary"]["gpaEarned"] is None, str(r["summary"]))
 
+    # --- số lần học / lần chưa đạt (điền sẵn đơn xin học lại)
+    term = next((x for x in r["terms"] if x["academicYear"] == year and x["semester"] == sem), {})
+    c301 = find(term.get("courses", []), "CS301")
+    check("lần học và lần chưa đạt của môn không đạt", c301.get("attempt") == 1 and c301.get("failedAttempts") == 1, str(c301))
+    c_none = next((c for c in term.get("courses", []) if c["total"] is None), {})
+    check("môn chưa có điểm: attempt = 0", c_none.get("attempt") == 0 and c_none.get("failedAttempts") == 0, str(c_none))
+
+    # --- trang Hỗ trợ: thủ tục dựng từ mẫu đơn đang bật
+    st, g = sv.req("GET", "/support/guide")
+    check("hướng dẫn thủ tục trả 200", st == 200 and len(g.get("procedures", [])) >= 1, f"{st} {str(g)[:200]}")
+    hl = next((p for p in g.get("procedures", []) if p["code"] == "DON_XIN_HOC_LAI"), {})
+    check("đơn xin học lại có luồng duyệt và ô phải điền", len(hl.get("approvalSteps", [])) >= 1 and len(hl.get("fields", [])) >= 1, str(hl)[:200])
+    check("không liệt kê ô lấy sẵn từ hồ sơ", all("Họ và tên" != f["label"] for f in hl.get("fields", [])), str(hl.get("fields")))
+    check("có câu hỏi thường gặp", len(g.get("faq", [])) >= 1)
+    check("liên hệ không có ô rỗng", all(all(v for v in c.values()) for c in g.get("contacts", [])), str(g.get("contacts"))[:200])
+    st, _ = H.Client().req("GET", "/support/guide")
+    check("chưa đăng nhập bị từ chối", st in (401, 403), str(st))
+
     # --- nhập CSV (quản lý)
     head = "ma_hv,ma_mon,nam_hoc,hoc_ky,th,qt,gk,ck,diem_hp,ghi_chu\n"
     code = psql(f"select student_code from student_profiles where user_id='{sid}'")

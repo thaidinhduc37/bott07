@@ -78,6 +78,7 @@ export const NAV: Record<Workspace, NavItem[]> = {
     { href: '/sinh-vien/lich', label: 'Lịch học & lịch thi', icon: 'calendar' },
     { href: '/sinh-vien/ket-qua', label: 'Kết quả học tập', icon: 'log' },
     { href: '/sinh-vien/bieu-mau', label: 'Biểu mẫu', icon: 'form' },
+    { href: '/sinh-vien/ho-tro', label: 'Hỗ trợ', icon: 'help' },
     { href: '/thong-bao', label: 'Thông báo', icon: 'bell' },
   ],
   'can-bo': [

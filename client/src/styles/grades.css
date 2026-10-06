@@ -103,18 +103,21 @@
 /* Bề rộng theo tỉ lệ: tên môn nhận phần còn lại (≈ 24%, tên dài tự xuống dòng), các cột số được chia rộng hơn
    nên từ tên môn tới cột TC không còn một khoảng trống dài. Màn hẹp dùng bề rộng cố định ở cuối tệp. */
 .grd-c-stt {
-  width: 5%;
+  width: 4%;
 }
 .grd-c-code {
-  width: 9%;
+  width: 8%;
 }
 .grd-c-tc {
-  width: 9%;
+  width: 7%;
 }
 .grd-c-part {
-  width: 10%;
+  width: 8%;
 }
 .grd-c-total {
+  width: 10%;
+}
+.grd-c-act {
   width: 13%;
 }
 
@@ -156,6 +159,26 @@
   max-width: var(--measure);
 }
 
+/* Liên kết sang đơn từ cạnh điểm: "Xin học lại" (môn không đạt) nổi bật, "Xin cải thiện" nhạt hơn. */
+.grd-act {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--ink-soft);
+}
+.grd-act--primary {
+  color: var(--pen-ink);
+}
+.grd-act:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-radius: var(--r-sm);
+}
+/* Bản trong ô tên môn chỉ dành cho màn hẹp (cột thao tác bị ẩn ở đó). */
+.grd-act-inline {
+  display: none;
+}
+
 /* Mã môn in ngay trước tên môn: chỉ dùng khi cột Mã môn bị ẩn (màn hẹp). */
 .grd-code-inline {
   display: none;
@@ -165,8 +188,14 @@
 @media (max-width: 40rem) {
   .grd-col-part,
   .grd-col-stt,
-  .grd-col-code {
+  .grd-col-code,
+  .grd-col-act {
     display: none;
+  }
+
+  .grd-act-inline {
+    display: block;
+    margin-top: 0.25rem;
   }
 
   .grd-code-inline {

@@ -1,0 +1,55 @@
+{
+  "_ghiChu": "Nội dung trang Hỗ trợ của học viên. Chỉnh sửa tệp này rồi tải lại trang (không cần khởi động lại máy chủ). Với mỗi nơi liên hệ, các trường email, phone, location, hours để trống thì trang tự ẩn dòng đó — chỉ điền thông tin THẬT của đơn vị.",
+  "contacts": [
+    {
+      "name": "Phòng Quản lý học viên",
+      "role": "Tiếp nhận và xử lý đơn từ, xác nhận thông tin học viên, nhắc nhở nề nếp.",
+      "email": "",
+      "phone": "",
+      "location": "",
+      "hours": ""
+    },
+    {
+      "name": "Phòng Quản lý đào tạo và bồi dưỡng nâng cao",
+      "role": "Lịch học, lịch thi, điểm học phần, học lại, thi lại và cải thiện điểm.",
+      "email": "",
+      "phone": "",
+      "location": "",
+      "hours": ""
+    }
+  ],
+  "faq": [
+    {
+      "q": "Đơn của tôi đang ở đâu, đã được duyệt chưa?",
+      "a": "Mở Biểu mẫu, bấm vào đơn cần xem. Trang chi tiết có luồng duyệt cho thấy đơn đang ở cấp nào và cấp trước đã quyết ra sao. Mỗi lần đơn đổi trạng thái bạn đều nhận được thông báo."
+    },
+    {
+      "q": "Ký đơn như thế nào?",
+      "a": "Sau khi lập đơn, mở đơn và bấm Ký. Hệ thống dùng chữ ký bạn đã lưu trong Hồ sơ và mã PIN ký của bạn. Chữ ký gắn với đúng nội dung tại thời điểm ký nên sau khi ký bạn không sửa được nội dung đơn."
+    },
+    {
+      "q": "Đã ký nhưng phát hiện sai thì làm sao?",
+      "a": "Nội dung đơn bị khóa khi ký để chữ ký còn giá trị chứng minh. Nếu đơn chưa gửi đi, hãy xóa đơn nháp và lập đơn mới. Nếu đơn đã được duyệt một phần, liên hệ phòng đang xử lý để được hướng dẫn."
+    },
+    {
+      "q": "Chữ ký trên hệ thống có phải chữ ký số không?",
+      "a": "Không. Đây là chữ ký điện tử nội bộ: có mã băm của nội dung và nhật ký đầy đủ để đối chiếu, nhưng không phải chữ ký số công cộng theo quy định về chứng thư số."
+    },
+    {
+      "q": "Thông tin cá nhân trong đơn sai thì sửa ở đâu?",
+      "a": "Họ tên, mã học viên, lớp, khóa, hệ đào tạo và ngày sinh được lấy từ hồ sơ do Phòng Quản lý học viên quản lý, bạn không tự sửa được. Hãy báo phòng cập nhật rồi lập lại đơn."
+    },
+    {
+      "q": "Điểm học phần của tôi chưa hiện?",
+      "a": "Điểm do giảng viên hoặc Phòng Quản lý đào tạo nhập. Khi có điểm mới bạn sẽ nhận thông báo và thấy ở trang Kết quả học tập. Môn chưa có điểm hiện dấu —."
+    },
+    {
+      "q": "Điểm học phần không đạt thì làm gì?",
+      "a": "Ở trang Kết quả học tập, bấm Xin học lại ngay cạnh môn không đạt; hệ thống điền sẵn môn, lần học và điểm vào đơn xin học lại để bạn kiểm tra lại trước khi gửi. Muốn nâng điểm một môn đã đạt thì dùng Xin cải thiện."
+    },
+    {
+      "q": "Trợ lý ảo trả lời không có căn cứ hoặc từ chối trả lời?",
+      "a": "Trợ lý chỉ trả lời khi tìm thấy căn cứ trong quy chế hoặc giáo trình và luôn kèm nguồn để bạn đối chiếu. Nếu từ chối, hãy thử hỏi cụ thể hơn (nêu tên văn bản, điều khoản) hoặc liên hệ phòng chức năng ở trên."
+    }
+  ]
+}
