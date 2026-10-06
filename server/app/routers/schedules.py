@@ -35,8 +35,8 @@ _IMPORT_MAX_BYTES = 5 * 1024 * 1024
 def _parse_uuid4(value: str) -> str:
     try:
         parsed = uuid.UUID(value)
-    except ValueError:
-        raise HTTPException(status_code=400, detail={"message": "id không hợp lệ"})
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail={"message": "id không hợp lệ"}) from exc
     return str(parsed)
 
 

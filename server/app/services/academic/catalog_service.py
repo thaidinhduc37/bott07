@@ -39,8 +39,8 @@ class CatalogService(ClassesMixin, CoursesMixin, StudentsMixin):
             return None
         try:
             fid = uuid.UUID(faculty_id)
-        except (ValueError, AttributeError, TypeError):
-            raise HTTPException(status_code=400, detail={"message": "Khoa không hợp lệ", "code": "INVALID_FACULTY"})
+        except (ValueError, AttributeError, TypeError) as exc:
+            raise HTTPException(status_code=400, detail={"message": "Khoa không hợp lệ", "code": "INVALID_FACULTY"}) from exc
         row = await self.db.get(Faculty, fid)
         if not row:
             raise HTTPException(status_code=400, detail={"message": "Khoa không hợp lệ", "code": "INVALID_FACULTY"})

@@ -60,7 +60,7 @@ class SignaturesService:
                 accept=[".png"],
             )
         except StorageError as e:
-            raise HTTPException(status_code=400, detail={"message": e.message, "code": e.code})
+            raise HTTPException(status_code=400, detail={"message": e.message, "code": e.code}) from e
 
         dims = parse_png_dimensions(file_bytes)
 

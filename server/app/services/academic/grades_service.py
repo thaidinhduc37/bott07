@@ -54,8 +54,8 @@ def _check_score(value, label: str) -> float | None:
         return None
     try:
         score = float(value)
-    except (TypeError, ValueError):
-        raise HTTPException(status_code=400, detail={"message": f"{label} phải là số", "code": "INVALID_SCORE"})
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail={"message": f"{label} phải là số", "code": "INVALID_SCORE"}) from exc
     if score != score or score < 0 or score > 10:
         raise HTTPException(
             status_code=400, detail={"message": f"{label} phải nằm trong khoảng 0 đến 10", "code": "INVALID_SCORE"}
@@ -66,8 +66,8 @@ def _check_score(value, label: str) -> float | None:
 def _parse_uuid(value: str, message: str) -> uuid.UUID:
     try:
         return uuid.UUID(value)
-    except (ValueError, AttributeError, TypeError):
-        raise HTTPException(status_code=404, detail={"message": message})
+    except (ValueError, AttributeError, TypeError) as exc:
+        raise HTTPException(status_code=404, detail={"message": message}) from exc
 
 
 def weighted_average(rows: list[tuple[float, int]]) -> float | None:
@@ -427,8 +427,8 @@ class GradesService:
             raise HTTPException(status_code=403, detail={"message": "Bạn không có quyền thực hiện thao tác này"})
         try:
             text = content.decode("utf-8-sig")
-        except UnicodeDecodeError:
-            raise HTTPException(status_code=400, detail={"message": "Tệp phải mã hóa UTF-8", "code": "BAD_ENCODING"})
+        except UnicodeDecodeError as exc:
+            raise HTTPException(status_code=400, detail={"message": "Tệp phải mã hóa UTF-8", "code": "BAD_ENCODING"}) from exc
         reader = csv.DictReader(io.StringIO(text))
         header = [h.strip().lower() for h in (reader.fieldnames or [])]
         missing = [h for h in ("ma_hv", "ma_mon", "nam_hoc", "hoc_ky") if h not in header]

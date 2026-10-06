@@ -225,8 +225,8 @@ class SchedulesService(ImportMixin, ExamsMixin):
 
         try:
             session_date = date.fromisoformat(dto.session_date)
-        except ValueError:
-            raise HTTPException(status_code=400, detail={"message": "Ngày học không hợp lệ"})
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail={"message": "Ngày học không hợp lệ"}) from exc
 
         starts_at = _combine_vn_to_utc(session_date, dto.start_time)
         ends_at = _combine_vn_to_utc(session_date, dto.end_time)
@@ -298,8 +298,8 @@ class SchedulesService(ImportMixin, ExamsMixin):
         if dto.session_date:
             try:
                 session_date = date.fromisoformat(dto.session_date)
-            except ValueError:
-                raise HTTPException(status_code=400, detail={"message": "Ngày học không hợp lệ"})
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail={"message": "Ngày học không hợp lệ"}) from exc
             row.session_date = session_date
             changed_time_or_room_or_status = True
 

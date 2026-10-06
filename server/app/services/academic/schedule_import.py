@@ -24,8 +24,8 @@ class ImportMixin:
 
         try:
             text = file_bytes.decode("utf-8-sig")
-        except UnicodeDecodeError:
-            raise HTTPException(status_code=400, detail={"message": "File CSV phải là UTF-8"})
+        except UnicodeDecodeError as exc:
+            raise HTTPException(status_code=400, detail={"message": "File CSV phải là UTF-8"}) from exc
 
         is_exam = sniff_is_exam(filename, text)
         parsed = parse_exam_csv(text) if is_exam else parse_schedule_csv(text)

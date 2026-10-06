@@ -22,8 +22,8 @@ def _validate_uuid4(v: str | None) -> str | None:
         return v
     try:
         uuid.UUID(v, version=4)
-    except ValueError:
-        raise ValueError("phải là UUID hợp lệ")
+    except ValueError as exc:
+        raise ValueError("phải là UUID hợp lệ") from exc
     return v
 
 

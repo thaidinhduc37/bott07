@@ -31,8 +31,8 @@ _NOT_FOUND = {"message": "Không tìm thấy khoa"}
 def _uuid(value: str, message: dict | None = None) -> uuid.UUID:
     try:
         return uuid.UUID(value)
-    except (ValueError, AttributeError, TypeError):
-        raise HTTPException(status_code=404, detail=message or _NOT_FOUND)
+    except (ValueError, AttributeError, TypeError) as exc:
+        raise HTTPException(status_code=404, detail=message or _NOT_FOUND) from exc
 
 
 def _is_manager(user: AuthenticatedUser) -> bool:
@@ -160,8 +160,8 @@ class FacultyService:
             return None
         try:
             uid = uuid.UUID(head_id)
-        except (ValueError, AttributeError, TypeError):
-            raise HTTPException(status_code=400, detail={"message": "Trưởng khoa không hợp lệ", "code": "INVALID_HEAD"})
+        except (ValueError, AttributeError, TypeError) as exc:
+            raise HTTPException(status_code=400, detail={"message": "Trưởng khoa không hợp lệ", "code": "INVALID_HEAD"}) from exc
         u = await self.db.get(User, uid)
         if not u or u.status != UserStatus.ACTIVE or not await self._has_role(uid, RoleCode.DEPARTMENT_HEAD):
             raise HTTPException(status_code=400, detail={"message": "Trưởng khoa không hợp lệ", "code": "INVALID_HEAD"})

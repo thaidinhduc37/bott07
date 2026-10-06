@@ -72,8 +72,8 @@ class ValidationMixin:
         try:
             d_from = date.fromisoformat(leave_from[:10])
             d_to = date.fromisoformat(leave_to[:10])
-        except ValueError:
-            raise HTTPException(status_code=400, detail={"message": "Ngày nghỉ học không hợp lệ", "code": "VALIDATION_ERROR"})
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail={"message": "Ngày nghỉ học không hợp lệ", "code": "VALIDATION_ERROR"}) from exc
 
         if d_to < d_from:
             raise HTTPException(

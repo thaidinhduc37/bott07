@@ -59,13 +59,13 @@ class ExamsMixin:
         là giảng viên ACTIVE. ``by`` mô tả buổi khiến phòng/giảng viên bận."""
         try:
             d = date.fromisoformat(day)
-        except ValueError:
-            raise HTTPException(status_code=400, detail={"message": "Ngày không hợp lệ (YYYY-MM-DD)"})
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail={"message": "Ngày không hợp lệ (YYYY-MM-DD)"}) from exc
         try:
             starts_at = _combine_vn_to_utc(d, start_time)
             ends_at = _combine_vn_to_utc(d, end_time)
-        except ValueError:
-            raise HTTPException(status_code=400, detail={"message": "Giờ không hợp lệ (HH:mm)"})
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail={"message": "Giờ không hợp lệ (HH:mm)"}) from exc
         if ends_at <= starts_at:
             raise HTTPException(status_code=400, detail={"message": "Giờ kết thúc phải sau giờ bắt đầu"})
 
@@ -168,8 +168,8 @@ class ExamsMixin:
 
         try:
             exam_date = date.fromisoformat(dto.exam_date)
-        except ValueError:
-            raise HTTPException(status_code=400, detail={"message": "Ngày thi không hợp lệ"})
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail={"message": "Ngày thi không hợp lệ"}) from exc
 
         starts_at = _combine_vn_to_utc(exam_date, dto.start_time)
         ends_at = starts_at + timedelta(minutes=dto.duration_minutes)
@@ -239,8 +239,8 @@ class ExamsMixin:
         if dto.exam_date:
             try:
                 exam_date = date.fromisoformat(dto.exam_date)
-            except ValueError:
-                raise HTTPException(status_code=400, detail={"message": "Ngày thi không hợp lệ"})
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail={"message": "Ngày thi không hợp lệ"}) from exc
             row.exam_date = exam_date
 
         # Giờ bắt đầu / thời lượng: tính lại ends_at theo VN.

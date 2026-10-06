@@ -37,8 +37,8 @@ class FeedbackService:
     ) -> dict:
         try:
             mid = uuid.UUID(message_id)
-        except (ValueError, TypeError):
-            raise _not_found()
+        except (ValueError, TypeError) as exc:
+            raise _not_found() from exc
         row = (
             await self.db.execute(
                 select(ChatMessage, ChatConversation.user_id)

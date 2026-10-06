@@ -49,7 +49,7 @@ class FilesMixin:
                 subdir="attachments", accept=self._ATTACHMENT_ACCEPT,
             )
         except StorageError as e:
-            raise HTTPException(status_code=400, detail={"message": e.message, "code": e.code})
+            raise HTTPException(status_code=400, detail={"message": e.message, "code": e.code}) from e
 
         attachment = SubmissionAttachment(
             submission_id=submission.id, uploaded_by_id=user.id,

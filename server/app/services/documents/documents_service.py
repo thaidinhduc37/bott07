@@ -106,10 +106,10 @@ class DocumentsService:
         if dto.issued_at:
             try:
                 issued_at = datetime.strptime(dto.issued_at, "%Y-%m-%d").date()
-            except ValueError:
+            except ValueError as exc:
                 raise HTTPException(
                     status_code=400, detail={"message": "Ngày ban hành không hợp lệ (định dạng YYYY-MM-DD)"}
-                )
+                ) from exc
 
         try:
             stored = self.storage.save(
@@ -120,7 +120,7 @@ class DocumentsService:
                 allow_text=True,
             )
         except StorageError as e:
-            raise HTTPException(status_code=400, detail={"message": e.message, "code": e.code})
+            raise HTTPException(status_code=400, detail={"message": e.message, "code": e.code}) from e
 
         # If this exact content is already indexed, don't ingest again —
         # loading a 177-page syllabus costs hundreds of LLM calls.

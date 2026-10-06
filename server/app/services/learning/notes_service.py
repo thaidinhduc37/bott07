@@ -27,8 +27,8 @@ LETTERS = "ABCD"
 def _uuid_or_404(value: str, what: str) -> uuid.UUID:
     try:
         return uuid.UUID(value)
-    except (ValueError, TypeError):
-        raise HTTPException(status_code=404, detail={"message": f"Không tìm thấy {what}"})
+    except (ValueError, TypeError) as exc:
+        raise HTTPException(status_code=404, detail={"message": f"Không tìm thấy {what}"}) from exc
 
 
 class NotesService:

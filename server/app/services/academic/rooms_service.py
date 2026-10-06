@@ -57,8 +57,8 @@ def match_room(rooms: list[Room], code: str | None, building: str | None) -> Roo
 def _parse_uuid(value: str) -> uuid.UUID:
     try:
         return uuid.UUID(value)
-    except (ValueError, AttributeError, TypeError):
-        raise HTTPException(status_code=404, detail={"message": "Không tìm thấy phòng"})
+    except (ValueError, AttributeError, TypeError) as exc:
+        raise HTTPException(status_code=404, detail={"message": "Không tìm thấy phòng"}) from exc
 
 
 class RoomsService:
@@ -246,8 +246,8 @@ class RoomsService:
         try:
             start_day = date.fromisoformat(from_) if from_ else datetime.now(VN_TZ).date()
             end_day = date.fromisoformat(to) if to else start_day + timedelta(days=14)
-        except ValueError:
-            raise HTTPException(status_code=400, detail={"message": "Ngày không hợp lệ (YYYY-MM-DD)"})
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail={"message": "Ngày không hợp lệ (YYYY-MM-DD)"}) from exc
         if end_day < start_day:
             raise HTTPException(status_code=400, detail={"message": "Ngày kết thúc phải sau ngày bắt đầu"})
         if (end_day - start_day).days > MAX_TIMETABLE_DAYS:

@@ -26,8 +26,8 @@ admin_audit_router = APIRouter(prefix="/admin/audit-logs", tags=["admin-audit"])
 def _validate_uuid(value: str) -> str:
     try:
         uuid.UUID(value)
-    except ValueError:
-        raise HTTPException(status_code=400, detail={"message": "id không hợp lệ"})
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail={"message": "id không hợp lệ"}) from exc
     return value
 
 

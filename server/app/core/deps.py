@@ -51,10 +51,10 @@ async def get_current_user(
 
     try:
         payload = decode_access_token(token)
-    except TokenExpiredError:
-        raise _unauthenticated("TOKEN_EXPIRED", "Phiên đăng nhập đã hết hạn")
-    except TokenInvalidError:
-        raise _unauthenticated("UNAUTHENTICATED", "Bạn cần đăng nhập để thực hiện thao tác này")
+    except TokenExpiredError as exc:
+        raise _unauthenticated("TOKEN_EXPIRED", "Phiên đăng nhập đã hết hạn") from exc
+    except TokenInvalidError as exc:
+        raise _unauthenticated("UNAUTHENTICATED", "Bạn cần đăng nhập để thực hiện thao tác này") from exc
 
     user = AuthenticatedUser(
         id=payload["sub"],

@@ -84,8 +84,8 @@ class InsightsService:
     async def course_detail(self, user: AuthenticatedUser, course_id: str) -> dict:
         try:
             cid = uuid.UUID(course_id)
-        except (ValueError, TypeError):
-            raise HTTPException(status_code=404, detail={"message": "Không tìm thấy môn học"})
+        except (ValueError, TypeError) as exc:
+            raise HTTPException(status_code=404, detail={"message": "Không tìm thấy môn học"}) from exc
         course = next((c for c in await self._courses(user) if c.id == cid), None)
         if not course:
             # Môn của giảng viên khác: 404, không lộ là môn có tồn tại.

@@ -39,8 +39,8 @@ def _parse_range(from_: str | None, to: str | None) -> tuple[date, date]:
     if from_ and to:
         try:
             return date.fromisoformat(from_), date.fromisoformat(to)
-        except ValueError:
-            raise HTTPException(status_code=400, detail={"message": "Khoảng ngày không hợp lệ (YYYY-MM-DD)"})
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail={"message": "Khoảng ngày không hợp lệ (YYYY-MM-DD)"}) from exc
     return _current_week_range_vn()
 
 
