@@ -22,20 +22,20 @@ function totalCell(c: GradeCourse) {
 
 function TermSheet({ term }: { term: GradeTerm }) {
   return (
-    <section className="sheet sheet--pad grd-term-sheet">
-      <div className="section-head">
-        <h2 className="aside-h">
+    <section className="sheet grd-term">
+      <header className="grd-term__bar">
+        <h2 className="grd-term__title">
           {term.semester} — Năm học {term.academicYear}
         </h2>
-        <span className="grd-term-tags">
-          <span className="tag tag--muted">
+        <span className="grd-term__tags">
+          <span className="grd-term__tag">
             {term.gradedCount}/{term.courseCount} môn có điểm
           </span>
-          <span className="tag tag--muted">{term.credits} tín chỉ</span>
+          <span className="grd-term__tag">{term.credits} tín chỉ</span>
         </span>
-      </div>
+      </header>
 
-      <div className="table-wrap">
+      <div className="table-wrap grd-term__table">
         <table className="data-table grd-table">
           <colgroup>
             <col className="grd-c-stt grd-col-stt" />
@@ -63,7 +63,7 @@ function TermSheet({ term }: { term: GradeTerm }) {
           </thead>
           <tbody>
             {term.courses.map((c, i) => (
-              <tr key={c.courseId}>
+              <tr key={c.courseId} className={c.passed === false ? 'grd-row--fail' : undefined}>
                 <td className="num grd-col-stt">{i + 1}</td>
                 <td className="mono grd-col-code">{c.code}</td>
                 <td>
@@ -82,10 +82,10 @@ function TermSheet({ term }: { term: GradeTerm }) {
         </table>
       </div>
 
-      <div className="grd-term-foot">
+      <footer className="grd-term__foot">
         <span>Điểm trung bình học kỳ</span>
         <strong>{term.gpa === null ? '—' : viScore(term.gpa)}</strong>
-      </div>
+      </footer>
     </section>
   );
 }
@@ -114,7 +114,27 @@ export default function AcademicResults() {
 
   return (
     <div className="stack">
-      <PageHeader title="Kết quả học tập" description="Điểm học phần theo từng học kỳ." />
+      <PageHeader
+        title="Kết quả học tập"
+        description="Điểm học phần theo từng học kỳ."
+        actions={
+          terms.length > 1 ? (
+            <select
+              className="field__input grd-pick"
+              aria-label="Học kỳ"
+              value={termFilter}
+              onChange={(e) => setTermFilter(e.target.value)}
+            >
+              <option value={ALL}>Tất cả học kỳ</option>
+              {terms.map((t) => (
+                <option key={`${t.academicYear}|${t.semester}`} value={`${t.academicYear}|${t.semester}`}>
+                  {t.semester} — Năm học {t.academicYear}
+                </option>
+              ))}
+            </select>
+          ) : undefined
+        }
+      />
 
       {error && (
         <div className="notice notice--error" role="alert">
@@ -158,25 +178,6 @@ export default function AcademicResults() {
             </div>
           ) : (
             <>
-              <div className="field grd-filter">
-                <label className="field__label" htmlFor="grd-term">
-                  Học kỳ
-                </label>
-                <select
-                  id="grd-term"
-                  className="field__input"
-                  value={termFilter}
-                  onChange={(e) => setTermFilter(e.target.value)}
-                >
-                  <option value={ALL}>Tất cả học kỳ</option>
-                  {terms.map((t) => (
-                    <option key={`${t.academicYear}|${t.semester}`} value={`${t.academicYear}|${t.semester}`}>
-                      {t.semester} — Năm học {t.academicYear}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               {visible.map((t) => (
                 <TermSheet key={`${t.academicYear}|${t.semester}`} term={t} />
               ))}

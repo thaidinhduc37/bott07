@@ -1,27 +1,88 @@
-/* grades — trang "Kết quả học tập" của học viên (tiền tố grd-) */
+/* grades — trang "Kết quả học tập" của học viên (tiền tố grd-)
 
-/* Thẻ cạnh tiêu đề học kỳ: nằm ngang, xuống hàng khi hẹp. */
-.grd-term-tags {
+   Mỗi học kỳ là MỘT khối: thanh tiêu đề liền với bảng, bảng tràn sát mép khối (không thêm viền
+   hay lề thứ hai quanh bảng), dòng điểm trung bình học kỳ ở chân khối. */
+
+/* Ô chọn học kỳ nằm trên hàng tiêu đề trang. */
+.grd-pick {
+  width: auto;
+  min-width: 14rem;
+  max-width: 100%;
+}
+
+.grd-term {
+  overflow: hidden;
+}
+
+/* -------------------------------------------------------------- thanh tiêu đề học kỳ */
+.grd-term__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--gap-2) var(--gap-4);
+  padding: 0.7rem 1.25rem;
+  background: var(--pen);
+  color: var(--on-pen);
+}
+
+.grd-term__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.grd-term__tags {
   display: flex;
   flex-wrap: wrap;
   gap: var(--gap-2);
 }
 
-/* Điểm chưa nhập: "—" màu nhạt. */
-.grd-dash {
-  color: var(--ink-faint);
+.grd-term__tag {
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--r-pill);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: color-mix(in oklab, var(--on-pen) 20%, transparent);
 }
 
-.grd-total {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+/* -------------------------------------------------------------------------- bảng */
+/* Bảng sát mép khối: bỏ viền, bo góc, đổ bóng và giới hạn chiều cao mặc định của `.table-wrap`. */
+.grd-term__table {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  max-height: none;
 }
 
-/* ---------------------------------------------------------------- bảng điểm
-   Cột cố định bề rộng để tiêu đề và giá trị thẳng hàng giữa các học kỳ; cột số căn giữa. */
 .grd-table {
   table-layout: fixed;
   width: 100%;
+}
+
+.grd-table thead th {
+  padding-block: 0.6rem;
+  background: transparent;
+}
+
+.grd-table th,
+.grd-table td {
+  padding-inline: 0.75rem;
+}
+
+.grd-table th:first-child,
+.grd-table td:first-child {
+  padding-left: 1.25rem;
+}
+
+.grd-table th:last-child,
+.grd-table td:last-child {
+  padding-right: 1.25rem;
+}
+
+.grd-table td {
+  padding-block: 0.7rem;
 }
 
 .grd-table th.num,
@@ -34,37 +95,52 @@
   overflow-wrap: anywhere;
 }
 
-.grd-c-stt {
-  width: 3.75rem;
-}
-.grd-c-code {
-  width: 6.5rem;
-}
-.grd-c-tc {
-  width: 4rem;
-}
-.grd-c-part {
-  width: 4.5rem;
-}
-.grd-c-total {
-  width: 6.5rem;
+/* Môn không đạt: nền đỏ rất nhạt cho dễ thấy khi lướt. */
+.grd-row--fail td {
+  background: color-mix(in oklab, var(--seal-wash) 40%, transparent);
 }
 
-/* Dòng điểm trung bình học kỳ: nhãn trái, số phải — nằm ngay dưới bảng, cùng khung. */
-.grd-term-foot {
+.grd-c-stt {
+  width: 3.5rem;
+}
+.grd-c-code {
+  width: 6rem;
+}
+.grd-c-tc {
+  width: 3.5rem;
+}
+.grd-c-part {
+  width: 4rem;
+}
+.grd-c-total {
+  width: 6rem;
+}
+
+/* Điểm chưa nhập: "—" màu nhạt. */
+.grd-dash {
+  color: var(--ink-faint);
+}
+
+.grd-total {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------ chân khối: điểm TB học kỳ */
+.grd-term__foot {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--gap-4);
-  margin-top: var(--gap-3);
-  padding: var(--gap-3) var(--gap-4) 0;
+  padding: 0.7rem 1.25rem;
   border-top: 1px solid var(--rule-faint);
+  background: var(--paper);
   font-size: 0.9375rem;
   color: var(--ink-soft);
 }
 
-.grd-term-foot strong {
-  font-size: 1.125rem;
+.grd-term__foot strong {
+  font-size: 1.0625rem;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
@@ -78,17 +154,12 @@
   max-width: var(--measure);
 }
 
-/* Bộ lọc học kỳ: không kéo giãn hết chiều ngang. */
-.grd-filter {
-  max-width: 22rem;
-}
-
 /* Mã môn in ngay trước tên môn: chỉ dùng khi cột Mã môn bị ẩn (màn hẹp). */
 .grd-code-inline {
   display: none;
 }
 
-/* Màn hẹp (< 40rem): chỉ giữ Tên môn (kèm mã môn ở dòng trên), Tín chỉ, Điểm — tên môn mới đủ chỗ. */
+/* ------------------------------------------------------------------- màn hẹp */
 @media (max-width: 40rem) {
   .grd-col-part,
   .grd-col-stt,
@@ -103,9 +174,18 @@
     color: var(--ink-faint);
   }
 
-  /* Thẻ học kỳ ít lề hơn để bảng có thêm chỗ. */
-  .grd-term-sheet.sheet--pad {
-    padding: var(--gap-4) var(--gap-3);
+  .grd-term__bar,
+  .grd-term__foot {
+    padding-inline: var(--gap-4);
+  }
+
+  .grd-table th:first-child,
+  .grd-table td:first-child {
+    padding-left: var(--gap-4);
+  }
+  .grd-table th:last-child,
+  .grd-table td:last-child {
+    padding-right: var(--gap-4);
   }
 
   .grd-c-tc {
@@ -115,7 +195,7 @@
     width: 4.75rem;
   }
 
-  .grd-term-foot {
-    padding-inline: var(--gap-2);
+  .grd-pick {
+    width: 100%;
   }
 }
