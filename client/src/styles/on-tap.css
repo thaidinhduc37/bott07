@@ -99,9 +99,17 @@
   gap: var(--gap-1);
 }
 
+.study-exam__body {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.study-exam__title {
+  grid-column: 1 / -1;
+}
+
 .oh-exam__tag {
-  justify-self: start;
-  margin-top: var(--gap-1);
+  margin: 0;
 }
 
 /* Màn hẹp: form tạo đề (hành động chính) lên trước, cột phụ xuống sau. */
@@ -109,4 +117,50 @@
   .page-grid.oh-grid .page-grid__aside {
     order: 1;
   }
+}
+
+/* ------------------------------------------------------------ form tạo đề */
+
+/* Chủ đề một hàng; môn học, số câu và nút tạo đề chung một hàng — bớt hẳn một tầng khoảng trống. */
+.oh-composer {
+  display: grid;
+  gap: var(--gap-4);
+  align-content: start;
+}
+
+.oh-composer .aside-h {
+  margin: 0;
+}
+
+.oh-composer__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: var(--gap-4);
+  align-items: end;
+}
+
+.oh-composer__row .field + .field {
+  margin-top: 0;
+}
+
+@media (max-width: 40rem) {
+  .oh-composer__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .oh-composer__go {
+    width: 100%;
+  }
+}
+
+/* Hàng lịch sử gọn hơn hàng thao tác mặc định (không có icon, chỉ thân + điểm). */
+.oh-hist__list .action-row {
+  padding: var(--gap-3) var(--gap-5);
+}
+
+/* Cùng chiều cao 42px cho ô chọn, nhóm số câu và nút tạo đề để nhãn và đáy thẳng hàng. */
+.oh-composer__row .seg,
+.oh-composer__row .field__input,
+.oh-composer__go {
+  min-height: 2.625rem;
 }

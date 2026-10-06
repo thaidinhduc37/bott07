@@ -52,10 +52,8 @@ export function QuizComposer(props: {
   }
 
   return (
-    <form className="sheet sheet--pad stack" onSubmit={onCreate}>
-      <h2 className="display" style={{ fontSize: '1.15rem', margin: 0 }}>
-        Tạo đề mới
-      </h2>
+    <form className="sheet sheet--pad oh-composer" onSubmit={onCreate}>
+      <h2 className="aside-h">Tạo đề mới</h2>
       <div className="field">
         <label className="field__label" htmlFor="on-tap-chu-de">
           Chủ đề
@@ -71,7 +69,7 @@ export function QuizComposer(props: {
         />
         <span className="field__hint">Chủ đề càng cụ thể, câu hỏi càng sát giáo trình.</span>
       </div>
-      <div className="field-grid">
+      <div className="oh-composer__row">
         <div className="field">
           <label className="field__label" htmlFor="on-tap-mon">
             Môn học
@@ -101,21 +99,20 @@ export function QuizComposer(props: {
           >
             <legend className="sr-only">Số câu</legend>
             {[3, 5, 8, 10].map((n) => (
-              <label
-                key={n}
-                className={`seg__opt${nQuestions === n ? ' seg__opt--on' : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="on-tap-so-cau"
-                  checked={nQuestions === n}
-                  onChange={() => setNQuestions(n)}
-                />
+              <label key={n} className={`seg__opt${nQuestions === n ? ' seg__opt--on' : ''}`}>
+                <input type="radio" name="on-tap-so-cau" checked={nQuestions === n} onChange={() => setNQuestions(n)} />
                 {n}
               </label>
             ))}
           </fieldset>
         </div>
+        <button
+          type="submit"
+          className="btn btn--primary oh-composer__go"
+          disabled={busy || draft.topic.trim().length < 3}
+        >
+          {busy ? 'Đang soạn câu hỏi…' : 'Tạo đề'}
+        </button>
       </div>
 
       {abstain && <div className="notice notice--warn">{abstain}</div>}
@@ -124,12 +121,6 @@ export function QuizComposer(props: {
           {error}
         </div>
       )}
-
-      <div className="study-form__actions">
-        <button type="submit" className="btn btn--primary" disabled={busy || draft.topic.trim().length < 3}>
-          {busy ? 'Đang soạn câu hỏi…' : 'Tạo đề'}
-        </button>
-      </div>
     </form>
   );
 }

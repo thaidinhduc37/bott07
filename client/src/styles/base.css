@@ -840,7 +840,7 @@ select.field__input {
 }
 
 .sheet--pad {
-  padding: clamp(1.25rem, 0.9rem + 1.8vw, 2.25rem);
+  padding: clamp(1rem, 0.75rem + 1vw, 1.5rem);
 }
 
 /* Mặt phẳng không nổi — dùng khi khối đã nằm trong một `.sheet` khác. Hai bậc

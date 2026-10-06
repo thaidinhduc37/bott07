@@ -135,7 +135,6 @@ export default function StudyHubPage() {
     <div className="stack">
       <PageHeader
         title="Ôn tập"
-        description="Tạo đề trắc nghiệm từ giáo trình và theo dõi kế hoạch ôn cho từng kỳ thi."
         tabs={
           <Tabs
             idPrefix="on-tap"
@@ -143,7 +142,7 @@ export default function StudyHubPage() {
             value={tab}
             onChange={setTab}
             items={[
-              { id: 'on-tap', label: 'Ôn tập' },
+              { id: 'on-tap', label: 'Làm đề' },
               {
                 id: 'ke-hoach',
                 label: 'Kế hoạch ôn thi',
@@ -259,7 +258,7 @@ export default function StudyHubPage() {
                                 <span className="mono">{e.course.code}</span> — {e.course.name}
                               </span>
                               <span className="study-exam__meta">
-                                {dayLabel(e.examDate)} · còn {e.daysLeft} ngày
+                                {dayLabel(e.examDate).split(',')[0]} · còn {e.daysLeft} ngày
                               </span>
                               <span className={`tag ${r.cls} oh-exam__tag`}>{r.label}</span>
                             </span>

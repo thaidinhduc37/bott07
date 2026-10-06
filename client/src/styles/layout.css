@@ -299,9 +299,9 @@
 
 h1.page-title {
   font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: clamp(1.5rem, 1.15rem + 1.4vw, 2.125rem);
+  font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
   /* Giãn âm ở cỡ lớn: chữ càng to thì khoảng cách giữa các chữ càng trông rộng
      ra, và tiêu đề không siết lại sẽ trông rời rạc. */
   letter-spacing: -0.025em;
@@ -507,7 +507,7 @@ p.page-sub {
      đọc chặn ở 64rem, riêng vài trang thoát ra bằng `shell--full` — nên trên màn rộng
      mỗi trang một bề ngang. Độ dài dòng chữ do `--measure` của từng đoạn văn lo. */
   margin: 0 auto;
-  padding: clamp(1.5rem, 3vw, 2.75rem) clamp(1rem, 3vw, 2rem) var(--gap-12);
+  padding: clamp(1rem, 2vw, 1.5rem) clamp(1rem, 3vw, 2rem) var(--gap-8);
 }
 
 /* Trang chủ yếu để đọc tự thu hẹp khung: đặt `shell--read` lên phần tử gốc của
