@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ApiError } from '@/services/api';
 import {
   chatApi,
@@ -47,7 +47,7 @@ const SUGGESTIONS: Record<ChatMode, string[]> = {
   ],
 };
 
-export function ChatWorkspace() {
+export function ChatWorkspace({ rail }: { rail?: ReactNode } = {}) {
   const [mode, setMode] = useState<ChatMode>('QUYCHE');
   const [modesReady, setModesReady] = useState<Record<ChatMode, { ready: boolean; documents: number }> | null>(null);
   const [courses, setCourses] = useState<CourseRef[]>([]);
@@ -159,7 +159,7 @@ export function ChatWorkspace() {
   const modeReady = modesReady?.[mode]?.ready ?? true;
 
   return (
-    <div className="chat-layout shell--wide">
+    <div className={`chat-layout shell--wide${rail ? ' chat-layout--rail' : ''}`}>
       {/* --------------------------------------------------- lịch sử hội thoại
 
           Cột trái cố định, giống danh sách hội thoại của mọi ứng dụng chat —
@@ -292,6 +292,23 @@ export function ChatWorkspace() {
           trong lưới, nên nó vẫn ăn hai khoảng cách — và trên màn hình chưa hỏi
           gì, hai khoảng cách đó thành một mảng trống giữa thẻ chọn chế độ và ô
           nhập, trông như phần nội dung bị hỏng. */}
+      {/* Trạng thái ban đầu: gợi ý câu hỏi nằm ngay vùng trống phía trên ô nhập, thay vì chen vào ô nhập. */}
+      {messages.length === 0 && !busy && modeReady && (
+        <section className="chat-empty" aria-label="Gợi ý câu hỏi">
+          <h2 className="chat-empty__h">Bạn muốn hỏi gì?</h2>
+          <ul className="chat-empty__list">
+            {SUGGESTIONS[mode].map((q) => (
+              <li key={q}>
+                <button type="button" className="chat-empty__item" onClick={() => setQuestion(q)}>
+                  <Icon name="chat" size={16} />
+                  <span>{q}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {(messages.length > 0 || busy) && (
       <div className="thread">
         {messages.map((m) =>
@@ -343,34 +360,13 @@ export function ChatWorkspace() {
         {/* Câu hỏi mẫu chỉ hiện khi hội thoại còn trống. Sau tin nhắn đầu tiên
             người dùng đã biết cách hỏi, và giữ chúng lại chỉ chiếm chỗ của thứ
             họ đang thực sự đọc. */}
-        {messages.length === 0 && modeReady && (
-          <div style={{ marginBottom: 'var(--gap-4)' }}>
-            <p className="eyebrow" style={{ margin: '0 0 var(--gap-2)' }}>
-              Thử hỏi
-            </p>
-            <div className="row" style={{ gap: 'var(--gap-2)' }}>
-              {SUGGESTIONS[mode].map((q) => (
-                <button
-                  key={q}
-                  type="button"
-                  className="chip"
-                  disabled={busy}
-                  onClick={() => setQuestion(q)}
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         <label className="sr-only" htmlFor="cau-hoi">
           Câu hỏi của bạn
         </label>
         <textarea
           id="cau-hoi"
           className="field__input"
-          rows={3}
+          rows={2}
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => {
@@ -409,6 +405,8 @@ export function ChatWorkspace() {
         </div>
       </form>
       </div>
+
+      {rail}
     </div>
   );
 }

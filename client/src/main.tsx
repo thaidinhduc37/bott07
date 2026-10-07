@@ -21,6 +21,7 @@ import './styles/support.css';
 import './styles/feedback.css';
 import './styles/home.css';
 import './styles/on-tap.css';
+import './styles/chat-ui.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

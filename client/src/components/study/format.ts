@@ -22,3 +22,14 @@ export const READINESS_TAG: Record<Readiness, { cls: string; label: string }> = 
   CAN_ON_THEM: { cls: 'tag--warn', label: 'Cần ôn thêm' },
   ON_DINH: { cls: 'tag--ok', label: 'Ổn định' },
 };
+
+/** "07:30" từ chuỗi thời điểm ISO, theo giờ địa phương. */
+export const hhmm = (iso: string) =>
+  new Intl.DateTimeFormat('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(iso));
+
+/** Ngày hôm nay dạng "2026-10-07" theo giờ địa phương. */
+export const todayIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+

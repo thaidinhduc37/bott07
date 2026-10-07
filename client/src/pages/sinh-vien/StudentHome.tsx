@@ -3,25 +3,9 @@ import { Link } from 'react-router-dom';
 import { Icon } from '@/components/shared/Icon';
 import { useSession } from '@/components/shared/SessionProvider';
 import { ActivityBars } from '@/components/study/ActivityBars';
-import { viScore } from '@/components/study/format';
+import { dayLabel, hhmm, todayIso, viScore } from '@/components/study/format';
 import { learningApi, type ExamPlanItem, type ProgressOverview } from '@/services/learning-api';
 import { scheduleApi, type Timetable } from '@/services/schedule-api';
-
-const WEEKDAY = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-
-/** "T2, 07/12" từ "2026-12-07" — đọc theo giờ địa phương, không lệch ngày do UTC. */
-function examDay(iso: string): string {
-  const [y, m, d] = iso.split('-').map(Number);
-  return `${WEEKDAY[new Date(y, m - 1, d).getDay()]}, ${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}`;
-}
-
-const hhmm = (iso: string) =>
-  new Intl.DateTimeFormat('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(iso));
-
-const todayIso = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
 
 const todayLabel = () =>
   new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).format(
@@ -84,7 +68,7 @@ export default function StudentHome() {
               value: nextExam.daysLeft === 0 ? 'Hôm nay' : `${nextExam.daysLeft} ngày`,
               hint: (
                 <>
-                  <span className="mono">{nextExam.course.code}</span> · {examDay(nextExam.examDate)}
+                  <span className="mono">{nextExam.course.code}</span> · {dayLabel(nextExam.examDate)}
                 </>
               ),
               to: `/sinh-vien/on-tap?tab=ke-hoach#${nextExam.id}`,
