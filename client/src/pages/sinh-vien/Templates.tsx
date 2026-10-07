@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useMySubmissions } from '@/hooks/useMySubmissions';
 import { SubmissionList } from '@/components/forms/SubmissionList';
+import { TemplateCatalog } from '@/components/forms/TemplateCatalog';
 import { Icon } from '@/components/shared/Icon';
 import { PageHeader } from '@/components/shared/PageHeader';
 
@@ -32,11 +33,19 @@ export default function TemplateListPage() {
           {submissions.error}
         </div>
       )}
-      {submissions.loading ? (
-        <p className="eyebrow">Đang tải…</p>
-      ) : (
-        <SubmissionList items={submissions.items} />
-      )}
+
+      <div className="page-grid page-grid--main-first">
+        <div className="page-grid__main">
+          {submissions.loading ? (
+            <p className="eyebrow">Đang tải…</p>
+          ) : (
+            <SubmissionList items={submissions.items} />
+          )}
+        </div>
+        <aside className="page-grid__aside">
+          <TemplateCatalog />
+        </aside>
+      </div>
     </div>
   );
 }

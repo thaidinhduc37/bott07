@@ -112,13 +112,6 @@
   margin: 0;
 }
 
-/* Màn hẹp: form tạo đề (hành động chính) lên trước, cột phụ xuống sau. */
-@media (max-width: 60rem) {
-  .page-grid.oh-grid .page-grid__aside {
-    order: 1;
-  }
-}
-
 /* ------------------------------------------------------------ form tạo đề */
 
 /* Chủ đề một hàng; môn học, số câu và nút tạo đề chung một hàng — bớt hẳn một tầng khoảng trống. */

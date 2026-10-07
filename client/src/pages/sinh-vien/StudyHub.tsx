@@ -158,7 +158,7 @@ export default function StudyHubPage() {
 
       {tab === 'on-tap' ? (
         <TabPanel idPrefix="on-tap" tab="on-tap">
-          <div className="page-grid oh-grid">
+          <div className="page-grid page-grid--main-first">
             <div className="page-grid__main">
               <QuizComposer courses={courses} draft={draft} onDraftChange={setDraft} topicInputRef={topicInputRef} />
 

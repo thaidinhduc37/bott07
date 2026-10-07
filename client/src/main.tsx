@@ -23,6 +23,7 @@ import './styles/home.css';
 import './styles/on-tap.css';
 import './styles/chat-ui.css';
 import './styles/schedule-ui.css';
+import './styles/forms-ui.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

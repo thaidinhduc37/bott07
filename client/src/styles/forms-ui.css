@@ -1,0 +1,184 @@
+/* Trang "Đơn của tôi": chip lọc, ô tìm, hành động trên hàng, danh mục mẫu đơn bên phải. */
+
+/* Màn hẹp: nội dung chính (danh sách / form) lên trước, cột phụ xuống sau. */
+@media (max-width: 60rem) {
+  .page-grid.page-grid--main-first .page-grid__aside {
+    order: 1;
+  }
+}
+
+/* ------------------------------------------------------------- lọc đơn */
+
+.sub-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3) var(--gap-4);
+}
+
+.sub-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  background: var(--sheet-2);
+  border-radius: var(--r-md);
+}
+
+.sub-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-2);
+  min-height: 2rem;
+  padding: 0 var(--gap-3);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background-color 130ms var(--ease), color 130ms var(--ease);
+}
+
+.sub-chip:hover {
+  background: var(--sheet);
+  color: var(--ink);
+}
+
+.sub-chip--on {
+  background: var(--sheet);
+  color: var(--pen-ink);
+}
+
+.sub-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.sub-chip__n {
+  min-width: 1.25rem;
+  padding: 0 0.3rem;
+  border-radius: var(--r-pill);
+  background: var(--sheet-2);
+  font-size: 0.6875rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.sub-chip--on .sub-chip__n {
+  background: var(--pen-wash);
+}
+
+.sub-search {
+  width: 12rem;
+  min-height: 2.25rem;
+  padding-block: 0.3rem;
+  font-size: 0.8125rem;
+}
+
+.sub-step {
+  margin-top: var(--gap-1);
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.sub-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--gap-1);
+  white-space: nowrap;
+  font-size: 0.8125rem;
+}
+
+/* -------------------------------------------------- danh mục mẫu (cột phải) */
+
+.tpl-cat {
+  display: grid;
+  gap: var(--gap-3);
+  align-content: start;
+}
+
+.tpl-cat__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-3);
+}
+
+.tpl-cat__head .aside-h {
+  margin: 0;
+}
+
+.tpl-cat__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-2);
+}
+
+.tpl-cat__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gap-3);
+  padding: var(--gap-3);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-md);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 130ms var(--ease), border-color 130ms var(--ease);
+}
+
+.tpl-cat__item:hover {
+  background: var(--pen-wash);
+  border-color: var(--pen);
+}
+
+.tpl-cat__item:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.tpl-cat__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--r-md);
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+}
+
+.tpl-cat__body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tpl-cat__name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.tpl-cat__desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.tpl-cat__note {
+  margin: 0;
+  padding-top: var(--gap-3);
+  border-top: 1px solid var(--rule-faint);
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
