@@ -74,7 +74,9 @@ the API must be restarted; Vite hot-reloads the client.
 `ZT`/`zt-` prefix and clean up after themselves (also on failure).
 
 Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `khoa@` (faculty head),
-`gv.*@` (lecturers), `sv.*@` (students), all `@hvktcnan.edu.vn`.
+`gv.*@` (lecturers), `sv.*@` (students), all `@hvktcnan.edu.vn`. `python scripts/import_tkb.py --apply` loads the real timetable
+(`data/corpus/tkb`: 32 classes, 231 courses, ~3,200 sessions, no rooms/lecturers) and 10 demo students `sv.demo01`…`sv.demo10`
+(codes `DEMO001`…, one per class, same password).
 
 ## Conventions to know before editing
 
