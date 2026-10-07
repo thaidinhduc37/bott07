@@ -24,7 +24,7 @@ React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► Postg
   `documents`, `forms`, `learning`), `app/models`, `app/schemas` (Pydantic, camelCase via `CamelModel`), `app/pipeline`
   (the RAG pipeline + `container.py` that builds it once at startup + the Chroma store: hybrid retrieval → rerank → abstention gate → grade/rewrite → cited generation
   → groundedness check). Entry point `server/main.py`.
-- `scripts/` — Python maintenance scripts (`ingest_giaotrinh*.py`, `check_*.py`, `doc_titles.py`,
+- `scripts/` — Python maintenance scripts (`ingest_giaotrinh_full.py`, `fix_chroma_document_ids.py`, `check_*.py`, `doc_titles.py`,
   `fix_document_titles.py`) and `scripts/test/` (HTTP acceptance tests; see below).
 - `notebooks/rag-pipeline-2026.ipynb` — the research notebook the pipeline was ported from.
 - `data/` — every non-code resource, one root:

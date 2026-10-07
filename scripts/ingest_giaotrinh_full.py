@@ -1,7 +1,7 @@
 """Nạp đầy đủ giáo trình / đề cương từ data/corpus/giao-trinh/ vào RAG, có gắn môn học
 và có bản ghi tài liệu trong PostgreSQL.
 
-Vì sao có tệp này: `scripts/ingest_giaotrinh.py` (bản cũ) chỉ ghi vector vào
+Vì sao có tệp này: bản cũ (`ingest_giaotrinh.py`, đã xóa) chỉ ghi vector vào
 Chroma mà không tạo Document/DocumentVersion trong PostgreSQL. Trong khi đó
 `ChatService.modes_ready()` đếm số DocumentVersion có index_status=INDEXED để
 quyết định mục "Giáo trình & đề cương" có dùng được không. Kết quả: Chroma đã
@@ -229,7 +229,10 @@ async def main() -> None:
             # 2. Tạo (hoặc lấy lại) Document + DocumentVersion.
             doc = existing.get(doc_id)
             if doc is None:
+                # id phải trùng `document_id` ghi vào Chroma (uuid5 theo tên tệp); trước đây để id ngẫu nhiên
+                # nên PostgreSQL và Chroma không còn id nào chung (xem fix_chroma_document_ids.py).
                 doc = Document(
+                    id=uuid.UUID(doc_id),
                     title=title,
                     document_type=DocumentType.GIAOTRINH,
                     course_id=course_id,
