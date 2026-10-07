@@ -7,7 +7,7 @@ Router KHÔNG tự đăng ký — người kiểm soát thêm
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles
@@ -152,3 +152,23 @@ async def assign_students(
     db: AsyncSession = Depends(get_db),
 ):
     return await CatalogService(db).assign_students(dto, user, request)
+
+
+_IMPORT_MAX_BYTES = 2 * 1024 * 1024
+
+
+@router.post("/students/import", dependencies=[Depends(require_roles(*_MANAGER_ROLES))])
+async def import_students(
+    request: Request,
+    file: UploadFile = File(...),
+    dry_run: bool = Query(default=False, alias="dryRun"),
+    user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Nhập danh sách học viên từ CSV (tạo tài khoản mới, cập nhật lớp / họ tên). Xem `catalog_import.py`."""
+    data = await file.read()
+    if len(data) > _IMPORT_MAX_BYTES:
+        raise HTTPException(status_code=400, detail={"message": "Tệp vượt quá 2MB", "code": "FILE_TOO_LARGE"})
+    return await CatalogService(db).import_students(
+        user, content=data, filename=file.filename, dry_run=dry_run, request=request,
+    )

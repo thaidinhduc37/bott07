@@ -45,9 +45,9 @@ class Client:
                 return e.code, {}
 
 
-def login(email: str) -> Client:
+def login(email: str, password: str = "Demo@2026") -> Client:
     c = Client()
-    status, _ = c.req("POST", "/auth/login", {"email": email, "password": "Demo@2026"})
+    status, _ = c.req("POST", "/auth/login", {"email": email, "password": password})
     if status != 200 and status != 201:
         sys.exit(f"Không đăng nhập được {email}: {status}")
     return c

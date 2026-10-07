@@ -21,10 +21,11 @@ from app.services.accounts.audit_service import AuditService
 
 from app.services.academic.catalog_classes import ClassesMixin
 from app.services.academic.catalog_courses import CoursesMixin
+from app.services.academic.catalog_import import ImportStudentsMixin
 from app.services.academic.catalog_students import StudentsMixin
 
 
-class CatalogService(ClassesMixin, CoursesMixin, StudentsMixin):
+class CatalogService(ClassesMixin, CoursesMixin, StudentsMixin, ImportStudentsMixin):
     def __init__(self, db: AsyncSession):
         self.db = db
         self.audit = AuditService(db)

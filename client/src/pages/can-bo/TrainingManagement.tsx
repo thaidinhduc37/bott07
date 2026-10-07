@@ -6,6 +6,7 @@ import { useSession } from '@/components/shared/SessionProvider';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { ClassesPanel } from '@/components/training/ClassesPanel';
 import { CoursesPanel } from '@/components/training/CoursesPanel';
+import { StudentImport } from '@/components/training/StudentImport';
 import { StudentsPanel } from '@/components/training/StudentsPanel';
 import { FacultiesPanel } from '@/components/training/FacultiesPanel';
 import { FacultyDetail } from '@/components/training/FacultyDetail';
@@ -86,9 +87,9 @@ export default function TrainingManagement() {
         : 'khoa';
 
   const facultyId = params.get('khoa') ?? undefined;
-  // `?lop=<id>` mở học viên của một lớp; `?lop=tat-ca` mở toàn bộ học viên (để xếp lớp).
+  // `?lop=<id>` mở học viên của một lớp; `?lop=tat-ca` mở toàn bộ học viên (để xếp lớp); `?lop=nhap` mở nhập danh sách từ CSV.
   const lopParam = tab === 'lop' ? (params.get('lop') ?? (raw === 'hoc-vien' ? 'tat-ca' : null)) : null;
-  const classFilter = lopParam && lopParam !== 'tat-ca' ? lopParam : undefined;
+  const classFilter = lopParam && lopParam !== 'tat-ca' && lopParam !== 'nhap' ? lopParam : undefined;
 
   function changeTab(next: Tab) {
     const p = new URLSearchParams(params);
@@ -172,7 +173,7 @@ export default function TrainingManagement() {
                   Danh sách lớp
                 </button>
               </div>
-              <StudentsPanel key={lopParam} initialClassId={classFilter} />
+              {lopParam === 'nhap' ? <StudentImport /> : <StudentsPanel key={lopParam} initialClassId={classFilter} />}
             </div>
           ) : (
             <ClassesPanel onShowStudents={showStudentsOf} />

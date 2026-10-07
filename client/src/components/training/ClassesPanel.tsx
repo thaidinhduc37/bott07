@@ -80,6 +80,10 @@ export function ClassesPanel({ onShowStudents }: { onShowStudents: (classId: str
           <Icon name="users" size={18} />
           Xếp học viên vào lớp
         </button>
+        <button type="button" className="btn btn--quiet" onClick={() => onShowStudents('nhap')}>
+          <Icon name="form" size={18} />
+          Nhập từ CSV
+        </button>
       </div>
 
       {notice && (

@@ -1,4 +1,5 @@
-import { api } from './api';
+import { API_URL, api } from './api';
+import type { ImportResult } from './grades-staff-api';
 
 /**
  * Catalog đào tạo: lớp, môn học, giảng viên, học viên.
@@ -85,7 +86,29 @@ export interface CoursePayload {
   facultyId?: string | null;
 }
 
+/** Kết quả nhập học viên: như nhập điểm, thêm danh sách tài khoản mới (chỉ có khi ghi thật, mật khẩu hiện một lần). */
+export interface StudentImportResult extends ImportResult {
+  credentials: { studentCode: string; fullName: string; email: string; password: string }[];
+}
+
 export const catalogApi = {
+  /** Nhập danh sách học viên từ CSV. `dryRun` chạy hết kiểm tra nhưng không ghi gì. */
+  importStudents: async (file: File, dryRun: boolean): Promise<StudentImportResult> => {
+    const form = new FormData();
+    form.append('file', file);
+    const res = await fetch(`${API_URL}/catalog/students/import${dryRun ? '?dryRun=true' : ''}`, {
+      method: 'POST',
+      credentials: 'include',
+      body: form,
+    });
+    const body = (await res.json().catch(() => null)) as { message?: string } | StudentImportResult | null;
+    if (!res.ok) {
+      const msg = body && 'message' in body && typeof body.message === 'string' ? body.message : 'Nạp tệp thất bại';
+      throw new Error(msg);
+    }
+    return body as StudentImportResult;
+  },
+
   /* ---- Lớp ---- */
   classes: () => api<{ items: ClassItem[] }>('/catalog/classes'),
   createClass: (data: ClassPayload) =>

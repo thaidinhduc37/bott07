@@ -126,7 +126,7 @@ export function GradeImport() {
   );
 }
 
-function GradeImportReport({ result }: { result: ImportResult }) {
+export function GradeImportReport({ result }: { result: ImportResult }) {
   const ok = result.accepted && result.errors.length === 0;
 
   return (
