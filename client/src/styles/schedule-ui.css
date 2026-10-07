@@ -1,0 +1,125 @@
+/* Lịch học và lịch thi của học viên: thanh tuần một hàng, buổi đã qua mờ đi, lịch thi dạng lưới thẻ. */
+
+/* -------------------------------------------------------------- thanh tuần */
+
+.week-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3) var(--gap-5);
+  padding: var(--gap-2) var(--gap-3);
+}
+
+.week-bar__nav,
+.week-bar__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gap-3);
+}
+
+.week-bar__group {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  background: var(--sheet-2);
+  border-radius: var(--r-md);
+}
+
+.week-bar__btn,
+.week-bar__today {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  font: inherit;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background-color 130ms var(--ease), color 130ms var(--ease);
+}
+
+.week-bar__btn {
+  width: 2rem;
+}
+
+.week-bar__today {
+  padding: 0 var(--gap-4);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.week-bar__btn:hover,
+.week-bar__today:hover {
+  background: var(--sheet);
+  color: var(--ink);
+}
+
+.week-bar__today--on {
+  background: var(--sheet);
+  color: var(--pen-ink);
+}
+
+.week-bar__btn:focus-visible,
+.week-bar__today:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.week-bar__range {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.week-bar__select {
+  width: auto;
+  min-width: 11rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 2rem 0.3rem 0.7rem;
+  font-size: 0.8125rem;
+}
+
+.week-bar__switch-label {
+  font-size: 0.8125rem;
+}
+
+/* ----------------------------------------------- buổi học / ca thi đã qua */
+
+.timetable-block--past {
+  opacity: 0.6;
+}
+
+.timetable-block--past:hover,
+.timetable-block--past.timetable-block--selected {
+  opacity: 1;
+}
+
+/* -------------------------------------------------------- lịch thi: lưới thẻ */
+
+.term-exam-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr));
+  gap: var(--gap-4);
+}
+
+.term-exam-card__cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-3);
+}
+
+/* Nhãn số ngày còn lại luôn ở góc phải đầu thẻ, tên môn co lại nhường chỗ. */
+.term-exam-card__head {
+  flex-wrap: nowrap;
+}
+
+.term-exam-card__head > .tag {
+  flex: none;
+}
+
+.term-exam-card__head .term-course {
+  min-width: 0;
+}

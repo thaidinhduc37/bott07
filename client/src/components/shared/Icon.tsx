@@ -54,7 +54,9 @@ export type IconName =
   | 'pin'
   | 'help'
   | 'thumbUp'
-  | 'thumbDown';
+  | 'thumbDown'
+  | 'chevronLeft'
+  | 'chevronRight';
 
 /** Tên biểu tượng tương ứng trong bộ Material Symbols Outlined. */
 const SYMBOL: Record<IconName, string> = {
@@ -90,6 +92,8 @@ const SYMBOL: Record<IconName, string> = {
   help: 'help',
   thumbUp: 'thumb_up',
   thumbDown: 'thumb_down',
+  chevronLeft: 'chevron_left',
+  chevronRight: 'chevron_right',
 };
 
 export interface IconProps {

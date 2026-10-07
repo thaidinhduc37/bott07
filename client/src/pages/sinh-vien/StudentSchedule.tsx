@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ApiError } from '@/services/api';
 import {
-  dateOf,
   isoDate,
   mondayOf,
   scheduleApi,
@@ -12,10 +11,10 @@ import {
 } from '@/services/schedule-api';
 import { TimetableWeek } from '@/components/schedule/TimetableWeek';
 import { EntryDetail } from '@/components/schedule/EntryDetail';
-import { Icon } from '@/components/shared/Icon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { TabPanel, Tabs } from '@/components/shared/Tabs';
 import { ExamTermPanel } from '@/components/schedule/ExamTermPanel';
+import { WeekToolbar } from '@/components/schedule/WeekToolbar';
 
 export default function StudentSchedulePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -103,9 +102,6 @@ export default function StudentSchedulePage() {
   }
   const isCurrentWeek = isoDate(weekStart) === isoDate(mondayOf(new Date()));
 
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-
   // Hai tab: "Lịch học" (cách xem theo tuần như cũ) và "Lịch thi" (bảng kỳ thi theo học kỳ).
   type Tab = 'lich-hoc' | 'lich-thi';
   const tab: Tab = searchParams.get('tab') === 'lich-thi' ? 'lich-thi' : 'lich-hoc';
@@ -123,7 +119,7 @@ export default function StudentSchedulePage() {
       <PageHeader
         eyebrow="Học vụ"
         title="Lịch học và lịch thi"
-        description={data?.class ? `Lớp ${data.class.code} — ${data.class.name}` : undefined}
+        description={data?.class ? data.class.name : undefined}
         tabs={
           <Tabs
             label="Nội dung trang Lịch"
@@ -144,67 +140,17 @@ export default function StudentSchedulePage() {
       ) : (
       <div className="stack">
 
-      {/* ------------------------------------------------------ điều hướng tuần */}
-      <div className="sheet" style={{ padding: '0.6rem 0.75rem' }}>
-        <div className="row" style={{ flexWrap: 'wrap', gap: 'var(--gap-3)', justifyContent: 'space-between' }}>
-          <div className="row" style={{ gap: 'var(--gap-3)', flexWrap: 'wrap' }}>
-            <div className="seg">
-              <button type="button" className="seg__opt" onClick={() => shiftWeek(-1)}>
-                Tuần trước
-              </button>
-              <button
-                type="button"
-                className={`seg__opt${isCurrentWeek ? ' seg__opt--on' : ''}`}
-                onClick={() => setWeekStart(mondayOf(new Date()))}
-              >
-                Tuần này
-              </button>
-              <button type="button" className="seg__opt" onClick={() => shiftWeek(1)}>
-                Tuần tới
-              </button>
-            </div>
-            <span className="row" style={{ gap: '0.4rem', fontSize: '0.9375rem', color: 'var(--ink-soft)' }}>
-              <Icon name="calendar" size={18} />
-              <span className="mono">
-                {dateOf(weekStart.toISOString())} – {dateOf(weekEnd.toISOString())}
-              </span>
-            </span>
-          </div>
-
-          <div className="row" style={{ gap: 'var(--gap-3)', flexWrap: 'wrap' }}>
-            <select
-              className="field__input"
-              style={{
-                width: 'auto', flex: '0 1 auto', minWidth: '11rem', minHeight: '2.1rem',
-                padding: '0.3rem 2rem 0.3rem 0.7rem', fontSize: '0.8125rem',
-              }}
-              value={courseId}
-              onChange={(e) => setCourseId(e.target.value)}
-            >
-              <option value="">Tất cả môn học</option>
-              {courses.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.code} — {c.name}
-                </option>
-              ))}
-            </select>
-
-            <label className="switch-field">
-              <span className="switch">
-                <input
-                  type="checkbox"
-                  checked={showExams}
-                  onChange={(e) => setShowExams(e.target.checked)}
-                />
-                <span className="switch__track" aria-hidden="true">
-                  <span className="switch__thumb" />
-                </span>
-              </span>
-              <span style={{ fontSize: '0.8125rem' }}>Hiện cả lịch thi</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      <WeekToolbar
+        weekStart={weekStart}
+        isCurrentWeek={isCurrentWeek}
+        onShift={shiftWeek}
+        onToday={() => setWeekStart(mondayOf(new Date()))}
+        courses={courses}
+        courseId={courseId}
+        onCourse={setCourseId}
+        showExams={showExams}
+        onShowExams={setShowExams}
+      />
 
       {error && (
         <div className="notice notice--error" role="alert">

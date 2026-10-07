@@ -58,26 +58,10 @@
    (component ExamTable). Tiền tố `term-exam-`; chỉ dùng biến trong styles/. */
 
 /* Hai cách hiển thị: bảng (màn rộng) và thẻ (màn hẹp). Mặc định hiện bảng. */
-.term-exam-grid {
-  display: block;
-}
-
-.term-exam-table-wrap {
-  max-height: none;
-}
-
-.term-exam-cards {
-  display: none;
-}
-
-/* Kỳ thi đã qua: làm nhạt chữ. */
-.term-exam-row--past td,
 .term-exam-card--past {
   color: var(--ink-faint);
 }
 
-.term-exam-row--past .term-course__name,
-.term-exam-row--past .term-range__dates strong,
 .term-exam-card--past .term-course__name,
 .term-exam-card--past .term-range__dates strong {
   color: var(--ink-faint);
@@ -111,20 +95,3 @@
   font-weight: 600;
   color: var(--ink-faint);
 }
-
-/* Dưới 40rem: chuyển mỗi kỳ thi thành thẻ, ẩn bảng — không cuộn ngang ở 400px. */
-@media (max-width: 40rem) {
-  .term-exam-grid {
-    display: block;
-  }
-
-  .term-exam-table-wrap {
-    display: none;
-  }
-
-  .term-exam-cards {
-    display: grid;
-    gap: var(--gap-3);
-  }
-}
-

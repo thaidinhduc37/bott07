@@ -264,7 +264,8 @@ function EntryBlock({
     .filter(Boolean)
     .join(' · ');
 
-  const cls = `timetable-block ${variant}${cancelled ? ' timetable-block--off' : ''}${
+  const past = new Date(entry.endsAt).getTime() < Date.now();
+  const cls = `timetable-block ${variant}${cancelled ? ' timetable-block--off' : ''}${past ? ' timetable-block--past' : ''}${
     onSelect ? ' timetable-block--click' : ''
   }${selected ? ' timetable-block--selected' : ''}`.trim();
 
