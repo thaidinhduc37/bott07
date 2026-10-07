@@ -6,7 +6,7 @@ import type { ImportResult } from './grades-staff-api';
  *  - `GET    /question-bank/courses`                   → môn được quản lý + số câu
  *  - `GET    /question-bank/questions?courseId=&page=` → danh sách (có đáp án)
  *  - `DELETE /question-bank/questions/{id}`
- *  - `POST   /question-bank/import?courseId=&dryRun=`  → ImportResult (multipart)
+ *  - `POST   /question-bank/import?courseId=&format=gift|csv&dryRun=` → ImportResult (multipart)
  */
 
 export interface BankCourse {
@@ -35,14 +35,17 @@ export const questionBankApi = {
 
   remove: (id: string) => api<{ message: string }>(`/question-bank/questions/${id}`, { method: 'DELETE' }),
 
-  import: async (courseId: string, file: File, dryRun: boolean): Promise<ImportResult> => {
+  import: async (courseId: string, file: File, dryRun: boolean, format: 'gift' | 'csv'): Promise<ImportResult> => {
     const form = new FormData();
     form.append('file', file);
-    const res = await fetch(`${API_URL}/question-bank/import?courseId=${courseId}${dryRun ? '&dryRun=true' : ''}`, {
-      method: 'POST',
-      credentials: 'include',
-      body: form,
-    });
+    const res = await fetch(
+      `${API_URL}/question-bank/import?courseId=${courseId}&format=${format}${dryRun ? '&dryRun=true' : ''}`,
+      {
+        method: 'POST',
+        credentials: 'include',
+        body: form,
+      },
+    );
     const body = (await res.json().catch(() => null)) as { message?: string } | ImportResult | null;
     if (!res.ok) {
       const msg = body && 'message' in body && typeof body.message === 'string' ? body.message : 'Nạp tệp thất bại';

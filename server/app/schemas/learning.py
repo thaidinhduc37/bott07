@@ -40,7 +40,7 @@ class CreateReviewDto(CamelModel):
 class AnswerDto(CamelModel):
     question_id: str
     # None = bỏ trống, tính là sai.
-    selected_index: int | None = Field(default=None, ge=0, le=3)
+    selected_index: int | None = Field(default=None, ge=0, le=9)
 
 
 class SubmitQuizDto(CamelModel):

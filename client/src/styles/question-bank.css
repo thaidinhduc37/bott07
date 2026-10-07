@@ -85,3 +85,10 @@
 .qb-pager {
   justify-content: center;
 }
+
+/* Khối ví dụ GIFT nhiều dòng ở cột phụ. */
+.qb-gift {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.75rem;
+}

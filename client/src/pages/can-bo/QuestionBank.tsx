@@ -9,10 +9,25 @@ import { questionBankApi, type BankCourse, type BankQuestion } from '@/services/
 import '@/styles/question-bank.css';
 
 type Part = 'list' | 'import';
+type Format = 'gift' | 'csv';
 
 const COLUMNS = 'cau_hoi,a,b,c,d,dap_an,giai_thich,chuong';
 const EXAMPLE = 'Thủ đô của Việt Nam là?,Hà Nội,Huế,Đà Nẵng,Cần Thơ,A,Hà Nội là thủ đô từ năm 1010,Chương 1';
-const LETTERS = 'ABCDEF';
+const LETTERS = 'ABCDEFGHIJ';
+
+// Mẫu GIFT (định dạng của Moodle): mỗi câu cách nhau một dòng trống; = đáp án đúng, ~ đáp án sai, # phản hồi.
+const GIFT_SAMPLE = `// Dòng bắt đầu bằng // là ghi chú. Số đáp án tùy ý.
+$CATEGORY: Chương 1
+
+Thủ đô của Việt Nam là {
+=Hà Nội#Hà Nội là thủ đô từ năm 1010
+~Huế
+~Đà Nẵng
+~Cần Thơ
+}
+
+Mã hóa đối xứng dùng cùng một khóa để mã và giải mã. {T}
+`;
 const PAGE_SIZE = 20;
 
 const errText = (e: unknown, fallback: string) => (e instanceof ApiError ? e.message : fallback);
@@ -127,6 +142,7 @@ export default function QuestionBank() {
   const [courses, setCourses] = useState<BankCourse[] | null>(null);
   const [courseId, setCourseId] = useState('');
   const [part, setPart] = useState<Part>('list');
+  const [format, setFormat] = useState<Format>('gift');
   const [error, setError] = useState<string | null>(null);
 
   const loadCourses = useCallback(() => {
@@ -160,7 +176,7 @@ export default function QuestionBank() {
               onChange={setPart}
               items={[
                 { id: 'list', label: 'Câu hỏi', badge: course.questionCount },
-                { id: 'import', label: 'Nhập từ CSV' },
+                { id: 'import', label: 'Nhập từ tệp' },
               ]}
             />
           ) : undefined
@@ -204,24 +220,78 @@ export default function QuestionBank() {
             {part === 'list' ? (
               <QuestionList key={course.id} course={course} onChanged={loadCourses} />
             ) : (
-              <CsvImport
-                key={course.id}
-                id="qb-file"
-                run={(file, dryRun) => questionBankApi.import(course.id, file, dryRun)}
-                columns={COLUMNS}
-                exampleRow={EXAMPLE}
-                sample={`${COLUMNS}\n${EXAMPLE}\n`}
-                sampleName="mau-cau-hoi.csv"
-                submitLabel={`Nhập vào ${course.code}`}
-                notes={[
-                  'cau_hoi, a, b, dap_an bắt buộc; c–f là đáp án thêm (tối đa 6, phải liền nhau).',
-                  'dap_an là chữ cái của đáp án đúng (A, B, C…). Để trống giai_thich thì hệ thống ghi sẵn đáp án đúng.',
-                  'Câu trùng với câu đã có (cùng nội dung và đáp án) được bỏ qua, không báo lỗi.',
-                  'Còn dòng lỗi thì không ghi gì. Một tệp tối đa 500 dòng; mỗi môn tối đa 2.000 câu.',
-                  'Soạn trong Excel rồi chọn Lưu thành → CSV UTF-8.',
-                ]}
-                onAccepted={loadCourses}
-              />
+              <div className="stack">
+                <div className="field">
+                  <span className="field__label" id="qb-format-label">
+                    Định dạng tệp
+                  </span>
+                  <fieldset
+                    className="seg"
+                    style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}
+                    aria-labelledby="qb-format-label"
+                  >
+                    <legend className="sr-only">Định dạng tệp</legend>
+                    {(
+                      [
+                        ['gift', 'GIFT (Moodle)'],
+                        ['csv', 'CSV (Excel)'],
+                      ] as const
+                    ).map(([id, label]) => (
+                      <label key={id} className={`seg__opt${format === id ? ' seg__opt--on' : ''}`}>
+                        <input type="radio" name="qb-format" checked={format === id} onChange={() => setFormat(id)} />
+                        {label}
+                      </label>
+                    ))}
+                  </fieldset>
+                </div>
+                {format === 'gift' ? (
+                  <CsvImport
+                    key={`${course.id}-gift`}
+                    id="qb-file"
+                    run={(file, dryRun) => questionBankApi.import(course.id, file, dryRun, 'gift')}
+                    accept=".gift,.txt,text/plain"
+                    fileLabel="Tệp GIFT"
+                    hint="Tệp văn bản UTF-8 (.gift hoặc .txt) — xuất từ Moodle hoặc tự soạn. Bấm “Kiểm tra” trước khi nhập."
+                    formatGuide={
+                      <>
+                        <p className="field__hint" style={{ margin: '0 0 var(--gap-2)' }}>
+                          Mỗi câu cách nhau một dòng trống:
+                        </p>
+                        <pre className="gent-cols qb-gift">{GIFT_SAMPLE}</pre>
+                      </>
+                    }
+                    sample={GIFT_SAMPLE}
+                    sampleName="mau-cau-hoi.gift"
+                    submitLabel={`Nhập vào ${course.code}`}
+                    notes={[
+                      '= đáp án đúng, ~ đáp án sai; số đáp án tùy ý (2 đến 10), chỉ một đáp án đúng.',
+                      '{T} hoặc {F} cho câu đúng/sai. # sau đáp án là phản hồi; #### cuối khối là lời giải chung (hiện sau khi học viên nộp bài).',
+                      '$CATEGORY: tên → chương của các câu phía sau. Dạng chưa hỗ trợ (trả lời ngắn, ghép cặp, số, tự luận) sẽ báo lỗi ở đúng câu.',
+                      'Câu trùng với câu đã có được bỏ qua. Còn câu lỗi thì không ghi gì. Một tệp tối đa 500 câu; mỗi môn tối đa 2.000 câu.',
+                    ]}
+                    onAccepted={loadCourses}
+                  />
+                ) : (
+                  <CsvImport
+                    key={`${course.id}-csv`}
+                    id="qb-file"
+                    run={(file, dryRun) => questionBankApi.import(course.id, file, dryRun, 'csv')}
+                    columns={COLUMNS}
+                    exampleRow={EXAMPLE}
+                    sample={`${COLUMNS}
+${EXAMPLE}
+`}
+                    sampleName="mau-cau-hoi.csv"
+                    submitLabel={`Nhập vào ${course.code}`}
+                    notes={[
+                      'cau_hoi, a, b, dap_an bắt buộc; c–j là đáp án thêm (tối đa 10, phải liền nhau).',
+                      'dap_an là chữ cái của đáp án đúng (A, B, C…). Để trống giai_thich thì hệ thống ghi sẵn đáp án đúng.',
+                      'Câu trùng với câu đã có được bỏ qua. Còn dòng lỗi thì không ghi gì. Soạn trong Excel rồi Lưu thành → CSV UTF-8.',
+                    ]}
+                    onAccepted={loadCourses}
+                  />
+                )}
+              </div>
             )}
           </TabPanel>
         </>

@@ -34,10 +34,10 @@ def cleanup() -> None:
     psql("delete from bank_questions where question like 'ZT%'")
 
 
-def upload(client, course_id: str, content: str, dry: bool = False) -> tuple[int, dict]:
+def upload(client, course_id: str, content: str, dry: bool = False, filename: str = "cau-hoi.csv") -> tuple[int, dict]:
     boundary = uuid.uuid4().hex
     body = (
-        f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="cau-hoi.csv"\r\n'
+        f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{filename}"\r\n'
         f"Content-Type: text/csv\r\n\r\n{content}\r\n--{boundary}--\r\n"
     ).encode("utf-8")
     req = urllib.request.Request(
@@ -131,11 +131,45 @@ try:
     check("nguồn ghi là ngân hàng câu hỏi", all((q.get("sourceFile") or "").startswith("Ngân hàng") for q in done.get("questions", [])), str([q.get("sourceFile") for q in done.get("questions", [])]))
     check("câu sai vào sổ câu sai", psql("select count(*) from review_items where question like 'ZT 2 + 2%'") == "1")
 
+    # --- GIFT (định dạng Moodle): số đáp án tùy ý
+    gift = (
+        "$CATEGORY: ZT/Chương GIFT\n\n"
+        "::ZT1:: ZT Câu GIFT 7 đáp án? {=Đáp án 1 ~Đáp án 2 ~Đáp án 3 ~Đáp án 4 ~Đáp án 5 ~Đáp án 6 ~Đáp án 7#Sai}\n\n"
+        "ZT GIFT đúng sai {T#Vì đúng}\n\n"
+        "ZT GIFT hai đáp án {~Không =Có ####Giải thích chung}\n"
+    )
+    gift_count = "select count(*) from bank_questions where question like 'ZT GIFT%' or question like 'ZT Câu GIFT%'"
+    st, d = upload(gv, cs301, gift, dry=True, filename="cau-hoi.gift")
+    check("GIFT chạy thử: 3 câu hợp lệ", st == 200 and d["created"] == 3 and not d["errors"], f"{st} {str(d)[:300]}")
+    gift_bad = gift + "\nZT GIFT trả lời ngắn {=a =b}\n\nZT GIFT số {#3.14}\n"
+    st, d = upload(gv, cs301, gift_bad, filename="cau-hoi.txt")
+    lines = sorted(e["line"] for e in d.get("errors", []))
+    check("GIFT: báo đúng dòng câu không hỗ trợ", st == 200 and lines == [9, 11] and not d["accepted"], f"{st} {lines} {str(d)[:300]}")
+    check("GIFT còn lỗi thì không ghi", psql(gift_count) == "0")
+    st, d = upload(gv, cs301, gift, filename="cau-hoi.gift")
+    check("GIFT nhập thật 3 câu", st == 200 and d["accepted"] and d["created"] == 3, f"{st} {str(d)[:300]}")
+    check("GIFT: 7 đáp án, đúng ở vị trí 0, chương từ $CATEGORY", psql(
+        "select jsonb_array_length(options) || '|' || correct_index || '|' || (chapter like '%GIFT')::text from bank_questions "
+        "where question like 'ZT C%GIFT%'") == "7|0|true")
+    check("GIFT: lời giải từ phản hồi chung", psql("select explanation from bank_questions where question like 'ZT GIFT hai%'") != "")
+    st, d = upload(gv, cs301, gift, filename="cau-hoi.gift")
+    check("GIFT nhập lại không trùng", st == 200 and d["created"] == 0 and d["unchanged"] == 3, f"{st} {str(d)[:200]}")
+    st, d = upload(gv, cs301, "// chỉ chú thích\n", filename="trong.gift")
+    check("tệp GIFT rỗng → 400", st == 400 and d.get("code") == "EMPTY_FILE", f"{st} {d}")
+    # Học viên làm được câu 7 đáp án và chọn đáp án thứ 7.
+    st, r = sv.req("POST", "/learning/quiz", {"source": "bank", "courseId": cs301, "nQuestions": 10, "topic": "ZT gift", "includeReview": False})
+    qs2 = r.get("session", {}).get("questions", [])
+    long_q = next((q for q in qs2 if q["question"].startswith("ZT Câu GIFT")), None)
+    check("đề có câu 7 đáp án", st == 200 and long_q is not None and len(long_q["options"]) == 7, f"{st} {str(r)[:200]}")
+    if long_q:
+        st, done2 = sv.req("POST", f"/learning/quiz/{r['session']['id']}/submit", {"answers": [{"questionId": long_q["id"], "selectedIndex": 6}]})
+        check("chọn đáp án thứ 7 được chấp nhận", st == 200, f"{st} {str(done2)[:200]}")
+
     # --- xóa
     st, _ = gv2.req("DELETE", f"/question-bank/questions/{q2['id']}")
     check("giảng viên khác không xóa được", st == 404, str(st))
     st, _ = gv.req("DELETE", f"/question-bank/questions/{q2['id']}")
-    check("giảng viên xóa câu của môn mình", st == 200 and psql("select count(*) from bank_questions where question like 'ZT%'") == "2", str(st))
+    check("giảng viên xóa câu của môn mình", st == 200 and psql("select count(*) from bank_questions where question like 'ZT%'") == "5", str(st))
 
     # --- xuất CSV danh sách lớp
     st, body, hdr = raw_get(qldt, f"/catalog/students/export?classId={b3d15}")

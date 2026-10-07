@@ -14,6 +14,9 @@ export function CsvImport<R extends ImportResult>({
   run,
   columns,
   exampleRow,
+  formatGuide,
+  accept = '.csv,text/csv',
+  fileLabel = 'Tệp CSV',
   sample,
   sampleName,
   notes,
@@ -24,8 +27,13 @@ export function CsvImport<R extends ImportResult>({
 }: {
   id: string;
   run: (file: File, dryRun: boolean) => Promise<R>;
-  columns: string;
-  exampleRow: string;
+  /** Dòng tiêu đề cột và một dòng ví dụ (định dạng CSV); bỏ qua nếu có `formatGuide`. */
+  columns?: string;
+  exampleRow?: string;
+  /** Thay phần hướng dẫn định dạng mặc định (vd khối ví dụ GIFT nhiều dòng). */
+  formatGuide?: ReactNode;
+  accept?: string;
+  fileLabel?: string;
   sample: string;
   sampleName: string;
   notes: ReactNode[];
@@ -70,12 +78,13 @@ export function CsvImport<R extends ImportResult>({
         >
           <div className="field">
             <label className="field__label" htmlFor={id}>
-              Tệp CSV<span className="req">*</span>
+              {fileLabel}
+              <span className="req">*</span>
             </label>
             <input
               id={id}
               type="file"
-              accept=".csv,text/csv"
+              accept={accept}
               className="field__input"
               onChange={(e) => {
                 setFile(e.target.files?.[0] ?? null);
@@ -110,14 +119,18 @@ export function CsvImport<R extends ImportResult>({
       <aside className="page-grid__aside">
         <section className="sheet sheet--pad">
           <h2 className="aside-h">Định dạng tệp</h2>
-          <p className="field__hint" style={{ margin: '0 0 var(--gap-2)' }}>
-            Dòng đầu là tên cột:
-          </p>
-          <code className="gent-cols">{columns}</code>
-          <p className="field__hint" style={{ marginTop: 'var(--gap-3)' }}>
-            Ví dụ một dòng:
-          </p>
-          <code className="gent-cols">{exampleRow}</code>
+          {formatGuide ?? (
+            <>
+              <p className="field__hint" style={{ margin: '0 0 var(--gap-2)' }}>
+                Dòng đầu là tên cột:
+              </p>
+              <code className="gent-cols">{columns}</code>
+              <p className="field__hint" style={{ marginTop: 'var(--gap-3)' }}>
+                Ví dụ một dòng:
+              </p>
+              <code className="gent-cols">{exampleRow}</code>
+            </>
+          )}
           <div style={{ marginTop: 'var(--gap-5)' }}>
             <button type="button" className="btn btn--ghost btn--sm" onClick={() => downloadText(sampleName, sample)}>
               <Icon name="form" size={16} />

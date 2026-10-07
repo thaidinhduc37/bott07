@@ -1,4 +1,4 @@
-"""Ngân hàng câu hỏi (giảng viên / quản lý): xem, nhập CSV, xóa. Phạm vi môn kiểm tra trong service."""
+"""Ngân hàng câu hỏi (giảng viên / quản lý): xem, nhập GIFT/CSV, xóa. Phạm vi môn kiểm tra trong service."""
 
 from __future__ import annotations
 
@@ -45,12 +45,15 @@ async def import_questions(
     course_id: str = Query(..., alias="courseId"),
     file: UploadFile = File(...),
     dry_run: bool = Query(default=False, alias="dryRun"),
+    fmt: str | None = Query(default=None, alias="format", pattern="^(gift|csv)$"),
     user: AuthenticatedUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     data = await file.read()
     if len(data) > _IMPORT_MAX_BYTES:
         raise HTTPException(status_code=400, detail={"message": "Tệp vượt quá 2MB", "code": "FILE_TOO_LARGE"})
-    return await QuestionBankService(db).import_csv(
-        user, course_id, content=data, filename=file.filename, dry_run=dry_run, request=request,
+    # Không chỉ định thì đoán theo đuôi tệp: .csv → CSV, còn lại → GIFT.
+    fmt = fmt or ("csv" if (file.filename or "").lower().endswith(".csv") else "gift")
+    return await QuestionBankService(db).import_file(
+        user, course_id, content=data, filename=file.filename, fmt=fmt, dry_run=dry_run, request=request,
     )

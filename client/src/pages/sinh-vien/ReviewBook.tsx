@@ -6,7 +6,7 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { ApiError } from '@/services/api';
 import { learningApi, type ReviewItem, type ReviewOverview } from '@/services/learning-api';
 
-const LETTERS = ['A', 'B', 'C', 'D'];
+const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 const DAY = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium' });
 
 type Filter = 'due' | 'learning' | 'mastered' | 'all';

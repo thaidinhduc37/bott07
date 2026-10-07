@@ -1,7 +1,7 @@
 """Ngân hàng câu hỏi: giảng viên nhập câu trắc nghiệm cho môn mình phụ trách (CSV); học viên ôn bằng cách rút ngẫu nhiên.
 
-Cột CSV (UTF-8, dòng đầu là tên cột): `cau_hoi`, `a`, `b` bắt buộc; `c`..`f`, `dap_an` (chữ cái của đáp án đúng),
-`giai_thich`, `chuong` — `dap_an` cũng bắt buộc. Đáp án phải liền nhau (không bỏ trống `c` rồi điền `d`).
+Hai định dạng tệp (UTF-8): GIFT của Moodle (mặc định, số đáp án tùy ý, xem `question_gift.py`) và CSV với cột
+`cau_hoi`, `a`, `b`, `dap_an` bắt buộc; `c`..`j`, `giai_thich`, `chuong` tùy chọn (đáp án phải liền nhau).
 
 Quy tắc:
   * Giảng viên chỉ nhập / xem / xóa câu của môn có `courses.lecturer_id` là mình; quản lý đào tạo và quản trị: mọi môn.
@@ -27,11 +27,13 @@ from app.models.academic import Course
 from app.models.enums import RoleCode
 from app.models.learning import BankQuestion
 from app.services.accounts.audit_service import AuditService
+from app.services.learning.question_gift import parse_gift
 
 IMPORT_MAX_ROWS = 500
 BANK_MAX_PER_COURSE = 2000
-_LETTERS = "abcdef"
-_REQUIRED = ("cau_hoi", "a", "b", "dap_an")
+MAX_OPTIONS = 10
+_LETTERS = "abcdefghij"
+_REQUIRED = ("cau_hoi", "a", "b", "dap_an")  # chỉ cho CSV
 _LIMITS = {"cau_hoi": 1000, "option": 300, "giai_thich": 2000, "chuong": 100}
 
 
@@ -115,28 +117,60 @@ class QuestionBankService:
         await self.db.commit()
         return {"message": "Đã xóa câu hỏi"}
 
-    # --------------------------------------------------------------- nhập CSV
+    # --------------------------------------------------------------- nhập tệp
 
-    async def import_csv(
-        self, user: AuthenticatedUser, course_id: str, *, content: bytes, filename: str | None, dry_run: bool,
-        request: Request | None,
-    ) -> dict:
-        course = await self._course(user, course_id)
-        try:
-            text = content.decode("utf-8-sig")
-        except UnicodeDecodeError as exc:
-            raise _bad("Tệp phải mã hóa UTF-8", "BAD_ENCODING") from exc
+    @staticmethod
+    def _candidates_csv(text: str) -> list[dict]:
         reader = csv.DictReader(io.StringIO(text))
         header = [h.strip().lower() for h in (reader.fieldnames or [])]
         missing = [h for h in _REQUIRED if h not in header]
         if missing:
             raise _bad(
-                "Thiếu cột: " + ", ".join(missing) + ". Cột hợp lệ: cau_hoi, a, b, c, d, e, f, dap_an, giai_thich, chuong",
+                "Thiếu cột: " + ", ".join(missing) + ". Cột hợp lệ: cau_hoi, a, b, c … j, dap_an, giai_thich, chuong",
                 "BAD_HEADER",
             )
-        rows = list(reader)
-        if len(rows) > IMPORT_MAX_ROWS:
-            raise _bad(f"Tối đa {IMPORT_MAX_ROWS} dòng mỗi lần", "TOO_MANY_ROWS")
+        out: list[dict] = []
+        for line, raw in enumerate(reader, start=2):
+            r = {k.strip().lower(): (v or "").strip() for k, v in raw.items() if k}
+            problems: list[str] = []
+            opts = [r.get(letter, "") for letter in _LETTERS]
+            filled = [i for i, o in enumerate(opts) if o]
+            if len(filled) < 2:
+                problems.append("cần ít nhất 2 đáp án (cột a, b)")
+            elif filled != list(range(len(filled))):
+                problems.append("các đáp án phải liền nhau, không bỏ trống giữa chừng")
+            options = [opts[i] for i in filled]
+            answer = r.get("dap_an", "").lower()
+            correct = _LETTERS.index(answer) if len(answer) == 1 and answer in _LETTERS else -1
+            if correct < 0 or correct >= len(options):
+                problems.append(f"đáp án đúng ({r.get('dap_an') or 'trống'}) phải là một chữ cái ứng với đáp án đã có")
+            out.append({"line": line, "question": r.get("cau_hoi", ""), "options": options, "correct": correct,
+                        "explanation": r.get("giai_thich", ""), "chapter": r.get("chuong", ""), "problems": problems})
+        return out
+
+    @staticmethod
+    def _candidates_gift(text: str) -> list[dict]:
+        return [
+            {"line": g.line, "question": g.question, "options": g.options, "correct": g.correct,
+             "explanation": g.explanation, "chapter": g.chapter or "", "problems": list(g.problems)}
+            for g in parse_gift(text)
+        ]
+
+    async def import_file(
+        self, user: AuthenticatedUser, course_id: str, *, content: bytes, filename: str | None, fmt: str,
+        dry_run: bool, request: Request | None,
+    ) -> dict:
+        """Nhập câu hỏi từ tệp GIFT (`fmt="gift"`, mặc định) hoặc CSV (`fmt="csv"`). Dòng lỗi báo theo dòng trong tệp."""
+        course = await self._course(user, course_id)
+        try:
+            text = content.decode("utf-8-sig")
+        except UnicodeDecodeError as exc:
+            raise _bad("Tệp phải mã hóa UTF-8", "BAD_ENCODING") from exc
+        cands = self._candidates_csv(text) if fmt == "csv" else self._candidates_gift(text)
+        if len(cands) > IMPORT_MAX_ROWS:
+            raise _bad(f"Tối đa {IMPORT_MAX_ROWS} câu mỗi lần", "TOO_MANY_ROWS")
+        if not cands:
+            raise _bad("Tệp không có câu hỏi nào", "EMPTY_FILE")
 
         existing = set(
             (await self.db.execute(select(BankQuestion.question_hash).where(BankQuestion.course_id == course.id))).scalars()
@@ -145,54 +179,45 @@ class QuestionBankService:
         fresh: list[dict] = []
         seen: set[str] = set()
         duplicates = 0
-        for line, raw in enumerate(rows, start=2):
-            r = {k.strip().lower(): (v or "").strip() for k, v in raw.items() if k}
-            problems: list[str] = []
-            question = r.get("cau_hoi", "")
+        for c in cands:
+            problems = list(c["problems"])
+            question, options = c["question"].strip(), [o.strip() for o in c["options"]]
             if not question:
-                problems.append("thiếu nội dung câu hỏi")
+                if "thiếu nội dung câu hỏi" not in problems:
+                    problems.append("thiếu nội dung câu hỏi")
             elif len(question) > _LIMITS["cau_hoi"]:
                 problems.append(f"câu hỏi dài quá {_LIMITS['cau_hoi']} ký tự")
-            opts = [r.get(letter, "") for letter in _LETTERS]
-            filled = [i for i, o in enumerate(opts) if o]
-            if len(filled) < 2:
-                problems.append("cần ít nhất 2 đáp án (cột a, b)")
-            elif filled != list(range(len(filled))):
-                problems.append("các đáp án phải liền nhau, không bỏ trống giữa chừng")
-            options = [opts[i] for i in filled]
+            if len(options) > MAX_OPTIONS:
+                problems.append(f"tối đa {MAX_OPTIONS} đáp án mỗi câu")
             if any(len(o) > _LIMITS["option"] for o in options):
                 problems.append(f"có đáp án dài quá {_LIMITS['option']} ký tự")
             if len({o.lower() for o in options}) != len(options):
                 problems.append("có hai đáp án giống nhau")
-            answer = r.get("dap_an", "").lower()
-            correct = _LETTERS.index(answer) if len(answer) == 1 and answer in _LETTERS else -1
-            if correct < 0 or correct >= len(options):
-                problems.append(f"đáp án đúng ({r.get('dap_an') or 'trống'}) phải là một chữ cái ứng với đáp án đã có")
-            explanation = r.get("giai_thich", "")
+            explanation, chapter = c["explanation"].strip(), c["chapter"].strip()
             if len(explanation) > _LIMITS["giai_thich"]:
                 problems.append(f"giải thích dài quá {_LIMITS['giai_thich']} ký tự")
-            chapter = r.get("chuong", "")
             if len(chapter) > _LIMITS["chuong"]:
                 problems.append(f"tên chương dài quá {_LIMITS['chuong']} ký tự")
             if problems:
-                errors.append({"line": line, "message": "; ".join(problems)})
+                errors.append({"line": c["line"], "message": "; ".join(dict.fromkeys(problems))})
                 continue
             h = question_hash(question, options)
             if h in existing or h in seen:
                 duplicates += 1
                 continue
             seen.add(h)
-            fresh.append({"question": question, "options": options, "correct": correct, "chapter": chapter or None,
-                          "explanation": explanation or f"Đáp án đúng: {options[correct]}.", "hash": h})
+            fresh.append({"question": question, "options": options, "correct": c["correct"], "chapter": chapter or None,
+                          "explanation": explanation or f"Đáp án đúng: {options[c['correct']]}.", "hash": h})
 
         if not errors and len(existing) + len(fresh) > BANK_MAX_PER_COURSE:
             errors.append({"line": 0, "message": f"Ngân hàng của môn tối đa {BANK_MAX_PER_COURSE} câu (hiện có {len(existing)})"})
 
-        result = {"fileName": filename, "totalRows": len(rows), "validRows": len(fresh) + duplicates, "errors": errors,
+        # Câu hợp lệ vẫn đếm là `validRows`; chỉ khi KHÔNG còn lỗi mới ghi (tất cả hoặc không gì cả).
+        result = {"fileName": filename, "totalRows": len(cands), "validRows": len(fresh) + duplicates, "errors": errors,
                   "dryRun": dry_run, "created": len(fresh), "updated": 0, "unchanged": duplicates, "accepted": False}
         if errors or dry_run:
             result["message"] = (
-                f"Phát hiện {len(errors)} dòng lỗi, chưa ghi gì" if errors
+                f"Phát hiện {len(errors)} câu lỗi, chưa ghi gì" if errors
                 else f"Tệp hợp lệ: sẽ thêm {len(fresh)} câu, bỏ qua {duplicates} câu trùng (chạy thử, chưa ghi)"
             )
             return result
@@ -204,7 +229,7 @@ class QuestionBankService:
             ))
         await self.audit.log(
             action="BANK_IMPORT", user_id=user.id, entity_type="Course", entity_id=str(course.id),
-            detail={"course": course.code, "fileName": filename, "created": len(fresh), "duplicates": duplicates},
+            detail={"course": course.code, "fileName": filename, "format": fmt, "created": len(fresh), "duplicates": duplicates},
             request=request,
         )
         await self.db.commit()

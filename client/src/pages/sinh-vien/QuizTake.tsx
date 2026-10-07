@@ -8,7 +8,7 @@ import { viScore } from '@/components/study/format';
 import { ApiError } from '@/services/api';
 import { learningApi, type QuizQuestion, type QuizSession } from '@/services/learning-api';
 
-const LETTERS = ['A', 'B', 'C', 'D'];
+const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
 /** Làm bài (chưa nộp) và xem kết quả (đã nộp) — cùng một địa chỉ. */
 export default function QuizTakePage() {
