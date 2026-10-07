@@ -20,8 +20,8 @@ from app.models.enums import MessageRole
 from app.models.learning import QuizQuestion, QuizSession, QuizStatus
 from app.models.notes import NOTE_SOURCE_CHAT, NOTE_SOURCE_MANUAL, NOTE_SOURCE_QUIZ, StudyNote
 from app.schemas.notes import CreateNoteDto, NoteFromSourceDto, UpdateNoteDto
+from app.services.learning.answers import correct_of, correct_text
 
-LETTERS = "ABCD"
 
 
 def _uuid_or_404(value: str, what: str) -> uuid.UUID:
@@ -187,7 +187,7 @@ class NotesService:
             raise HTTPException(status_code=409, detail={"message": "Nộp bài xong mới lưu được câu hỏi"})
 
         content = (
-            f"Đáp án: {LETTERS[q.correct_index]}. {q.options[q.correct_index]}\n\n{q.explanation}"
+            f"Đáp án: {correct_text(q.options, correct_of(q))}\n\n{q.explanation}"
         )
         citations = (
             [{"marker": 1, "documentTitle": q.source_file, "sourceFile": q.source_file, "page": q.source_page,

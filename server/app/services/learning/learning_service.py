@@ -25,6 +25,7 @@ from app.models.learning import QuizQuestion, QuizSession, QuizStatus, ReviewIte
 from app.schemas.learning import CreateQuizDto, CreateReviewDto, SubmitQuizDto
 from app.schemas.rag import GradePayload, QuizPayload
 from app.services.chat.rag_client import RagClientService, get_rag_client
+from app.services.learning.answers import correct_of, correct_text, selected_of
 from app.services.learning.question_bank_service import QuestionBankService
 
 logger = logging.getLogger("learning")
@@ -118,16 +119,20 @@ class LearningService:
                 "ordinal": q.ordinal,
                 "question": q.question,
                 "options": q.options,
+                # Câu nhiều đáp án đúng hiện ô tick; KHÔNG nói trước có mấy đáp án đúng (như Moodle).
+                "multi": bool(q.correct_set),
                 "fromReview": q.review_item_id is not None,
             }
             # Chưa nộp thì không lộ đáp án ra client.
             if reveal:
                 item.update(
                     correctIndex=q.correct_index,
+                    correctIndexes=correct_of(q),
                     explanation=q.explanation,
                     sourceFile=q.source_file,
                     sourcePage=q.source_page,
                     selectedIndex=q.selected_index,
+                    selectedIndexes=selected_of(q),
                     isCorrect=q.is_correct,
                 )
             questions.append(item)
@@ -162,7 +167,7 @@ class LearningService:
             session.questions.append(
                 QuizQuestion(
                     ordinal=ordinal, question=q.question, options=q.options, correct_index=q.correct_index,
-                    explanation=q.explanation,
+                    correct_set=q.correct_set, explanation=q.explanation,
                     source_file="Ngân hàng câu hỏi" + (f" · {q.chapter}" if q.chapter else ""),
                 )
             )
@@ -239,6 +244,7 @@ class LearningService:
             question=item.question,
             options=item.options,
             correct_index=item.correct_index,
+            correct_set=item.correct_set,
             explanation=item.explanation,
             source_file=item.source_file,
             source_page=item.source_page,
@@ -273,13 +279,21 @@ class LearningService:
         if session.status != QuizStatus.IN_PROGRESS:
             raise HTTPException(status_code=409, detail={"message": "Lượt ôn tập này đã nộp rồi"})
 
-        chosen = {a.question_id: a.selected_index for a in dto.answers}
+        chosen = {a.question_id: a for a in dto.answers}
         now = _now()
         correct = 0
         for q in session.questions:
-            selected = chosen.get(str(q.id))
-            q.selected_index = selected
-            q.is_correct = selected is not None and selected == q.correct_index
+            a = chosen.get(str(q.id))
+            if q.correct_set:
+                # Nhiều đáp án đúng: đúng khi tick ĐÚNG và ĐỦ các đáp án (không tính điểm một phần).
+                picked = sorted({i for i in (a.selected_indexes or []) if 0 <= i < len(q.options)}) if a else []
+                q.selected_index = None
+                q.selected_set = picked or None
+                q.is_correct = bool(picked) and picked == sorted(q.correct_set)
+            else:
+                selected = a.selected_index if a else None
+                q.selected_index = selected
+                q.is_correct = selected is not None and selected == q.correct_index
             correct += int(q.is_correct)
             await self._update_review(user_id, session.course_id, q, now)
 
@@ -299,8 +313,8 @@ class LearningService:
                             "question": q.question,
                             "chosen": q.selected_index,
                             "correct": q.correct_index,
-                            "chosen_text": q.options[q.selected_index] if q.selected_index is not None else "(bỏ trống)",
-                            "correct_text": q.options[q.correct_index],
+                            "chosen_text": correct_text(q.options, selected_of(q)) if selected_of(q) else "(bỏ trống)",
+                            "correct_text": correct_text(q.options, correct_of(q)),
                             "explanation": q.explanation,
                         }
                         for q in session.questions
@@ -345,6 +359,7 @@ class LearningService:
                 question=q.question,
                 options=q.options,
                 correct_index=q.correct_index,
+                correct_set=q.correct_set,
                 explanation=q.explanation,
                 source_file=q.source_file,
                 source_page=q.source_page,
@@ -432,6 +447,7 @@ class LearningService:
                     "question": i.question,
                     "options": i.options,
                     "correctIndex": i.correct_index,
+                    "correctIndexes": correct_of(i),
                     "explanation": i.explanation,
                     "sourceFile": i.source_file,
                     "sourcePage": i.source_page,

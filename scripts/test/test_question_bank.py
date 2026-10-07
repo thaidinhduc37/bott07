@@ -165,11 +165,55 @@ try:
         st, done2 = sv.req("POST", f"/learning/quiz/{r['session']['id']}/submit", {"answers": [{"questionId": long_q["id"], "selectedIndex": 6}]})
         check("chọn đáp án thứ 7 được chấp nhận", st == 200, f"{st} {str(done2)[:200]}")
 
+    # --- nhiều đáp án đúng (A, B hoặc A, B, C…)
+    multi_gift = "ZT Chọn số chẵn {=2 =4 ~3 ~5}\n"
+    st, d = upload(gv, cs301, multi_gift, filename="nhieu.gift")
+    check("GIFT nhiều đáp án đúng nhập được", st == 200 and d["accepted"] and d["created"] == 1, f"{st} {str(d)[:200]}")
+    st, d = upload(gv, cs301, HEAD + 'ZT Chọn số lẻ,1,2,3,4,"A, C",,\n', filename="nhieu.csv")
+    check('CSV dap_an "A, C" nhập được', st == 200 and d["accepted"] and d["created"] == 1, f"{st} {str(d)[:200]}")
+    st, d = upload(gv, cs301, HEAD + "ZT sai đáp án,a,b,c,,AD,,\n", dry=True, filename="nhieu.csv")
+    check("CSV dap_an trỏ vào ô trống → lỗi", st == 200 and len(d["errors"]) == 1, f"{st} {str(d)[:200]}")
+    cs_even = psql("select correct_set::text from bank_questions where question like 'ZT Ch_n s_ ch_n%'")
+    cs_odd = psql("select correct_set::text from bank_questions where question like 'ZT Ch_n s_ l_%'")
+    n_single = psql("select count(*) from bank_questions where question like 'ZT%' and correct_set is null")
+    check("lưu correct_set đúng", cs_even == "[0, 1]" and cs_odd == "[0, 2]" and n_single == "6", f"{cs_even!r} {cs_odd!r} {n_single!r}")
+    st, d = gv.req("GET", f"/question-bank/questions?courseId={cs301}&pageSize=100")
+    mq = next((q for q in d["items"] if q["correctIndexes"] == [0, 1]), None)
+    check("giảng viên thấy correctIndexes", mq is not None, str(d)[:300])
+
+    # Học viên làm câu nhiều đáp án: ô tick, không lộ số đáp án đúng, chấm đúng-và-đủ.
+    st, r = sv.req("POST", "/learning/quiz", {"source": "bank", "courseId": cs301, "nQuestions": 10, "topic": "ZT multi", "includeReview": False})
+    sess = r["session"]
+    mqs = [q for q in sess["questions"] if q.get("multi")]
+    check("câu nhiều đáp án có cờ multi, không lộ đáp án", len(mqs) == 2 and all("correctIndexes" not in q for q in mqs), str(mqs)[:200])
+    ids = {q["id"]: q for q in mqs}
+    even_id = next((i for i, q in ids.items() if q["options"] == ["2", "4", "3", "5"]), None)
+    odd_id = next((i for i, q in ids.items() if q["options"] == ["1", "2", "3", "4"]), None)
+    answers = []
+    for q in sess["questions"]:
+        if q["id"] == even_id:
+            answers.append({"questionId": q["id"], "selectedIndexes": [0, 1]})   # đúng và đủ
+        elif q["id"] == odd_id:
+            answers.append({"questionId": q["id"], "selectedIndexes": [0]})       # thiếu một đáp án → sai
+        else:
+            answers.append({"questionId": q["id"], "selectedIndex": None})
+    st, done3 = sv.req("POST", f"/learning/quiz/{sess['id']}/submit", {"answers": answers})
+    res = {q["id"]: q for q in done3.get("questions", [])}
+    check("tick đúng và đủ → đúng", st == 200 and even_id is not None and res[even_id]["isCorrect"] is True
+          and res[even_id]["correctIndexes"] == [0, 1] and res[even_id]["selectedIndexes"] == [0, 1], str(res.get(even_id))[:300])
+    check("tick thiếu → sai, hiện đủ đáp án đúng", odd_id is not None and res[odd_id]["isCorrect"] is False
+          and res[odd_id]["correctIndexes"] == [0, 2], str(res.get(odd_id))[:300])
+    check("câu nhiều đáp án sai vào sổ câu sai kèm correct_set",
+          psql("select correct_set::text from review_items where question like 'ZT Ch_n s_ l_%'") == "[0, 2]")
+    st, ov = sv.req("GET", "/learning/review-items")
+    item = next((i for i in ov.get("items", []) if i["options"] == ["1", "2", "3", "4"]), None)
+    check("sổ câu sai trả correctIndexes", item is not None and item["correctIndexes"] == [0, 2], str(ov)[:300])
+
     # --- xóa
     st, _ = gv2.req("DELETE", f"/question-bank/questions/{q2['id']}")
     check("giảng viên khác không xóa được", st == 404, str(st))
     st, _ = gv.req("DELETE", f"/question-bank/questions/{q2['id']}")
-    check("giảng viên xóa câu của môn mình", st == 200 and psql("select count(*) from bank_questions where question like 'ZT%'") == "5", str(st))
+    check("giảng viên xóa câu của môn mình", st == 200 and psql("select count(*) from bank_questions where question like 'ZT%'") == "7", str(st))
 
     # --- xuất CSV danh sách lớp
     st, body, hdr = raw_get(qldt, f"/catalog/students/export?classId={b3d15}")

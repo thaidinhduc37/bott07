@@ -87,8 +87,15 @@ check("câu nhiều dòng, đáp án xuống dòng", q.question == "Câu một d
 q = qs[7]
 check("trọng số 100 là đáp án đúng, chương mới", q.correct == 0 and q.options == ["Đúng", "Nửa", "Sai"] and q.chapter == "Mạng" and not q.problems, str(q))
 
-for i, label in ((8, "trả lời ngắn"), (9, "ghép cặp"), (10, "số"), (11, "tự luận"), (12, "hai đáp án đúng"), (13, "thiếu khối đáp án")):
+for i, label in ((8, "trả lời ngắn"), (9, "ghép cặp"), (10, "số"), (11, "tự luận"), (13, "thiếu khối đáp án")):
     check(f"báo lỗi {label}, không đoán", bool(qs[i].problems), str(qs[i]))
+q = qs[12]
+check("nhiều đáp án đúng bằng nhiều dấu =", q.correct_set == [0, 1] and q.options == ["a", "b", "c"] and not q.problems, str(q))
+mw = parse_gift("Chọn các số chẵn {~%50%2 ~%50%4 ~%-100%3 ~%-100%5}")[0]
+check("nhiều đáp án đúng bằng trọng số ~%50%", mw.correct_set == [0, 1] and not mw.problems, str(mw))
+check("câu một đáp án đúng có correct_set 1 phần tử", qs[0].correct_set == [0] and qs[2].correct_set == [0], str(qs[0].correct_set))
+check("không có đáp án đúng → lỗi", bool(parse_gift("Câu {~a ~b}")[0].problems))
+check("mọi đáp án đúng (~%50% hết) → lỗi", bool(parse_gift("Câu {~%50%a ~%50%b}")[0].problems))
 check("báo lỗi đúng dòng của câu", qs[13].line == SAMPLE.replace("\r\n", "\n").split("\n").index("Thiếu khối đáp án") + 1, str(qs[13].line))
 
 check("tệp rỗng → không có câu", parse_gift("\n\n// chỉ chú thích\n") == [])

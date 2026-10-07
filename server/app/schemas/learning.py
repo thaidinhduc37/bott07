@@ -41,6 +41,8 @@ class AnswerDto(CamelModel):
     question_id: str
     # None = bỏ trống, tính là sai.
     selected_index: int | None = Field(default=None, ge=0, le=9)
+    # Câu nhiều đáp án đúng: các lựa chọn đã tick (thay cho `selected_index`).
+    selected_indexes: list[int] | None = Field(default=None, max_length=10)
 
 
 class SubmitQuizDto(CamelModel):

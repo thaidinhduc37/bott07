@@ -15,6 +15,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import io
+import re
 import uuid
 
 from fastapi import HTTPException
@@ -27,6 +28,7 @@ from app.models.academic import Course
 from app.models.enums import RoleCode
 from app.models.learning import BankQuestion
 from app.services.accounts.audit_service import AuditService
+from app.services.learning.answers import correct_of, correct_text
 from app.services.learning.question_gift import parse_gift
 
 IMPORT_MAX_ROWS = 500
@@ -94,7 +96,7 @@ class QuestionBankService:
         return {
             "total": total, "page": page, "pageSize": page_size,
             "items": [
-                {"id": str(q.id), "question": q.question, "options": q.options, "correctIndex": q.correct_index,
+                {"id": str(q.id), "question": q.question, "options": q.options, "correctIndex": q.correct_index, "correctIndexes": correct_of(q),
                  "explanation": q.explanation, "chapter": q.chapter}
                 for q in rows
             ],
@@ -141,9 +143,16 @@ class QuestionBankService:
                 problems.append("các đáp án phải liền nhau, không bỏ trống giữa chừng")
             options = [opts[i] for i in filled]
             answer = r.get("dap_an", "").lower()
-            correct = _LETTERS.index(answer) if len(answer) == 1 and answer in _LETTERS else -1
-            if correct < 0 or correct >= len(options):
-                problems.append(f"đáp án đúng ({r.get('dap_an') or 'trống'}) phải là một chữ cái ứng với đáp án đã có")
+            # "B" hoặc nhiều đáp án đúng: "A,C", "A C", "ACD".
+            correct = (
+                sorted({_LETTERS.index(ch) for ch in re.findall(r"[a-j]", answer)})
+                if re.fullmatch(r"[a-j](?:[\s,;/&+]*[a-j])*", answer)
+                else []
+            )
+            if not correct or max(correct) >= len(options):
+                problems.append(
+                    f"đáp án đúng ({r.get('dap_an') or 'trống'}) phải là chữ cái ứng với đáp án đã có (nhiều đáp án: A,C)"
+                )
             out.append({"line": line, "question": r.get("cau_hoi", ""), "options": options, "correct": correct,
                         "explanation": r.get("giai_thich", ""), "chapter": r.get("chuong", ""), "problems": problems})
         return out
@@ -151,7 +160,7 @@ class QuestionBankService:
     @staticmethod
     def _candidates_gift(text: str) -> list[dict]:
         return [
-            {"line": g.line, "question": g.question, "options": g.options, "correct": g.correct,
+            {"line": g.line, "question": g.question, "options": g.options, "correct": g.correct_set,
              "explanation": g.explanation, "chapter": g.chapter or "", "problems": list(g.problems)}
             for g in parse_gift(text)
         ]
@@ -207,7 +216,7 @@ class QuestionBankService:
                 continue
             seen.add(h)
             fresh.append({"question": question, "options": options, "correct": c["correct"], "chapter": chapter or None,
-                          "explanation": explanation or f"Đáp án đúng: {options[c['correct']]}.", "hash": h})
+                          "explanation": explanation or f"Đáp án đúng: {correct_text(options, c['correct'])}.", "hash": h})
 
         if not errors and len(existing) + len(fresh) > BANK_MAX_PER_COURSE:
             errors.append({"line": 0, "message": f"Ngân hàng của môn tối đa {BANK_MAX_PER_COURSE} câu (hiện có {len(existing)})"})
@@ -225,7 +234,8 @@ class QuestionBankService:
         for f in fresh:
             self.db.add(BankQuestion(
                 course_id=course.id, created_by_id=uuid.UUID(user.id), question=f["question"], options=f["options"],
-                correct_index=f["correct"], explanation=f["explanation"], chapter=f["chapter"], question_hash=f["hash"],
+                correct_index=f["correct"][0], correct_set=f["correct"] if len(f["correct"]) > 1 else None,
+                explanation=f["explanation"], chapter=f["chapter"], question_hash=f["hash"],
             ))
         await self.audit.log(
             action="BANK_IMPORT", user_id=user.id, entity_type="Course", entity_id=str(course.id),

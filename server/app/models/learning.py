@@ -67,10 +67,14 @@ class QuizQuestion(Base):
     question: Mapped[str] = mapped_column(Text, nullable=False)
     options: Mapped[list] = mapped_column(JSONB, nullable=False)
     correct_index: Mapped[int] = mapped_column("correct_index", Integer, nullable=False)
+    # Nhiều đáp án đúng (xem `BankQuestion.correct_set`); NULL = một đáp án đúng.
+    correct_set: Mapped[list | None] = mapped_column("correct_set", JSONB(none_as_null=True), nullable=True)
     explanation: Mapped[str] = mapped_column(Text, nullable=False)
     source_file: Mapped[str | None] = mapped_column("source_file", String, nullable=True)
     source_page: Mapped[int | None] = mapped_column("source_page", Integer, nullable=True)
     selected_index: Mapped[int | None] = mapped_column("selected_index", Integer, nullable=True)
+    # Các lựa chọn đã tick ở câu nhiều đáp án đúng.
+    selected_set: Mapped[list | None] = mapped_column("selected_set", JSONB(none_as_null=True), nullable=True)
     is_correct: Mapped[bool | None] = mapped_column("is_correct", Boolean, nullable=True)
     # Câu này lấy lại từ sổ câu sai (không phải câu mới sinh).
     review_item_id: Mapped[uuid.UUID | None] = mapped_column(
@@ -97,6 +101,7 @@ class ReviewItem(Base):
     question: Mapped[str] = mapped_column(Text, nullable=False)
     options: Mapped[list] = mapped_column(JSONB, nullable=False)
     correct_index: Mapped[int] = mapped_column("correct_index", Integer, nullable=False)
+    correct_set: Mapped[list | None] = mapped_column("correct_set", JSONB(none_as_null=True), nullable=True)
     explanation: Mapped[str] = mapped_column(Text, nullable=False)
     source_file: Mapped[str | None] = mapped_column("source_file", String, nullable=True)
     source_page: Mapped[int | None] = mapped_column("source_page", Integer, nullable=True)
@@ -131,6 +136,8 @@ class BankQuestion(Base):
     question: Mapped[str] = mapped_column(Text, nullable=False)
     options: Mapped[list] = mapped_column(JSONB, nullable=False)
     correct_index: Mapped[int] = mapped_column("correct_index", Integer, nullable=False)
+    # Câu nhiều đáp án đúng: danh sách chỉ số đúng (đã sắp xếp, ≥ 2 phần tử). NULL = một đáp án đúng (`correct_index`).
+    correct_set: Mapped[list | None] = mapped_column("correct_set", JSONB(none_as_null=True), nullable=True)
     explanation: Mapped[str] = mapped_column(Text, nullable=False)
     # Chương / chủ đề do giảng viên ghi (tùy chọn), hiện ở phần nguồn của câu hỏi.
     chapter: Mapped[str | None] = mapped_column(String, nullable=True)

@@ -2,6 +2,7 @@
 
 Hỗ trợ:
   * Trắc nghiệm:   ``::Tiêu đề:: Câu hỏi {=Đáp án đúng ~Sai 1 ~Sai 2}`` (đáp án có thể xuống dòng riêng).
+  * Nhiều đáp án đúng: nhiều dấu ``=`` hoặc ``~%50%A ~%50%B ~Sai`` — học viên phải chọn đủ và đúng tất cả.
   * Đúng / Sai:    ``Câu hỏi {T}`` / ``{FALSE}`` → hai lựa chọn "Đúng", "Sai".
   * Phản hồi:      ``#phản hồi`` sau một đáp án; ``####phản hồi chung`` cuối khối → lời giải thích.
   * ``$CATEGORY: a/b/c``   → chương của các câu phía sau (lấy phần cuối).
@@ -10,8 +11,7 @@ Hỗ trợ:
   * Ký tự thoát ``\\~ \\= \\# \\{ \\} \\:``, ``\\n`` là xuống dòng; dòng ``//`` là chú thích; tiền tố ``[html]``,
     ``[markdown]``, ``[plain]``, ``[moodle]`` được bỏ (``[html]`` còn bỏ thẻ).
 
-Không hỗ trợ (báo lỗi ở đúng câu, không bỏ qua im lặng): trả lời ngắn, ghép cặp ``->``, số ``#``, tự luận ``{}``,
-nhiều đáp án đúng. Các câu hợp lệ vẫn được dùng.
+Không hỗ trợ (báo lỗi ở đúng câu, không bỏ qua im lặng): trả lời ngắn, ghép cặp ``->``, số ``#``, tự luận ``{}``. Các câu hợp lệ vẫn được dùng.
 
 Câu hỏi ngăn cách nhau bằng dòng trống; ``line`` là dòng đầu tiên của câu trong tệp.
 """
@@ -34,6 +34,8 @@ class GiftQuestion:
     question: str = ""
     options: list[str] = field(default_factory=list)
     correct: int = -1
+    # Mọi chỉ số đáp án đúng (1 phần tử = trắc nghiệm một đáp án đúng, ≥ 2 = nhiều đáp án đúng).
+    correct_set: list[int] = field(default_factory=list)
     explanation: str = ""
     chapter: str | None = None
     problems: list[str] = field(default_factory=list)
@@ -119,6 +121,7 @@ def _parse_block(text: str, line: int, chapter: str | None) -> GiftQuestion:
     if tf:
         q.options = ["Đúng", "Sai"]
         q.correct = 0 if tf.group(1).upper().startswith("T") else 1
+        q.correct_set = [q.correct]
         q.explanation = _unescape((general or tf.group(2) or "").strip())
         return q
 
@@ -148,14 +151,18 @@ def _parse_block(text: str, line: int, chapter: str | None) -> GiftQuestion:
             return q
         if not text_:
             q.problems.append("có đáp án trống")
-        if marker == "=" or weight == 100:
+        # `=` luôn là đúng; `~%w%` với w > 0 là đúng (Moodle: nhiều đáp án đúng chia điểm, vd ~%50%A ~%50%B).
+        if marker == "=" or (weight is not None and weight > 0):
             correct.append(len(q.options))
-            feedback = fb
+            feedback = feedback or fb
         q.options.append(text_)
-    if len(correct) != 1:
-        q.problems.append(f"cần đúng 1 đáp án đúng, câu này có {len(correct)}")
+    if not correct:
+        q.problems.append("chưa có đáp án đúng (đánh dấu bằng = hoặc ~%100%)")
+    elif len(correct) == len(q.options):
+        q.problems.append("mọi đáp án đều đúng — cần ít nhất một đáp án sai")
     else:
         q.correct = correct[0]
+        q.correct_set = correct
     q.explanation = _unescape(general.strip()) or feedback
     return q
 

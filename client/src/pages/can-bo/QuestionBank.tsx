@@ -27,6 +27,13 @@ Thủ đô của Việt Nam là {
 }
 
 Mã hóa đối xứng dùng cùng một khóa để mã và giải mã. {T}
+
+Chọn các số chẵn {
+=2
+=4
+~3
+~5
+}
 `;
 const PAGE_SIZE = 20;
 
@@ -103,13 +110,14 @@ function QuestionList({ course, onChanged }: { course: BankCourse; onChanged: ()
             </div>
             <ul className="qb-opts">
               {q.options.map((o, i) => (
-                <li key={i} className={i === q.correctIndex ? 'qb-opt qb-opt--ok' : 'qb-opt'}>
+                <li key={i} className={q.correctIndexes.includes(i) ? 'qb-opt qb-opt--ok' : 'qb-opt'}>
                   <span className="qb-opt__k">{LETTERS[i]}</span>
                   {o}
                 </li>
               ))}
             </ul>
             <p className="qb-item__meta">
+              {q.correctIndexes.length > 1 && <span className="tag tag--muted">Nhiều đáp án đúng</span>}
               {q.chapter && <span className="tag tag--muted">{q.chapter}</span>}
               <span>{q.explanation}</span>
             </p>
@@ -264,7 +272,7 @@ export default function QuestionBank() {
                     sampleName="mau-cau-hoi.gift"
                     submitLabel={`Nhập vào ${course.code}`}
                     notes={[
-                      '= đáp án đúng, ~ đáp án sai; số đáp án tùy ý (2 đến 10), chỉ một đáp án đúng.',
+                      '= đáp án đúng, ~ đáp án sai; số đáp án tùy ý (2 đến 10). Nhiều dấu = hoặc ~%50%A ~%50%B là câu nhiều đáp án đúng: học viên phải chọn đủ và đúng.',
                       '{T} hoặc {F} cho câu đúng/sai. # sau đáp án là phản hồi; #### cuối khối là lời giải chung (hiện sau khi học viên nộp bài).',
                       '$CATEGORY: tên → chương của các câu phía sau. Dạng chưa hỗ trợ (trả lời ngắn, ghép cặp, số, tự luận) sẽ báo lỗi ở đúng câu.',
                       'Câu trùng với câu đã có được bỏ qua. Còn câu lỗi thì không ghi gì. Một tệp tối đa 500 câu; mỗi môn tối đa 2.000 câu.',
@@ -285,7 +293,7 @@ ${EXAMPLE}
                     submitLabel={`Nhập vào ${course.code}`}
                     notes={[
                       'cau_hoi, a, b, dap_an bắt buộc; c–j là đáp án thêm (tối đa 10, phải liền nhau).',
-                      'dap_an là chữ cái của đáp án đúng (A, B, C…). Để trống giai_thich thì hệ thống ghi sẵn đáp án đúng.',
+                      'dap_an là chữ cái của đáp án đúng (B); nhiều đáp án đúng thì ghi A,C (đặt trong dấu nháy kép khi có dấu phẩy). Để trống giai_thich thì hệ thống ghi sẵn đáp án đúng.',
                       'Câu trùng với câu đã có được bỏ qua. Còn dòng lỗi thì không ghi gì. Soạn trong Excel rồi Lưu thành → CSV UTF-8.',
                     ]}
                     onAccepted={loadCourses}

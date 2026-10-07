@@ -143,8 +143,8 @@ export default function ReviewBookPage() {
                       )}
                     </div>
                     <p className="review-item__ans">
-                      <strong>Đáp án:</strong> {LETTERS[item.correctIndex]}.{' '}
-                      {item.options[item.correctIndex]}
+                      <strong>Đáp án:</strong> {item.correctIndexes.map((i) => LETTERS[i]).join(', ')}.{' '}
+                      {item.correctIndexes.map((i) => item.options[i]).join('; ')}
                     </p>
                     <details className="review-item__ex">
                       <summary>Xem giải thích</summary>

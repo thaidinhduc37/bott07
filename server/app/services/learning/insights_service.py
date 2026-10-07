@@ -25,10 +25,10 @@ from app.models.academic import Course
 from app.models.chat import ChatConversation, ChatMessage
 from app.models.enums import MessageRole, RoleCode
 from app.models.learning import QuizSession, QuizStatus, ReviewItem
+from app.services.learning.answers import correct_of, correct_text
 
 MIN_LEARNERS = 2
 WINDOW_DAYS = 30
-LETTERS = "ABCD"
 
 
 def _sees_all(user: AuthenticatedUser) -> bool:
@@ -117,12 +117,12 @@ class InsightsService:
         if hard_rows:
             opt_rows = (
                 await self.db.execute(
-                    select(ReviewItem.question_hash, ReviewItem.options)
+                    select(ReviewItem.question_hash, ReviewItem.options, ReviewItem.correct_index, ReviewItem.correct_set)
                     .where(ReviewItem.course_id == cid, ReviewItem.question_hash.in_([r.question_hash for r in hard_rows]))
                     .distinct(ReviewItem.question_hash)
                 )
             ).all()
-            answers = {r.question_hash: r.options for r in opt_rows}
+            answers = {r.question_hash: correct_text(r.options, correct_of(r)) for r in opt_rows}
 
         topic_rows = (
             await self.db.execute(
@@ -151,10 +151,7 @@ class InsightsService:
             "hardQuestions": [
                 {
                     "question": r.question,
-                    "correctAnswer": (
-                        f"{LETTERS[r.correct_index]}. {answers[r.question_hash][r.correct_index]}"
-                        if r.question_hash in answers else None
-                    ),
+                    "correctAnswer": answers.get(r.question_hash),
                     "sourceFile": r.source_file,
                     "sourcePage": r.source_page,
                     "learners": r.learners,

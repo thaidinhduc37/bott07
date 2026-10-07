@@ -6,10 +6,14 @@ export interface QuizQuestion {
   ordinal: number;
   question: string;
   options: string[];
+  /** Câu có nhiều đáp án đúng: hiện ô tick (không báo trước có mấy đáp án đúng). */
+  multi: boolean;
   /** Câu lấy lại từ sổ câu sai, không phải câu mới sinh. */
   fromReview: boolean;
   // Chỉ có sau khi nộp bài — backend không gửi đáp án trước.
   correctIndex?: number;
+  correctIndexes?: number[];
+  selectedIndexes?: number[];
   explanation?: string;
   sourceFile?: string | null;
   sourcePage?: number | null;
@@ -52,6 +56,7 @@ export interface ReviewItem {
   question: string;
   options: string[];
   correctIndex: number;
+  correctIndexes: number[];
   explanation: string;
   sourceFile: string | null;
   sourcePage: number | null;
@@ -143,15 +148,14 @@ export const learningApi = {
 
   session: (id: string) => api<QuizSession>(`/learning/quiz/${id}`),
 
-  submit: (id: string, answers: { questionId: string; selectedIndex: number | null }[]) =>
+  submit: (id: string, answers: { questionId: string; selectedIndex?: number | null; selectedIndexes?: number[] }[]) =>
     api<QuizSession>(`/learning/quiz/${id}/submit`, { method: 'POST', body: { answers } }),
 
   progress: () => api<ProgressOverview>('/learning/progress'),
 
   reviewItems: () => api<ReviewOverview>('/learning/review-items'),
 
-  removeReviewItem: (id: string) =>
-    api<{ message: string }>(`/learning/review-items/${id}`, { method: 'DELETE' }),
+  removeReviewItem: (id: string) => api<{ message: string }>(`/learning/review-items/${id}`, { method: 'DELETE' }),
 
   examPlan: () => api<{ today: string; exams: ExamPlanItem[]; reason?: 'NO_CLASS' }>('/learning/exam-plan'),
 

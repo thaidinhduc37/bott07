@@ -21,6 +21,8 @@ export interface BankQuestion {
   question: string;
   options: string[];
   correctIndex: number;
+  /** Mọi đáp án đúng (≥ 2 phần tử = câu nhiều đáp án đúng). */
+  correctIndexes: number[];
   explanation: string;
   chapter: string | null;
 }
