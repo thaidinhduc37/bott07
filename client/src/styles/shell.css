@@ -500,3 +500,10 @@ a.picker-row:hover {
   box-shadow: var(--ring);
 }
 
+/* Màn hẹp: chuông và menu hồ sơ nằm bên phải thanh trên (thanh `content-topbar` bị ẩn ở đây). */
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-2);
+  margin-left: auto;
+}

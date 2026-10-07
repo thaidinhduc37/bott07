@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSession } from './SessionProvider';
-import { Icon } from './Icon';
+import { Icon, type IconName } from './Icon';
 import { UserMenu } from './UserMenu';
 import { ROLE_LABEL, visibleNav, workspaceOf, type Workspace } from '@/utils/roles';
 
@@ -134,6 +134,27 @@ export function AppShell({
   }
 
   const nav = visibleNav(workspace, user.roles);
+  // Sổ tay và Hỗ trợ của học viên không chiếm chỗ ở thanh bên: nằm trong menu hồ sơ.
+  const accountLinks: { to: string; label: string; icon: IconName }[] =
+    workspace === 'sinh-vien'
+      ? [
+          { to: '/sinh-vien/so-tay', label: 'Sổ tay', icon: 'pencil' },
+          { to: '/sinh-vien/ho-tro', label: 'Hỗ trợ', icon: 'help' },
+        ]
+      : [];
+  const accountActions = (
+    <>
+      <Link to="/thong-bao" className="btn btn--ghost btn--icon" aria-label="Thông báo">
+        <Icon name="bell" size={18} />
+      </Link>
+      <UserMenu
+        fullName={user.fullName}
+        roleSummary={user.roles.map((r) => ROLE_LABEL[r]).join(', ')}
+        links={accountLinks}
+        onLogout={() => void logout()}
+      />
+    </>
+  );
 
   return (
     <div className="shell">
@@ -153,6 +174,7 @@ export function AppShell({
           <Icon name={menuOpen ? 'close' : 'menu'} size={18} />
         </button>
         <Brand workspace={workspace} />
+        <div className="topbar__actions">{accountActions}</div>
       </header>
 
       {/* Tấm phủ. Là `<button>` chứ không phải `<div onClick>`: nó có thể bấm
@@ -223,16 +245,7 @@ export function AppShell({
             chiều rộng vùng nội dung (bên phải thanh bên), giống mockup: bên phải
             là cụm thông báo/giao diện/đăng xuất rồi tới danh tính người dùng. */}
         <header className="content-topbar">
-          <div className="content-topbar__actions">
-            <Link to="/thong-bao" className="btn btn--ghost btn--icon" aria-label="Thông báo">
-              <Icon name="bell" size={18} />
-            </Link>
-            <UserMenu
-              fullName={user.fullName}
-              roleSummary={user.roles.map((r) => ROLE_LABEL[r]).join(', ')}
-              onLogout={() => void logout()}
-            />
-          </div>
+          <div className="content-topbar__actions">{accountActions}</div>
         </header>
 
         {/* `key` buộc `<main>` dựng lại ở mỗi lần đổi trang, nên hoạt ảnh `rise`

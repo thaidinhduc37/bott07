@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Icon } from './Icon';
+import { Icon, type IconName } from './Icon';
 import { useTheme } from '@/hooks/useTheme';
 
 /**
@@ -26,10 +26,13 @@ function initialsOf(fullName: string): string {
 export function UserMenu({
   fullName,
   roleSummary,
+  links = [],
   onLogout,
 }: {
   fullName: string;
   roleSummary: string;
+  /** Liên kết phụ xếp ngay dưới "Thông tin hồ sơ" (vd Sổ tay, Hỗ trợ của học viên). */
+  links?: { to: string; label: string; icon: IconName }[];
   onLogout: () => void;
 }) {
   const { isDark, toggle: toggleTheme } = useTheme();
@@ -93,6 +96,12 @@ export function UserMenu({
             <Icon name="person" size={18} />
             Thông tin hồ sơ
           </Link>
+          {links.map((l) => (
+            <Link key={l.to} to={l.to} role="menuitem" className="user-menu__item" onClick={() => setOpen(false)}>
+              <Icon name={l.icon} size={18} />
+              {l.label}
+            </Link>
+          ))}
           <div className="user-menu__divider" />
           <button type="button" role="menuitem" className="user-menu__item user-menu__item--danger" onClick={onLogout}>
             <Icon name="logout" size={18} />

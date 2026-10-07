@@ -810,7 +810,8 @@ button.study-aside__link:focus-visible {
 @media (max-width: 30rem) {
   .metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--gap-3);
+    /* giữ khe 1px làm đường phân cách của thanh liền khối */
+    gap: 1px;
   }
   .metric__body {
     padding: var(--gap-3);
