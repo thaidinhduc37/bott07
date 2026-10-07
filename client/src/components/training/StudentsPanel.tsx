@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Icon } from '@/components/shared/Icon';
-import { ApiError } from '@/services/api';
+import { API_URL, ApiError } from '@/services/api';
 import {
   catalogApi,
   type ClassItem,
@@ -206,6 +206,14 @@ export function StudentsPanel({ initialClassId }: { initialClassId?: string }) {
             Chưa có lớp
           </button>
         </div>
+
+        <a
+          className="btn btn--quiet train-export"
+          href={`${API_URL}/catalog/students/export${classId ? `?classId=${classId}` : ''}`}
+        >
+          <Icon name="form" size={16} />
+          Tải CSV {classId ? 'lớp này' : 'tất cả'}
+        </a>
       </div>
 
       {notice && (

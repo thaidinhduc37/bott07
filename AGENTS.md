@@ -39,7 +39,7 @@ React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► Postg
 | Area | Server | Client |
 |---|---|---|
 | Chat with citations | `chat` router/service, `pipeline/` | `ChatWorkspace`, `StudentChat`, `StaffChat` |
-| Review (quiz from curricula, wrong-answer book, notes, exam plan, reminders) | `learning` router, `learning_service`, `notes_service`, `exam_plan_service`, `study_reminders` | `StudyHub`, `QuizTake`, `ReviewBook`, `Notebook` |
+| Review (quiz from curricula or from the lecturer's question bank, wrong-answer book, notes, exam plan, reminders) | `learning` router, `learning_service`, `question_bank_service` (+ `question_bank` router: lecturers import MCQs per own course via CSV; learners draw random questions, no AI/τ gate), `notes_service`, `exam_plan_service`, `study_reminders` | `StudyHub`, `QuizTake`, `ReviewBook`, `Notebook`, `QuestionBank` (`/can-bo/ngan-hang-cau-hoi`) |
 | Progress / lecturer insights | `progress_service`, `insights_service` (aggregate only, ≥2 learners) | `StudentHome`, `StaffHome`, `LearningInsights` |
 | Schedules | `schedules` router/service, `schedule_conflicts` (class/room/lecturer clash), CSV import | `StudentSchedule`, `StaffSchedule`, `SessionForm`, `ExamForm` |
 | Academic admin | `catalog` (classes, courses, students→class, CSV student import `catalog_import.py`: new accounts get a random password returned once, never stored in clear or audited), `faculties`, `rooms` | `TrainingManagement` (tabs Khoa/Lớp/Môn/Phòng; học viên nằm trong tab Lớp) |

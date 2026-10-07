@@ -4,7 +4,7 @@ import { Metrics } from '@/components/shared/Metrics';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { dayLabel, hhmm } from '@/components/study/format';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-import { ApiError } from '@/services/api';
+import { API_URL, ApiError } from '@/services/api';
 import { teachingApi, type TeachingClass, type TeachingClassDetail } from '@/services/teaching-api';
 import '@/styles/my-classes.css';
 
@@ -125,6 +125,9 @@ function ClassDetail({ id }: { id: string }) {
         description={[data.class.name, data.class.faculty].filter(Boolean).join(' · ')}
         actions={
           <>
+            <a href={`${API_URL}/teaching/classes/${data.class.id}/export`} className="btn btn--quiet">
+              Tải danh sách (CSV)
+            </a>
             <Link to="/can-bo/nhap-diem" className="btn btn--quiet">
               Nhập điểm
             </Link>

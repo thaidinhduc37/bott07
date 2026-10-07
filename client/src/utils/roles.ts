@@ -112,6 +112,12 @@ export const NAV: Record<Workspace, NavItem[]> = {
       roles: ['LECTURER'],
     },
     {
+      href: '/can-bo/ngan-hang-cau-hoi',
+      label: 'Ngân hàng câu hỏi',
+      icon: 'book',
+      roles: ['ACADEMIC_MANAGER', 'LECTURER'],
+    },
+    {
       href: '/can-bo/nhap-diem',
       label: 'Nhập điểm',
       icon: 'pencil',
@@ -132,6 +138,7 @@ export const NAV: Record<Workspace, NavItem[]> = {
     { href: '/quan-tri/tai-lieu', label: 'Tài liệu', icon: 'folder' },
     { href: '/quan-tri/dao-tao', label: 'Quản lý đào tạo', icon: 'book' },
     { href: '/quan-tri/lich', label: 'Lịch học & lịch thi', icon: 'calendar' },
+    { href: '/quan-tri/ngan-hang-cau-hoi', label: 'Ngân hàng câu hỏi', icon: 'book' },
     { href: '/quan-tri/nhap-diem', label: 'Nhập điểm', icon: 'pencil' },
     { href: '/quan-tri/nhat-ky', label: 'Nhật ký thao tác', icon: 'log' },
     { href: '/quan-tri/dich-vu', label: 'Trạng thái dịch vụ', icon: 'pulse' },

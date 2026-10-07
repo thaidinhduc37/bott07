@@ -130,8 +130,11 @@ export interface ExamPlanItem {
 }
 
 export const learningApi = {
-  createQuiz: (body: { topic: string; courseId?: string; nQuestions?: number }) =>
+  createQuiz: (body: { topic?: string; courseId?: string; nQuestions?: number; source?: 'ai' | 'bank' }) =>
     api<CreateQuizResult>('/learning/quiz', { method: 'POST', body }),
+
+  /** Môn nào đã có ngân hàng câu hỏi của giảng viên, kèm số câu. */
+  bank: () => api<{ items: { courseId: string; count: number }[] }>('/learning/bank'),
 
   createReview: (body: { courseId?: string; limit?: number } = {}) =>
     api<QuizSession>('/learning/review', { method: 'POST', body }),

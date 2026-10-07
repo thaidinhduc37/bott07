@@ -17,6 +17,7 @@ from app.services.learning.exam_plan_service import ExamPlanService
 from app.services.learning.feedback_service import FeedbackService
 from app.services.learning.insights_service import InsightsService
 from app.services.learning.progress_service import ProgressService
+from app.services.learning.question_bank_service import QuestionBankService
 from app.services.learning.learning_service import LearningService
 from app.services.learning.notes_service import NotesService
 
@@ -36,6 +37,12 @@ async def create_quiz(
     db: AsyncSession = Depends(get_db),
 ):
     return await LearningService(db).create_quiz(user.id, dto)
+
+
+@router.get("/bank")
+async def bank_counts(user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    """Môn nào đã có ngân hàng câu hỏi của giảng viên (và bao nhiêu câu) — để chọn nguồn khi tạo đề."""
+    return await QuestionBankService(db).counts_for_learners()
 
 
 @router.post("/review")

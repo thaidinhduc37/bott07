@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ApiError } from '@/services/api';
 import type { CourseRef } from '@/services/chat-api';
@@ -26,16 +26,29 @@ export function QuizComposer(props: {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [abstain, setAbstain] = useState<string | null>(null);
+  // Môn đã có ngân hàng câu hỏi của giảng viên → học viên được chọn nguồn câu hỏi.
+  const [bank, setBank] = useState<Record<string, number>>({});
+  const [source, setSource] = useState<'ai' | 'bank'>('ai');
+  useEffect(() => {
+    learningApi
+      .bank()
+      .then((r) => setBank(Object.fromEntries(r.items.map((i) => [i.courseId, i.count]))))
+      .catch(() => setBank({}));
+  }, []);
+  const bankCount = draft.courseId ? (bank[draft.courseId] ?? 0) : 0;
+  const useBank = source === 'bank' && bankCount > 0;
+  const ready = useBank || draft.topic.trim().length >= 3;
 
   async function onCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (draft.topic.trim().length < 3 || busy) return;
+    if (!ready || busy) return;
     setBusy(true);
     setError(null);
     setAbstain(null);
     try {
       const r = await learningApi.createQuiz({
-        topic: draft.topic.trim(),
+        source: useBank ? 'bank' : 'ai',
+        topic: draft.topic.trim() || undefined,
         courseId: draft.courseId || undefined,
         nQuestions,
       });
@@ -54,7 +67,29 @@ export function QuizComposer(props: {
   return (
     <form className="sheet sheet--pad oh-composer" onSubmit={onCreate}>
       <h2 className="aside-h">Tạo đề mới</h2>
-      <div className="field">
+      {bankCount > 0 && (
+        <div className="field">
+          <span className="field__label" id="on-tap-nguon-label">
+            Nguồn câu hỏi
+          </span>
+          <fieldset
+            className="seg"
+            style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}
+            aria-labelledby="on-tap-nguon-label"
+          >
+            <legend className="sr-only">Nguồn câu hỏi</legend>
+            <label className={`seg__opt${source === 'ai' ? ' seg__opt--on' : ''}`}>
+              <input type="radio" name="on-tap-nguon" checked={source === 'ai'} onChange={() => setSource('ai')} />
+              Soạn từ giáo trình
+            </label>
+            <label className={`seg__opt${source === 'bank' ? ' seg__opt--on' : ''}`}>
+              <input type="radio" name="on-tap-nguon" checked={source === 'bank'} onChange={() => setSource('bank')} />
+              Ngân hàng của giảng viên ({bankCount} câu)
+            </label>
+          </fieldset>
+        </div>
+      )}
+      <div className="field" hidden={useBank}>
         <label className="field__label" htmlFor="on-tap-chu-de">
           Chủ đề
         </label>
@@ -69,6 +104,11 @@ export function QuizComposer(props: {
         />
         <span className="field__hint">Chủ đề càng cụ thể, câu hỏi càng sát giáo trình.</span>
       </div>
+      {useBank && (
+        <p className="field__hint" style={{ margin: 0 }}>
+          Câu hỏi do giảng viên soạn, rút ngẫu nhiên từ ngân hàng của môn này.
+        </p>
+      )}
       <div className="oh-composer__row">
         <div className="field">
           <label className="field__label" htmlFor="on-tap-mon">
@@ -84,6 +124,7 @@ export function QuizComposer(props: {
             {courses.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.code} — {c.name}
+                {bank[c.id] ? ' · có ngân hàng câu hỏi' : ''}
               </option>
             ))}
           </select>
@@ -106,12 +147,8 @@ export function QuizComposer(props: {
             ))}
           </fieldset>
         </div>
-        <button
-          type="submit"
-          className="btn btn--primary oh-composer__go"
-          disabled={busy || draft.topic.trim().length < 3}
-        >
-          {busy ? 'Đang soạn câu hỏi…' : 'Tạo đề'}
+        <button type="submit" className="btn btn--primary oh-composer__go" disabled={busy || !ready}>
+          {busy ? (useBank ? 'Đang rút câu hỏi…' : 'Đang soạn câu hỏi…') : 'Tạo đề'}
         </button>
       </div>
 

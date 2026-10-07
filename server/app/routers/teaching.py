@@ -20,3 +20,8 @@ async def my_classes(user: AuthenticatedUser = Depends(get_current_user), db: As
 @router.get("/classes/{class_id}", dependencies=[Depends(require_roles(RoleCode.LECTURER.value))])
 async def my_class(class_id: str, user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     return await TeachingService(db).class_detail(user, class_id)
+
+
+@router.get("/classes/{class_id}/export", dependencies=[Depends(require_roles(RoleCode.LECTURER.value))])
+async def export_class(class_id: str, user: AuthenticatedUser = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    return await TeachingService(db).export_class(user, class_id)

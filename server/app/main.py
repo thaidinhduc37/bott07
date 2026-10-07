@@ -31,6 +31,7 @@ from app.routers.catalog import router as catalog_router
 from app.routers.faculties import router as faculties_router
 from app.routers.grades import router as grades_router
 from app.routers.support import router as support_router
+from app.routers.question_bank import router as question_bank_router
 from app.routers.rooms import router as rooms_router
 from app.routers.teaching import router as teaching_router
 from app.routers.courses import classes_router, router as courses_router
@@ -114,6 +115,7 @@ app.include_router(faculties_router, prefix=api_prefix)
 app.include_router(grades_router, prefix=api_prefix)
 app.include_router(support_router, prefix=api_prefix)
 app.include_router(rooms_router, prefix=api_prefix)
+app.include_router(question_bank_router, prefix=api_prefix)
 app.include_router(teaching_router, prefix=api_prefix)
 app.include_router(forms_router, prefix=api_prefix)
 app.include_router(approvals_router, prefix=api_prefix)

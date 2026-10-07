@@ -1,0 +1,87 @@
+/* Trang "Ngân hàng câu hỏi" của giảng viên. Tiền tố `qb-`. */
+
+.qb-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gap-3) var(--gap-4);
+  padding: var(--gap-3) var(--gap-4);
+}
+
+.qb-bar .field__label {
+  margin: 0;
+}
+
+.qb-bar__select {
+  flex: 1 1 18rem;
+  max-width: 32rem;
+}
+
+.qb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-3);
+}
+
+.qb-item {
+  display: grid;
+  gap: var(--gap-3);
+  padding: var(--gap-4) var(--gap-5);
+}
+
+.qb-item__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--gap-3);
+}
+
+.qb-item__q {
+  margin: 0;
+  font-weight: 600;
+}
+
+.qb-opts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-1);
+  font-size: 0.875rem;
+}
+
+.qb-opt {
+  display: flex;
+  gap: var(--gap-3);
+  padding: 0.25rem var(--gap-3);
+  border-radius: var(--r-sm);
+  color: var(--ink-soft);
+}
+
+.qb-opt--ok {
+  background: var(--pen-wash);
+  color: var(--pen-ink);
+  font-weight: 600;
+}
+
+.qb-opt__k {
+  flex: none;
+  width: 1.25rem;
+  font-weight: 700;
+}
+
+.qb-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--gap-2) var(--gap-3);
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+
+.qb-pager {
+  justify-content: center;
+}

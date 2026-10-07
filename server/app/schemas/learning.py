@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
-from pydantic import Field, field_validator
+from typing import Literal
+
+from pydantic import Field, field_validator, model_validator
 
 from app.schemas.base import CamelModel
 
 
 class CreateQuizDto(CamelModel):
-    topic: str = Field(..., min_length=3, max_length=300)
+    # "bank" = rút từ ngân hàng câu hỏi của giảng viên (bắt buộc có môn, chủ đề tùy chọn); "ai" = sinh từ giáo trình.
+    source: Literal["ai", "bank"] = "ai"
+    topic: str = Field(default="", max_length=300)
     course_id: str | None = None
     n_questions: int = Field(default=5, ge=3, le=10)
     # Trộn thêm tối đa 3 câu sai đã đến hạn ôn của cùng môn.
@@ -18,6 +22,14 @@ class CreateQuizDto(CamelModel):
     @classmethod
     def _trim(cls, v: str) -> str:
         return v.strip() if isinstance(v, str) else v
+
+    @model_validator(mode="after")
+    def _topic_for_ai(self) -> "CreateQuizDto":
+        if self.source == "ai" and len(self.topic) < 3:
+            raise ValueError("Chủ đề cần ít nhất 3 ký tự")
+        if self.source == "bank" and not self.course_id:
+            raise ValueError("Chọn môn học để ôn từ ngân hàng câu hỏi")
+        return self
 
 
 class CreateReviewDto(CamelModel):

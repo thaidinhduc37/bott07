@@ -25,6 +25,7 @@ from app.models.learning import QuizQuestion, QuizSession, QuizStatus, ReviewIte
 from app.schemas.learning import CreateQuizDto, CreateReviewDto, SubmitQuizDto
 from app.schemas.rag import GradePayload, QuizPayload
 from app.services.chat.rag_client import RagClientService, get_rag_client
+from app.services.learning.question_bank_service import QuestionBankService
 
 logger = logging.getLogger("learning")
 
@@ -145,9 +146,45 @@ class LearningService:
 
     # ------------------------------------------------------------ tạo đề
 
+    async def _create_bank_quiz(self, user_id: str, dto: CreateQuizDto, course: Course) -> dict:
+        """Đề rút ngẫu nhiên từ ngân hàng câu hỏi của giảng viên: không gọi AI nên không cần ngưỡng τ."""
+        picked = await QuestionBankService(self.db).draw(course.id, dto.n_questions)
+        if not picked:
+            raise HTTPException(
+                status_code=400, detail={"message": "Môn này chưa có ngân hàng câu hỏi", "code": "BANK_EMPTY"}
+            )
+        session = QuizSession(
+            user_id=user_id, course_id=course.id, status=QuizStatus.IN_PROGRESS,
+            topic=dto.topic or f"Ngân hàng câu hỏi {course.code}",
+        )
+        ordinal = 1
+        for q in picked:
+            session.questions.append(
+                QuizQuestion(
+                    ordinal=ordinal, question=q.question, options=q.options, correct_index=q.correct_index,
+                    explanation=q.explanation,
+                    source_file="Ngân hàng câu hỏi" + (f" · {q.chapter}" if q.chapter else ""),
+                )
+            )
+            ordinal += 1
+        if dto.include_review:
+            fresh = {q.question_hash for q in picked}
+            for item in await self._due_items(user_id, str(course.id), REVIEW_MIX):
+                if item.question_hash in fresh:
+                    continue
+                session.questions.append(self._question_from_review(item, ordinal))
+                ordinal += 1
+        self.db.add(session)
+        await self.db.commit()
+        return {"abstained": False, "session": await self._present(await self._load_session(user_id, str(session.id)))}
+
     async def create_quiz(self, user_id: str, dto: CreateQuizDto) -> dict:
         course = await self._resolve_course(dto.course_id)
         course_id = str(course.id) if course else None
+        if dto.source == "bank":
+            if course is None:
+                raise HTTPException(status_code=400, detail={"message": "Chọn môn học để ôn từ ngân hàng câu hỏi"})
+            return await self._create_bank_quiz(user_id, dto, course)
 
         # Gọi RAG TRƯỚC khi ghi DB: LLM lỗi thì không để lại lượt làm bài rỗng.
         result = await self.rag.quiz(

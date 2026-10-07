@@ -17,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.deps import AuthenticatedUser
 from app.models.academic import Course, Schedule, StudyClass
 from app.models.users import StudentProfile, User
+from app.services.academic.csv_export import csv_response
 
 
 def _course_ref(c: Course) -> dict:
@@ -73,6 +74,12 @@ class TeachingService:
             )
         items.sort(key=lambda x: x["code"])
         return {"items": items}
+
+    async def export_class(self, user: AuthenticatedUser, class_id: str):
+        """CSV mã + họ tên học viên của lớp mình dạy (không có email / điện thoại)."""
+        detail = await self.class_detail(user, class_id)
+        rows = [[s["studentCode"], s["fullName"]] for s in detail["students"]]
+        return csv_response(f"lop-{detail['class']['code']}.csv", ["ma_hv", "ho_ten"], rows)
 
     async def class_detail(self, user: AuthenticatedUser, class_id: str) -> dict:
         try:

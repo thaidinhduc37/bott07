@@ -157,6 +157,16 @@ async def assign_students(
 _IMPORT_MAX_BYTES = 2 * 1024 * 1024
 
 
+@router.get("/students/export", dependencies=[Depends(require_roles(*_MANAGER_ROLES))])
+async def export_students(
+    class_id: str | None = Query(default=None, alias="classId"),
+    db: AsyncSession = Depends(get_db),
+    _user: AuthenticatedUser = Depends(get_current_user),
+):
+    """CSV danh sách học viên (một lớp hoặc tất cả) — cùng cột với tệp nhập."""
+    return await CatalogService(db).export_students(class_id=class_id)
+
+
 @router.post("/students/import", dependencies=[Depends(require_roles(*_MANAGER_ROLES))])
 async def import_students(
     request: Request,

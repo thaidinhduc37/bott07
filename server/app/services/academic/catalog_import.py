@@ -17,6 +17,7 @@ import csv
 import io
 import re
 import secrets
+import uuid
 import string
 
 from fastapi import HTTPException
@@ -28,6 +29,7 @@ from app.core.security import hash_password
 from app.models.academic import StudyClass
 from app.models.enums import RoleCode
 from app.models.users import Role, StudentProfile, User, UserRole
+from app.services.academic.csv_export import csv_response
 
 IMPORT_MAX_ROWS = 1000
 _REQUIRED = ("ma_hv", "ho_ten", "email")
@@ -50,6 +52,28 @@ def _bad(message: str, code: str) -> HTTPException:
 
 
 class ImportStudentsMixin:
+    async def export_students(self, *, class_id: str | None):
+        """CSV danh sách học viên (một lớp hoặc tất cả), cùng cột với tệp nhập nên sửa xong nhập lại được."""
+        stmt = (
+            select(StudentProfile.student_code, User.full_name, User.email, StudyClass.code, StudentProfile.cohort, User.phone)
+            .join(User, User.id == StudentProfile.user_id)
+            .outerjoin(StudyClass, StudyClass.id == StudentProfile.class_id)
+            .order_by(StudyClass.code.asc().nulls_last(), StudentProfile.student_code.asc())
+        )
+        name = "hoc-vien"
+        if class_id:
+            try:
+                cid = uuid.UUID(class_id)
+            except ValueError as exc:
+                raise HTTPException(status_code=404, detail={"message": "Không tìm thấy lớp"}) from exc
+            cls = await self.db.get(StudyClass, cid)
+            if cls is None:
+                raise HTTPException(status_code=404, detail={"message": "Không tìm thấy lớp"})
+            stmt = stmt.where(StudentProfile.class_id == cid)
+            name = f"lop-{cls.code}"
+        rows = [list(r) for r in (await self.db.execute(stmt)).all()]
+        return csv_response(f"{name}.csv", list(_COLUMNS), rows)
+
     async def import_students(
         self, user: AuthenticatedUser, *, content: bytes, filename: str | None, dry_run: bool, request: Request | None
     ) -> dict:

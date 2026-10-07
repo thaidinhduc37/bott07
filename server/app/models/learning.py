@@ -113,3 +113,32 @@ class ReviewItem(Base):
         UniqueConstraint("user_id", "question_hash", name="uq_review_items_user_question"),
         Index("ix_review_items_user_id_due_at", "user_id", "due_at"),
     )
+
+
+class BankQuestion(Base):
+    """Câu hỏi trắc nghiệm do giảng viên nhập (CSV) cho một môn; học viên ôn bằng cách rút ngẫu nhiên từ đây
+    thay vì để AI sinh từ giáo trình. Mọi câu thuộc đúng một môn."""
+
+    __tablename__ = "bank_questions"
+
+    id: Mapped[uuid.UUID] = uuid_pk()
+    course_id: Mapped[uuid.UUID] = mapped_column(
+        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="CASCADE"), nullable=False
+    )
+    created_by_id: Mapped[uuid.UUID | None] = mapped_column(
+        "created_by_id", PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    question: Mapped[str] = mapped_column(Text, nullable=False)
+    options: Mapped[list] = mapped_column(JSONB, nullable=False)
+    correct_index: Mapped[int] = mapped_column("correct_index", Integer, nullable=False)
+    explanation: Mapped[str] = mapped_column(Text, nullable=False)
+    # Chương / chủ đề do giảng viên ghi (tùy chọn), hiện ở phần nguồn của câu hỏi.
+    chapter: Mapped[str | None] = mapped_column(String, nullable=True)
+    # Cùng cách băm với `ReviewItem.question_hash` để nhập lại cùng tệp không tạo trùng.
+    question_hash: Mapped[str] = mapped_column("question_hash", String, nullable=False)
+    created_at: Mapped[datetime] = created_at_col()
+
+    __table_args__ = (
+        UniqueConstraint("course_id", "question_hash", name="uq_bank_questions_course_question"),
+        Index("ix_bank_questions_course_id", "course_id"),
+    )
