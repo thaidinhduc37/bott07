@@ -7,8 +7,8 @@ và môn được gán giảng viên demo của khoa — chỉ để giao diện
 
 Mọi bản ghi sinh ra mang dấu hiệu nhận biết để xóa sạch được mà không đụng dữ liệu thật:
   * khoa  `DM-01`…`DM-15`; lớp và môn có mã bắt đầu bằng `DM`;
-  * tài khoản `dm.gvNNN@hvktcnan.edu.vn` (giảng viên, mỗi khoa 6 người, người đầu là trưởng khoa)
-    và `dm.svNNNNN@hvktcnan.edu.vn` (học viên, mã `DMNNNNN`), mật khẩu `Demo@2026`.
+  * giảng viên (mỗi khoa 6 người, người đầu là trưởng khoa) thuộc các khoa `DM-…`; học viên có mã `DMNNNNN`.
+    Email theo tên như tài khoản thật (`gv.nguyenvanan@…`, `sv.tranthuha@…`, trùng thì thêm số), mật khẩu `Demo@2026`.
 
     python scripts/seed_demo_scale.py                       # xem trước số lượng
     python scripts/seed_demo_scale.py --apply               # sinh dữ liệu (mặc định 20 học viên/lớp)
@@ -23,6 +23,7 @@ import argparse
 import asyncio
 import random
 import sys
+import unicodedata
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -65,6 +66,22 @@ FACULTIES: list[tuple[str, list[str]]] = [
     ("Khoa Quân sự - Thể chất", ["Giáo dục quốc phòng", "Giáo dục thể chất"]),
     ("Khoa Pháp luật và Quản lý", ["Pháp luật về an ninh mạng", "Quản trị an ninh"]),
 ]
+
+def _slug(name: str) -> str:
+    """"Nguyễn Văn An" → "nguyenvanan" (bỏ dấu, chữ thường, không khoảng trắng)."""
+    plain = unicodedata.normalize("NFD", name).replace("đ", "d").replace("Đ", "D")
+    return "".join(ch for ch in plain if ch.isascii() and ch.isalnum()).lower()
+
+
+def _email(prefix: str, name: str, used: set[str]) -> str:
+    base, n = f"{prefix}.{_slug(name)}", 1
+    email = f"{base}@hvktcnan.edu.vn"
+    while email in used:
+        n += 1
+        email = f"{base}{n}@hvktcnan.edu.vn"
+    used.add(email)
+    return email
+
 
 _HO = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Vũ", "Đặng", "Bùi", "Đỗ", "Ngô", "Dương", "Lý", "Phan", "Trịnh", "Đinh"]
 _DEM = ["Văn", "Thị", "Minh", "Quang", "Ngọc", "Thanh", "Hải", "Khánh", "Gia", "Tuấn", "Phương", "Thu", "Đức", "Anh", "Bảo"]
@@ -113,7 +130,12 @@ async def remove() -> None:
             ("buổi thi", "DELETE FROM exam_schedules WHERE class_id IN (SELECT id FROM classes WHERE code LIKE 'DM%')"),
             ("buổi học", "DELETE FROM schedules WHERE class_id IN (SELECT id FROM classes WHERE code LIKE 'DM%')"),
             ("điểm", "DELETE FROM course_grades WHERE course_id IN (SELECT id FROM courses WHERE code LIKE 'DM%')"),
-            ("tài khoản", "DELETE FROM users WHERE email LIKE 'dm.%@hvktcnan.edu.vn'"),
+            (
+                "tài khoản",
+                "DELETE FROM users WHERE faculty_id IN (SELECT id FROM faculties WHERE code LIKE 'DM-%') "
+                "OR id IN (SELECT user_id FROM student_profiles WHERE student_code LIKE 'DM%') "
+                "OR email LIKE 'dm.%@hvktcnan.edu.vn'",  # kiểu email cũ của bản đầu tiên
+            ),
             ("môn", "DELETE FROM courses WHERE code LIKE 'DM%'"),
             ("lớp", "DELETE FROM classes WHERE code LIKE 'DM%'"),
             ("khoa", "DELETE FROM faculties WHERE code LIKE 'DM-%'"),
@@ -198,6 +220,7 @@ async def main() -> None:
         lecturers_by_faculty: dict[int, list[User]] = {}
         faculties: dict[int, Faculty] = {}
         lect_no = 0
+        used_emails = set((await db.execute(select(User.email))).scalars())
 
         for p in plan:
             # Tên khoa phải duy nhất: thêm hậu tố để không đụng khoa thật cùng tên.
@@ -208,7 +231,8 @@ async def main() -> None:
             people: list[User] = []
             for j in range(LECTURERS_PER_FACULTY):
                 lect_no += 1
-                u = User(email=f"dm.gv{lect_no:03d}@hvktcnan.edu.vn", full_name=_name(rng), password_hash=pw_hash,
+                full_name = _name(rng)
+                u = User(email=_email("gv", full_name, used_emails), full_name=full_name, password_hash=pw_hash,
                          faculty_id=fac.id)
                 db.add(u)
                 await db.flush()
@@ -250,7 +274,8 @@ async def main() -> None:
                     classes_made += 1
                     for _ in range(args.students_per_class):
                         student_no += 1
-                        u = User(email=f"dm.sv{student_no:05d}@hvktcnan.edu.vn", full_name=_name(rng), password_hash=pw_hash)
+                        full_name = _name(rng)
+                        u = User(email=_email("sv", full_name, used_emails), full_name=full_name, password_hash=pw_hash)
                         db.add(u)
                         await db.flush()
                         db.add(UserRole(user_id=u.id, role_id=roles[RoleCode.STUDENT].id))

@@ -183,7 +183,18 @@ class UsersService:
                     ),
                 }
             )
-        return {"total": total, "page": page, "pageSize": page_size, "items": items}
+        # Tổng quan của CẢ hệ thống (không theo bộ lọc / trang): trang quản trị không tự đếm từ 20 dòng đang hiện.
+        by_status = (await self.db.execute(select(User.status, func.count()).group_by(User.status))).all()
+        by_role = (
+            await self.db.execute(
+                select(Role.code, func.count()).select_from(UserRole).join(Role, Role.id == UserRole.role_id).group_by(Role.code)
+            )
+        ).all()
+        summary = {
+            "status": {getattr(k, "value", k): n for k, n in by_status},
+            "roles": {getattr(k, "value", k): n for k, n in by_role},
+        }
+        return {"total": total, "page": page, "pageSize": page_size, "items": items, "summary": summary}
 
     async def create_user(self, dto: CreateUserRequest, actor_id: str, request: Request) -> dict:
         existing = (await self.db.execute(select(User).where(User.email == dto.email))).scalar_one_or_none()

@@ -75,8 +75,9 @@ the API must be restarted; Vite hot-reloads the client.
 
 Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `khoa@` (faculty head),
 `gv.*@` (lecturers), `sv.*@` (students), all `@hvktcnan.edu.vn`. `python scripts/import_tkb.py --apply` loads the real timetable
-(`data/corpus/tkb`: 32 classes, 231 courses, ~3,200 sessions, no rooms/lecturers) and 10 demo students `sv.demo01`…`sv.demo10`
-(codes `DEMO001`…, one per class, same password).
+(`data/corpus/tkb`: 32 classes, 231 courses, ~3,200 sessions, no rooms/lecturers) and 10 demo students `sv.<name>@…` (e.g. `sv.tranthuha`)
+(codes `DEMO001`…, one per class, same password). Generated demo accounts use name-based emails like the real ones
+(`gv.nguyenvanan@…`, `sv.tranthuha@…`, a number appended on collision); demo data is recognised by faculty `DM-…` / student code `DM…`, not by email.
 `python scripts/seed_demo_scale.py --apply` generates throw-away multi-faculty test data (15 faculties, 31 majors, 124 classes, ~2,500
 students, 90 lecturers incl. 15 faculty heads, 180 courses, ~6,000 sessions; fictitious names; markers `DM-`/`DM…`/`dm.*@`); It also temporarily assigns the real-timetable classes/courses to demo faculties and lecturers (`--no-tkb` to skip); `--remove` deletes it all and
 clears those assignments.

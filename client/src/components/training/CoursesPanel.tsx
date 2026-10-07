@@ -8,7 +8,7 @@ import {
 } from '@/services/catalog-api';
 import { CourseDialog } from './CourseDialog';
 import { ConfirmDeleteDialog } from './Dialogs';
-import { PAGE_SIZE, Pager } from './Pager';
+import { PAGE_SIZE, Pager } from '@/components/shared/Pager';
 
 const NONE = '__none__';
 

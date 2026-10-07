@@ -4,7 +4,7 @@ import { ApiError } from '@/services/api';
 import { catalogApi, type ClassItem } from '@/services/catalog-api';
 import { ClassDialog } from './ClassDialog';
 import { ConfirmDeleteDialog } from './Dialogs';
-import { PAGE_SIZE, Pager } from './Pager';
+import { PAGE_SIZE, Pager } from '@/components/shared/Pager';
 
 const NONE = '__none__';
 

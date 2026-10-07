@@ -26,7 +26,9 @@ export interface AdminUser {
   createdAt: string;
   roles: RoleCode[];
   roleNames?: string[];
-  studentProfile?: { studentCode: string; studyClass: { code: string } | null } | null;
+  /** Chỉ có với học viên. */
+  studentCode?: string | null;
+  classCode?: string | null;
 }
 
 export interface AuditLogEntry {
@@ -49,10 +51,7 @@ export interface ServiceStatus {
       ok: boolean;
       detail: string;
       url: string;
-      collections: Record<
-        string,
-        { dense_points: number; sparse_documents?: number; in_sync?: boolean }
-      >;
+      collections: Record<string, { dense_points: number; sparse_documents?: number; in_sync?: boolean }>;
     };
     llm: { ok: boolean; detail?: string } | null;
   };
@@ -90,13 +89,20 @@ export interface CreatedUser {
 }
 
 export const adminApi = {
-  users: (params: { search?: string; role?: string; status?: string } = {}) => {
+  users: (params: { search?: string; role?: string; status?: string; page?: number; pageSize?: number } = {}) => {
     const qs = new URLSearchParams(
-      Object.entries(params).filter(([, v]) => v) as [string, string][],
+      Object.entries(params)
+        .filter(([, v]) => v)
+        .map(([k, v]) => [k, String(v)]),
     ).toString();
-    return api<{ total: number; page: number; pageSize: number; items: AdminUser[] }>(
-      `/admin/users${qs ? `?${qs}` : ''}`,
-    );
+    return api<{
+      total: number;
+      page: number;
+      pageSize: number;
+      items: AdminUser[];
+      /** Đếm của cả hệ thống, không theo bộ lọc. */
+      summary: { status: Partial<Record<UserStatus, number>>; roles: Partial<Record<RoleCode, number>> };
+    }>(`/admin/users${qs ? `?${qs}` : ''}`);
   },
 
   setStatus: (id: string, status: UserStatus, reason?: string) =>

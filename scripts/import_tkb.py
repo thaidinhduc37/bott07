@@ -1,4 +1,4 @@
-"""Nạp thời khóa biểu thật (32 lớp) từ `data/corpus/tkb/` và tạo ~10 tài khoản học viên thử.
+"""Nạp thời khóa biểu thật (32 lớp) từ `data/corpus/tkb/` và tạo ~10 tài khoản học viên thử (email theo tên: sv.<tên không dấu>@…).
 
 Nguồn: `TKB_danh_sach_lop.csv` (lớp, ngành), `TKB_hoc_phan.csv` (học phần của từng lớp: mã, tên, tín chỉ),
 `TKB_lich_hoc.csv` (từng buổi: thứ, tiết, tuần, ngày/tháng, ký hiệu học phần).
@@ -26,6 +26,7 @@ import asyncio
 import csv
 import re
 import sys
+import unicodedata
 from collections import Counter
 from datetime import date, datetime
 from pathlib import Path
@@ -75,6 +76,12 @@ def _periods(raw: str) -> tuple[int, int] | None:
 
 def _at(day: date, minute: int) -> datetime:
     return datetime(day.year, day.month, day.day, minute // 60, minute % 60, tzinfo=VN_TZ)
+
+
+def _slug(name: str) -> str:
+    """"Nguyễn Minh Khôi" → "nguyenminhkhoi" (bỏ dấu, chữ thường, không khoảng trắng)."""
+    plain = unicodedata.normalize("NFD", name).replace("đ", "d").replace("Đ", "D")
+    return "".join(ch for ch in plain if ch.isascii() and ch.isalnum()).lower()
 
 
 def _nganh_title(nganh: str) -> str:
@@ -203,11 +210,16 @@ async def main() -> None:
             chosen = with_schedule[::step][: args.demo_accounts]
             pw_hash = hash_password(DEMO_PASSWORD)  # cùng mật khẩu demo của các tài khoản mẫu
             for i, lop in enumerate(chosen, start=1):
-                email = f"sv.demo{i:02d}@hvktcnan.edu.vn"
-                if (await db.execute(select(User.id).where(User.email == email))).scalar_one_or_none():
-                    continue
+                full_name = _DEMO_NAMES[(i - 1) % len(_DEMO_NAMES)]
+                email = f"sv.{_slug(full_name)}@hvktcnan.edu.vn"  # cùng kiểu với tài khoản thật (sv.nguyenducanh@…)
                 code = f"DEMO{i:03d}"
-                u = User(email=email, full_name=_DEMO_NAMES[(i - 1) % len(_DEMO_NAMES)], password_hash=pw_hash)
+                if (await db.execute(select(StudentProfile.id).where(StudentProfile.student_code == code))).first():
+                    continue
+                n = 1
+                while (await db.execute(select(User.id).where(User.email == email))).scalar_one_or_none():
+                    n += 1  # trùng email người khác (vd tài khoản demo nhiều khoa): thêm số
+                    email = f"sv.{_slug(full_name)}{n}@hvktcnan.edu.vn"
+                u = User(email=email, full_name=full_name, password_hash=pw_hash)
                 db.add(u)
                 await db.flush()
                 db.add(UserRole(user_id=u.id, role_id=role.id, assigned_by=manager_id))

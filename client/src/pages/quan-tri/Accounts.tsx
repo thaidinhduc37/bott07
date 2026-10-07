@@ -1,23 +1,29 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from '@/components/shared/SessionProvider';
-import {
-  USER_STATUS_LABEL,
-  USER_STATUS_TAG,
-  adminApi,
-  type AdminUser,
-  type UserStatus,
-} from '@/services/admin-api';
+import { USER_STATUS_LABEL, USER_STATUS_TAG, adminApi, type AdminUser, type UserStatus } from '@/services/admin-api';
 import { ROLE_LABEL, type RoleCode } from '@/utils/roles';
 import { viDateTime } from '@/services/forms-api';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Icon } from '@/components/shared/Icon';
 import { CreateUserDialog } from '@/components/admin/CreateUserDialog';
+import { Pager } from '@/components/shared/Pager';
 
-const ALL_ROLES: RoleCode[] = ['ADMIN', 'ACADEMIC_MANAGER', 'LECTURER', 'APPROVER', 'STUDENT'];
+const PAGE_SIZE = 20;
+
+const ALL_ROLES: RoleCode[] = ['ADMIN', 'ACADEMIC_MANAGER', 'LECTURER', 'DEPARTMENT_HEAD', 'APPROVER', 'STUDENT'];
 
 export default function AccountsPage() {
   const { user: me } = useSession();
   const [items, setItems] = useState<AdminUser[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [summary, setSummary] = useState<{
+    status: Partial<Record<UserStatus, number>>;
+    roles: Partial<Record<RoleCode, number>>;
+  }>({
+    status: {},
+    roles: {},
+  });
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [loading, setLoading] = useState(true);
@@ -29,14 +35,22 @@ export default function AccountsPage() {
 
   const load = useCallback(async () => {
     try {
-      setItems((await adminApi.users({ search: search || undefined, role: roleFilter || undefined })).items);
+      const r = await adminApi.users({
+        search: search || undefined,
+        role: roleFilter || undefined,
+        page,
+        pageSize: PAGE_SIZE,
+      });
+      setItems(r.items);
+      setTotal(r.total);
+      setSummary(r.summary);
       setError(null);
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setLoading(false);
     }
-  }, [search, roleFilter]);
+  }, [search, roleFilter, page]);
 
   useEffect(() => {
     void load();
@@ -54,14 +68,14 @@ export default function AccountsPage() {
     }
   }
 
-  // Đếm cho cột phụ "Tổng quan" — tính từ danh sách đã tải, không gọi thêm API.
+  // Cột phụ "Tổng quan": số liệu của cả hệ thống do máy chủ đếm (danh sách chỉ hiện một trang).
   const statusCounts = (['ACTIVE', 'SUSPENDED', 'DISABLED'] as UserStatus[]).map((s) => ({
     status: s,
-    count: items.filter((u) => u.status === s).length,
+    count: summary.status[s] ?? 0,
   }));
   const roleCounts = ALL_ROLES.map((r) => ({
     role: r,
-    count: items.filter((u) => u.roles.includes(r)).length,
+    count: summary.roles[r] ?? 0,
   }));
 
   return (
@@ -86,80 +100,90 @@ export default function AccountsPage() {
           ) : (
             <div className="sheet">
               <ul className="acct-list">
-              {items.map((u) => {
-                const isMe = u.id === me?.id;
-                return (
-                  <li key={u.id} className="acct-list__item">
-                    <div className="acct-row">
-                      <div className="acct-row__body">
-                        <h2 className="acct-row__name">
-                          {u.fullName}
-                          {isMe && <span className="tag tag--muted">bạn</span>}
-                        </h2>
-                        <p className="acct-row__meta">
-                          <span className="mono">{u.email}</span>
-                          {u.studentProfile && <span className="mono"> · {u.studentProfile.studentCode}</span>}
-                          <span> · {u.roles.map((r) => ROLE_LABEL[r]).join(' · ')}</span>
-                          <span> · {u.lastLoginAt ? `đăng nhập gần nhất ${viDateTime(u.lastLoginAt)}` : 'chưa đăng nhập'}</span>
-                        </p>
+                {items.map((u) => {
+                  const isMe = u.id === me?.id;
+                  return (
+                    <li key={u.id} className="acct-list__item">
+                      <div className="acct-row">
+                        <div className="acct-row__body">
+                          <h2 className="acct-row__name">
+                            {u.fullName}
+                            {isMe && <span className="tag tag--muted">bạn</span>}
+                          </h2>
+                          <p className="acct-row__meta">
+                            <span className="mono">{u.email}</span>
+                            {u.studentCode && (
+                              <span className="mono">
+                                {' '}
+                                · {u.studentCode}
+                                {u.classCode ? ` · ${u.classCode}` : ''}
+                              </span>
+                            )}
+                            <span> · {u.roles.map((r) => ROLE_LABEL[r]).join(' · ')}</span>
+                            <span>
+                              {' '}
+                              · {u.lastLoginAt ? `đăng nhập gần nhất ${viDateTime(u.lastLoginAt)}` : 'chưa đăng nhập'}
+                            </span>
+                          </p>
+                        </div>
+                        <div className="acct-row__side">
+                          <span className={`tag ${USER_STATUS_TAG[u.status]}`}>{USER_STATUS_LABEL[u.status]}</span>
+                          {isMe ? (
+                            <span className="acct-row__self">Không tự đổi vai trò hay khóa chính mình</span>
+                          ) : (
+                            <div className="acct-row__actions">
+                              <button type="button" className="btn btn--quiet btn--sm" onClick={() => setEditing(u.id)}>
+                                Đổi vai trò
+                              </button>
+                              {(['ACTIVE', 'SUSPENDED', 'DISABLED'] as UserStatus[])
+                                .filter((s) => s !== u.status)
+                                .map((s) => (
+                                  <button
+                                    key={s}
+                                    type="button"
+                                    className={`btn btn--quiet btn--sm ${s === 'ACTIVE' ? '' : 'acct-row__danger'}`}
+                                    onClick={() =>
+                                      act(
+                                        () => adminApi.setStatus(u.id, s),
+                                        `${u.fullName}: ${USER_STATUS_LABEL[s].toLowerCase()}.`,
+                                      )
+                                    }
+                                  >
+                                    {s === 'ACTIVE' ? 'Mở khóa' : s === 'SUSPENDED' ? 'Tạm khóa' : 'Vô hiệu hóa'}
+                                  </button>
+                                ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="acct-row__side">
-                        <span className={`tag ${USER_STATUS_TAG[u.status]}`}>
-                          {USER_STATUS_LABEL[u.status]}
-                        </span>
-                        {isMe ? (
-                          <span className="acct-row__self">Không tự đổi vai trò hay khóa chính mình</span>
-                        ) : (
-                          <div className="acct-row__actions">
-                            <button type="button" className="btn btn--quiet btn--sm" onClick={() => setEditing(u.id)}>
-                              Đổi vai trò
-                            </button>
-                            {(['ACTIVE', 'SUSPENDED', 'DISABLED'] as UserStatus[])
-                              .filter((s) => s !== u.status)
-                              .map((s) => (
-                                <button
-                                  key={s}
-                                  type="button"
-                                  className={`btn btn--quiet btn--sm ${s === 'ACTIVE' ? '' : 'acct-row__danger'}`}
-                                  onClick={() =>
-                                    act(
-                                      () => adminApi.setStatus(u.id, s),
-                                      `${u.fullName}: ${USER_STATUS_LABEL[s].toLowerCase()}.`,
-                                    )
-                                  }
-                                >
-                                  {s === 'ACTIVE' ? 'Mở khóa' : s === 'SUSPENDED' ? 'Tạm khóa' : 'Vô hiệu hóa'}
-                                </button>
-                              ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
 
-                    {editing === u.id && (
-                      <RoleEditor
-                        user={u}
-                        onCancel={() => setEditing(null)}
-                        onSave={(roles) =>
-                          act(async () => {
-                            await adminApi.setRoles(u.id, roles);
-                            setEditing(null);
-                          }, `Đã cập nhật vai trò cho ${u.fullName}.`)
-                        }
-                      />
-                    )}
-                  </li>
-                );
-              })}
+                      {editing === u.id && (
+                        <RoleEditor
+                          user={u}
+                          onCancel={() => setEditing(null)}
+                          onSave={(roles) =>
+                            act(async () => {
+                              await adminApi.setRoles(u.id, roles);
+                              setEditing(null);
+                            }, `Đã cập nhật vai trò cho ${u.fullName}.`)
+                          }
+                        />
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
+          {!loading && <Pager page={page} total={total} pageSize={PAGE_SIZE} onPage={setPage} />}
         </div>
 
         <aside className="page-grid__aside">
           <section className="sheet sheet--pad">
             <div className="row" style={{ justifyContent: 'space-between', marginBottom: 'var(--gap-4)' }}>
-              <h2 className="aside-h" style={{ margin: 0 }}>Lọc</h2>
+              <h2 className="aside-h" style={{ margin: 0 }}>
+                Lọc
+              </h2>
               <button
                 ref={createBtnRef}
                 type="button"
@@ -173,11 +197,25 @@ export default function AccountsPage() {
             <div className="acct-filters">
               <label>
                 <span className="field__label">Tìm theo tên, email hoặc mã học viên</span>
-                <input className="field__input" value={search} onChange={(e) => setSearch(e.target.value)} />
+                <input
+                  className="field__input"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                />
               </label>
               <label>
                 <span className="field__label">Vai trò</span>
-                <select className="field__input" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+                <select
+                  className="field__input"
+                  value={roleFilter}
+                  onChange={(e) => {
+                    setRoleFilter(e.target.value);
+                    setPage(1);
+                  }}
+                >
                   <option value="">Tất cả vai trò</option>
                   {ALL_ROLES.map((r) => (
                     <option key={r} value={r}>
@@ -214,9 +252,8 @@ export default function AccountsPage() {
           <section className="sheet sheet--pad">
             <h2 className="aside-h">Lưu ý</h2>
             <p className="appr-note">
-              Khóa một tài khoản sẽ cắt mọi phiên đang mở của người đó. Gỡ vai trò có hiệu lực
-              chậm nhất sau 15 phút — thời gian sống của access token; nếu cần chặn ngay thì khóa
-              tài khoản.
+              Khóa một tài khoản sẽ cắt mọi phiên đang mở của người đó. Gỡ vai trò có hiệu lực chậm nhất sau 15 phút —
+              thời gian sống của access token; nếu cần chặn ngay thì khóa tài khoản.
             </p>
           </section>
         </aside>
