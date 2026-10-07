@@ -78,7 +78,8 @@ Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `kho
 (`data/corpus/tkb`: 32 classes, 231 courses, ~3,200 sessions, no rooms/lecturers) and 10 demo students `sv.demo01`…`sv.demo10`
 (codes `DEMO001`…, one per class, same password).
 `python scripts/seed_demo_scale.py --apply` generates throw-away multi-faculty test data (15 faculties, 31 majors, 124 classes, ~2,500
-students, 90 lecturers incl. 15 faculty heads, 180 courses, ~6,000 sessions; fictitious names; markers `DM-`/`DM…`/`dm.*@`); `--remove` deletes it all.
+students, 90 lecturers incl. 15 faculty heads, 180 courses, ~6,000 sessions; fictitious names; markers `DM-`/`DM…`/`dm.*@`); It also temporarily assigns the real-timetable classes/courses to demo faculties and lecturers (`--no-tkb` to skip); `--remove` deletes it all and
+clears those assignments.
 Classes carry a free-text `major` (ngành); the Lớp and Môn học tabs filter by faculty/major/cohort/search and paginate client-side (25 per page).
 
 ## Conventions to know before editing

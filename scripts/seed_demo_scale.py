@@ -2,6 +2,9 @@
 
 Tên khoa, ngành, người và môn đều là GIẢ ĐỊNH để minh họa, không phải số liệu của Học viện.
 
+Ngoài ra (trừ khi dùng `--no-tkb`) các lớp/môn nạp từ thời khóa biểu thật (`import_tkb.py`) được gán TẠM vào khoa demo theo ngành
+và môn được gán giảng viên demo của khoa — chỉ để giao diện đầy đủ khi trình diễn; `--remove` trả các gán này về trống.
+
 Mọi bản ghi sinh ra mang dấu hiệu nhận biết để xóa sạch được mà không đụng dữ liệu thật:
   * khoa  `DM-01`…`DM-15`; lớp và môn có mã bắt đầu bằng `DM`;
   * tài khoản `dm.gvNNN@hvktcnan.edu.vn` (giảng viên, mỗi khoa 6 người, người đầu là trưởng khoa)
@@ -10,6 +13,7 @@ Mọi bản ghi sinh ra mang dấu hiệu nhận biết để xóa sạch đư�
     python scripts/seed_demo_scale.py                       # xem trước số lượng
     python scripts/seed_demo_scale.py --apply               # sinh dữ liệu (mặc định 20 học viên/lớp)
     python scripts/seed_demo_scale.py --apply --students-per-class 10
+    python scripts/seed_demo_scale.py --apply --no-tkb      # không đụng lớp/môn của thời khóa biểu thật
     python scripts/seed_demo_scale.py --remove              # xóa toàn bộ dữ liệu thử đã sinh
 """
 
@@ -69,6 +73,20 @@ _TEN = ["An", "Bình", "Châu", "Dũng", "Giang", "Hà", "Hiếu", "Hùng", "Kho
 _TOPICS = ["Nhập môn", "Cơ sở", "Nguyên lý", "Kỹ thuật", "Phân tích", "Thiết kế", "Thực hành", "Chuyên đề", "Ứng dụng",
            "Quản lý", "Đánh giá", "Đồ án"]
 
+# Ngành trong thời khóa biểu thật → số thứ tự khoa demo (giả định, chỉ để trình diễn).
+TKB_MAJOR_TO_FACULTY = {
+    "Kỹ thuật CAND": 8,
+    "Kỹ thuật viễn thông CAND": 5,
+    "Công nghệ điện tử và vi mạch bán dẫn": 5,
+    "Trinh sát kỹ thuật": 7,
+    "Hậu cần CAND": 10,
+    "An toàn thông tin CAND": 1,
+    "An toàn thông tin": 1,
+    "Khoa học dữ liệu và trí tuệ nhân tạo": 3,
+    "Công nghệ phần mềm": 2,
+}
+DEMO_SUFFIX = " (dữ liệu thử)"
+
 # Giờ bắt đầu theo tiết (phút từ 00:00), mỗi tiết 50 phút — cùng quy ước với import_tkb.py.
 _BLOCKS = [(1, 3, 420), (4, 6, 580), (7, 9, 810)]
 
@@ -87,6 +105,11 @@ def _plan() -> list[dict]:
 async def remove() -> None:
     async with AsyncSessionLocal() as db:
         steps = [
+            # Trả về trống các gán tạm của `assign_tkb` (trước khi xóa khoa / tài khoản).
+            ("giảng viên buổi học TKB", "UPDATE schedules SET instructor = NULL WHERE external_id LIKE 'TKB-%'"),
+            ("khoa chữ của lớp", f"UPDATE classes SET faculty = NULL WHERE faculty LIKE '%{DEMO_SUFFIX}'"),
+            ("khoa của lớp", "UPDATE classes SET faculty_id = NULL WHERE faculty_id IN (SELECT id FROM faculties WHERE code LIKE 'DM-%') AND code NOT LIKE 'DM%'"),
+            ("khoa của môn TKB", "UPDATE courses SET faculty_id = NULL, lecturer_id = NULL WHERE code NOT LIKE 'DM%' AND faculty_id IN (SELECT id FROM faculties WHERE code LIKE 'DM-%')"),
             ("buổi thi", "DELETE FROM exam_schedules WHERE class_id IN (SELECT id FROM classes WHERE code LIKE 'DM%')"),
             ("buổi học", "DELETE FROM schedules WHERE class_id IN (SELECT id FROM classes WHERE code LIKE 'DM%')"),
             ("điểm", "DELETE FROM course_grades WHERE course_id IN (SELECT id FROM courses WHERE code LIKE 'DM%')"),
@@ -102,11 +125,50 @@ async def remove() -> None:
     print("Đã xóa dữ liệu thử.")
 
 
+async def assign_tkb(db, faculties: dict[int, Faculty], lecturers: dict[int, list[User]]) -> None:
+    """Gán tạm lớp/môn của thời khóa biểu thật vào khoa demo theo ngành; môn được gán giảng viên demo của khoa."""
+    classes = (await db.execute(select(StudyClass).where(StudyClass.faculty_id.is_(None), StudyClass.code.not_like("DM%")))).scalars().all()
+    by_class: dict = {}
+    n_cls = 0
+    for c in classes:
+        fi = TKB_MAJOR_TO_FACULTY.get(c.major or "")
+        if fi is None or fi not in faculties:
+            continue
+        c.faculty_id, c.faculty = faculties[fi].id, faculties[fi].name
+        by_class[c.id] = fi
+        n_cls += 1
+    await db.flush()
+
+    pairs = (await db.execute(select(Schedule.course_id, Schedule.class_id).where(Schedule.external_id.like("TKB-%")).distinct())).all()
+    first_faculty: dict = {}
+    for course_id, class_id in pairs:
+        if class_id in by_class:
+            first_faculty.setdefault(course_id, by_class[class_id])
+    courses = {c.id: c for c in (await db.execute(select(Course).where(Course.id.in_(list(first_faculty))))).scalars()} if first_faculty else {}
+    rr: dict[int, int] = {}
+    n_course = 0
+    for cid, fi in first_faculty.items():
+        course = courses[cid]
+        if course.faculty_id is not None or course.lecturer_id is not None:
+            continue
+        people = lecturers[fi]
+        lecturer = people[rr.get(fi, 0) % len(people)]
+        rr[fi] = rr.get(fi, 0) + 1
+        course.faculty_id, course.lecturer_id = faculties[fi].id, lecturer.id
+        await db.execute(
+            text("UPDATE schedules SET instructor = :n WHERE course_id = :c AND external_id LIKE 'TKB-%' AND instructor IS NULL"),
+            {"n": lecturer.full_name, "c": cid},
+        )
+        n_course += 1
+    print(f"  gán tạm {n_cls} lớp thật vào khoa demo, {n_course} môn thật vào khoa + giảng viên demo")
+
+
 async def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--remove", action="store_true")
     ap.add_argument("--students-per-class", type=int, default=20)
+    ap.add_argument("--no-tkb", action="store_true", help="Không gán lớp/môn của thời khóa biểu thật vào khoa demo.")
     args = ap.parse_args()
 
     if args.remove:
@@ -139,7 +201,7 @@ async def main() -> None:
 
         for p in plan:
             # Tên khoa phải duy nhất: thêm hậu tố để không đụng khoa thật cùng tên.
-            fac = Faculty(code=f"DM-{p['fi']:02d}", name=f"{p['name']} (dữ liệu thử)")
+            fac = Faculty(code=f"DM-{p['fi']:02d}", name=f"{p['name']}{DEMO_SUFFIX}")
             db.add(fac)
             await db.flush()
             faculties[p["fi"]] = fac
@@ -214,6 +276,8 @@ async def main() -> None:
                             sessions_made += 1
                     await db.flush()
             print(f"  {p['name']}: xong")
+        if not args.no_tkb:
+            await assign_tkb(db, faculties, lecturers_by_faculty)
         await db.commit()
         print(f"\nĐã sinh {classes_made} lớp, {student_no} học viên, {sessions_made} buổi học. "
               f"Xóa bằng: python scripts/seed_demo_scale.py --remove")
