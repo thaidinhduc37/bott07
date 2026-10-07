@@ -10,7 +10,7 @@ export interface Metric {
   /** Có `to` thì cả ô là liên kết. */
   to?: string;
   /** Làm nổi ô cần chú ý (vd câu đến hạn > 0). */
-  tone?: 'warn' | 'ok';
+  tone?: 'warn' | 'ok' | 'seal';
 }
 
 /**

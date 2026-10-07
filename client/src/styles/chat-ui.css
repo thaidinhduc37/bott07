@@ -84,25 +84,57 @@
   resize: none;
 }
 
-/* ------------------------------------------------------- cột ngữ cảnh phải */
+/* ------------------------------------------------------ cột phụ: tab + thông tin */
 
-.chat-rail {
-  display: none;
+.chat-side__tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  padding: 2px;
+  background: var(--sheet-2);
+  border-radius: var(--r-md);
 }
 
-@container main (min-width: 70rem) {
-  .chat-layout--rail {
-    grid-template-columns: 19rem minmax(0, 1fr) 20rem;
-  }
+.chat-side__tab {
+  padding: var(--gap-2) var(--gap-3);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
 
-  .chat-rail {
-    display: grid;
-    gap: var(--gap-4);
-    align-content: start;
-    min-width: 0;
-    min-height: 0;
-    overflow-y: auto;
-  }
+.chat-side__tab:hover {
+  color: var(--ink);
+}
+
+.chat-side__tab--on {
+  background: var(--sheet);
+  color: var(--pen-ink);
+}
+
+.chat-side__tab:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* Trong cột phụ, danh sách hội thoại không còn dính trên và co theo nội dung như khi đứng riêng. */
+.chat-side .chat-history {
+  position: static;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.chat-rail {
+  display: grid;
+  gap: var(--gap-4);
+  align-content: start;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .chat-rail__card {

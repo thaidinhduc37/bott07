@@ -1,21 +1,9 @@
+import { Metrics } from '@/components/shared/Metrics';
 import { Link } from 'react-router-dom';
 import { STATUS_TAG, viDate, type SubmissionStatus, type SubmissionSummary } from '@/services/forms-api';
-import { Icon } from '@/components/shared/Icon';
 
 const PROCESSING: SubmissionStatus[] = ['SUBMITTED', 'UNDER_REVIEW', 'NEEDS_REVISION'];
 const DONE: SubmissionStatus[] = ['APPROVED', 'COMPLETED'];
-
-function StatCard({ icon, label, value, tone }: { icon: Parameters<typeof Icon>[0]['name']; label: string; value: number; tone?: 'pen' | 'ok' | 'seal' }) {
-  return (
-    <div className="sheet sheet--pad stat-card">
-      <div className="spread" style={{ alignItems: 'flex-start' }}>
-        <span className="eyebrow">{label}</span>
-        <Icon name={icon} size={18} className={tone ? `stat-card__icon stat-card__icon--${tone}` : 'stat-card__icon'} />
-      </div>
-      <span className={`stat-card__value${tone ? ` stat-card__value--${tone}` : ''}`}>{value}</span>
-    </div>
-  );
-}
 
 export function SubmissionList({ items }: { items: SubmissionSummary[] }) {
   if (items.length === 0) {
@@ -34,12 +22,15 @@ export function SubmissionList({ items }: { items: SubmissionSummary[] }) {
 
   return (
     <div className="stack">
-      <div className="stat-cards">
-        <StatCard icon="folder" label="Tổng số đơn" value={items.length} />
-        <StatCard icon="pulse" label="Đang xử lý" value={processing} tone="pen" />
-        <StatCard icon="check" label="Đã duyệt" value={done} tone="ok" />
-        <StatCard icon="close" label="Không được duyệt" value={rejected} tone="seal" />
-      </div>
+      <Metrics
+        label="Thống kê đơn"
+        items={[
+          { label: 'Tổng số đơn', value: items.length },
+          { label: 'Đang xử lý', value: processing },
+          { label: 'Đã duyệt', value: done, tone: done > 0 ? 'ok' : undefined },
+          { label: 'Không được duyệt', value: rejected, tone: rejected > 0 ? 'seal' : undefined },
+        ]}
+      />
 
       <div className="table-wrap">
         <table className="data-table">

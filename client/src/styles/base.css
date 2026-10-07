@@ -396,6 +396,11 @@ a {
   color: var(--pen);
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
+  /* Gạch chân nhạt: vẫn nhận ra là liên kết trong đoạn văn nhưng không nặng nề ở bảng và danh sách. */
+  text-decoration-color: color-mix(in oklab, var(--pen) 35%, transparent);
+}
+a:hover {
+  text-decoration-color: currentColor;
 }
 
 /* ============================================================ cửa vào
@@ -800,11 +805,12 @@ select.field__input {
   color: var(--pen);
   cursor: pointer;
   text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--pen) 35%, transparent);
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
 }
 .btn--quiet:hover {
-  text-decoration-thickness: 2px;
+  text-decoration-color: currentColor;
 }
 
 .btn--sm {

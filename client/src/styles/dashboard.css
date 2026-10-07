@@ -89,52 +89,6 @@
   color: var(--ink-soft);
 }
 
-/* ----------------------------------------------------------- thẻ thống kê
-
-   Bốn ô tổng-đang xử lý-đã duyệt-từ chối trên đầu "Đơn của tôi" — liếc là
-   biết tình hình chung trước khi đọc từng dòng trong bảng bên dưới. */
-
-.stat-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: var(--gap-4);
-}
-
-.stat-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-3);
-}
-
-.stat-card__icon {
-  color: var(--ink-faint);
-}
-.stat-card__icon--pen {
-  color: var(--pen-ink);
-}
-.stat-card__icon--ok {
-  color: var(--ok-ink);
-}
-.stat-card__icon--seal {
-  color: var(--seal);
-}
-
-.stat-card__value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-.stat-card__value--pen {
-  color: var(--pen-ink);
-}
-.stat-card__value--ok {
-  color: var(--ok-ink);
-}
-.stat-card__value--seal {
-  color: var(--seal);
-}
-
 /* ------------------------------------------------------ lưới thời khóa biểu
 
    Đúng mẫu tham chiếu: cột giờ bên trái, 7 cột ngày, mỗi buổi học/ca thi là

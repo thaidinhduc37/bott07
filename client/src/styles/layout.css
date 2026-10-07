@@ -402,9 +402,12 @@ p.page-sub {
   justify-content: flex-end;
   height: 3.5rem;
   padding: 0 var(--gap-5);
-  background: color-mix(in oklab, var(--sheet) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--rule-faint);
+  /* Không nền, không viền: thanh chỉ chứa chuông và avatar nên không cần một dải trắng riêng. */
+  background: transparent;
+  pointer-events: none;
+}
+.content-topbar > * {
+  pointer-events: auto;
 }
 
 .content-topbar__actions {

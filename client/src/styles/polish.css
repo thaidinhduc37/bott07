@@ -457,26 +457,30 @@ button.study-aside__link:focus-visible {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  gap: var(--gap-4);
+  /* Đường phân cách là khe 1px lộ nền `--rule-faint`: đúng ở mọi số cột khi lưới xuống dòng. */
+  gap: 1px;
+  background: var(--rule-faint);
+  border: 1px solid var(--rule-faint);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 .metric__body {
   display: grid;
   gap: var(--gap-1);
   align-content: start;
   height: 100%;
-  padding: var(--gap-4) var(--gap-5);
+  padding: var(--gap-5) var(--gap-6);
   background: var(--sheet);
-  border: 1px solid var(--rule-faint);
-  border-radius: var(--r-lg);
   color: var(--ink);
   text-decoration: none;
 }
 .metric__body--link:hover {
-  border-color: var(--rule);
+  background: var(--sheet-2);
 }
 .metric__body--link:focus-visible {
   outline: none;
-  box-shadow: var(--ring);
+  box-shadow: inset var(--ring);
 }
 .metric__label {
   font-size: 0.75rem;
@@ -484,7 +488,7 @@ button.study-aside__link:focus-visible {
   color: var(--ink-faint);
 }
 .metric__value {
-  font-size: 1.625rem;
+  font-size: 1.75rem;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -492,6 +496,9 @@ button.study-aside__link:focus-visible {
 }
 .metric__value--warn {
   color: var(--warn-ink);
+}
+.metric__value--seal {
+  color: var(--seal-ink);
 }
 .metric__value--ok {
   color: var(--ok-ink);

@@ -1,6 +1,7 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '@/components/shared/Icon';
+import { Metrics, type Metric } from '@/components/shared/Metrics';
 import { useSession } from '@/components/shared/SessionProvider';
 import { ActivityBars } from '@/components/study/ActivityBars';
 import { dayLabel, hhmm, todayIso, viScore } from '@/components/study/format';
@@ -11,14 +12,6 @@ const todayLabel = () =>
   new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).format(
     new Date(),
   );
-
-interface Kpi {
-  label: string;
-  value: string | number;
-  hint: ReactNode;
-  to?: string;
-  tone?: 'warn' | 'ok';
-}
 
 /** Điểm (thang 10) → màu thanh: từ 8 là tốt, dưới 5 cần chú ý. */
 const scoreTone = (s: number | null) =>
@@ -43,7 +36,7 @@ export default function StudentHome() {
   }, []);
 
   const due = progress?.review.due ?? 0;
-  const metrics: Kpi[] = progress
+  const metrics: Metric[] = progress
     ? [
         {
           label: 'Chuỗi ngày ôn',
@@ -143,30 +136,7 @@ export default function StudentHome() {
         )}
       </header>
 
-      {progress && (
-        <ul className="sh-kpis" aria-label="Tiến trình ôn tập">
-          {metrics.map((m) => {
-            const inner = (
-              <>
-                <span className="sh-kpi__label">{m.label}</span>
-                <span className={`sh-kpi__value${m.tone ? ` sh-kpi__value--${m.tone}` : ''}`}>{m.value}</span>
-                <span className="sh-kpi__hint">{m.hint}</span>
-              </>
-            );
-            return (
-              <li key={m.label} className="sh-kpi">
-                {m.to ? (
-                  <Link to={m.to} className="sh-kpi__body sh-kpi__body--link">
-                    {inner}
-                  </Link>
-                ) : (
-                  <div className="sh-kpi__body">{inner}</div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      {progress && <Metrics label="Tiến trình ôn tập" items={metrics} />}
 
       <div className="sh-grid">
         <div className="sh-col">

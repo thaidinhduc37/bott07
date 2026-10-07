@@ -105,71 +105,6 @@
   border: 1px solid var(--rule-faint);
 }
 
-/* ------------------------------------------------------------ thanh số liệu */
-
-.sh-kpis {
-  list-style: none;
-  margin-inline: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  background: var(--sheet);
-  border: 1px solid var(--rule-faint);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-.sh-kpi + .sh-kpi {
-  border-left: 1px solid var(--rule-faint);
-}
-
-.sh-kpi__body {
-  display: grid;
-  gap: var(--gap-1);
-  align-content: start;
-  height: 100%;
-  padding: var(--gap-5) var(--gap-6);
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.sh-kpi__body--link:hover {
-  background: var(--sheet-2);
-}
-
-.sh-kpi__body--link:focus-visible {
-  outline: none;
-  box-shadow: inset var(--ring);
-}
-
-.sh-kpi__label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--ink-faint);
-}
-
-.sh-kpi__value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-
-.sh-kpi__value--warn {
-  color: var(--warn-ink);
-}
-
-.sh-kpi__value--ok {
-  color: var(--ok-ink);
-}
-
-.sh-kpi__hint {
-  font-size: 0.8125rem;
-  color: var(--ink-soft);
-}
-
 /* --------------------------------------------------------- lưới trang chủ */
 
 /* Hàng 1: tiến trình cạnh lịch hôm nay (cao bằng nhau); hàng 2: nhịp ôn trải ngang. Các lớp `.sh-col`
@@ -206,18 +141,6 @@
     padding: var(--gap-6);
   }
 
-  .sh-kpis {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .sh-kpi:nth-child(odd) {
-    border-left: 0;
-  }
-
-  .sh-kpi:nth-child(n + 3) {
-    border-top: 1px solid var(--rule-faint);
-  }
-
   .sh-grid {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
@@ -232,11 +155,4 @@
     padding: var(--gap-5);
   }
 
-  .sh-kpi__body {
-    padding: var(--gap-4);
-  }
-
-  .sh-kpi__value {
-    font-size: 1.375rem;
-  }
 }
