@@ -19,6 +19,12 @@
   gap: var(--gap-3);
 }
 
+/* Không để ô chọn môn (tên rất dài) kéo cả nhóm rộng hơn khung — trên màn hẹp nhóm phải co lại và xuống dòng. */
+.week-bar__filters {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .week-bar__group {
   display: inline-flex;
   align-items: center;
