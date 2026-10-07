@@ -195,8 +195,15 @@
 /* Phần đầu trang (component `PageHeader`). KHÔNG có margin-bottom riêng: khoảng cách tới
    nội dung là của `.stack` cha (24px). Trước đây `.page-head` cộng thêm 24px nữa nên từ
    tiêu đề tới nội dung tốn 48px trên mọi trang dùng nó. */
+/* Tiêu đề trang (kèm breadcrumb, tab) luôn ở trên cùng khi cuộn, dính ngay dưới thanh trên 3.5rem
+   (cả thanh `.topbar` ở màn hẹp cũng cao 3.5rem). Padding dọc được bù bằng lề âm để nhịp trang không đổi. */
 .page-head {
-  margin-bottom: 0;
+  position: sticky;
+  top: 3.5rem;
+  z-index: 15;
+  margin-block: calc(-1 * var(--gap-3));
+  padding-block: var(--gap-3);
+  background: var(--paper);
 }
 
 .page-head__row {
@@ -402,12 +409,9 @@ p.page-sub {
   justify-content: flex-end;
   height: 3.5rem;
   padding: 0 var(--gap-5);
-  /* Không nền, không viền: thanh chỉ chứa chuông và avatar nên không cần một dải trắng riêng. */
-  background: transparent;
-  pointer-events: none;
-}
-.content-topbar > * {
-  pointer-events: auto;
+  /* Cùng màu nền trang, không viền: trông như không có thanh, nhưng đủ đặc để tiêu đề dính (`.page-head`)
+     nằm ngay dưới nó mà nội dung cuộn không lộ ra phía sau. */
+  background: var(--paper);
 }
 
 .content-topbar__actions {

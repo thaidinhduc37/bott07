@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ApiError } from '@/services/api';
 import {
   chatApi,
@@ -48,6 +49,7 @@ const SUGGESTIONS: Record<ChatMode, string[]> = {
 };
 
 export function ChatWorkspace({ rail }: { rail?: ReactNode } = {}) {
+  const { pathname } = useLocation();
   const [mode, setMode] = useState<ChatMode>('QUYCHE');
   const [modesReady, setModesReady] = useState<Record<ChatMode, { ready: boolean; documents: number }> | null>(null);
   const [courses, setCourses] = useState<CourseRef[]>([]);
@@ -164,6 +166,8 @@ export function ChatWorkspace({ rail }: { rail?: ReactNode } = {}) {
   }
 
   const modeReady = modesReady?.[mode]?.ready ?? true;
+  const conversationTitle =
+    (conversationId && conversations.find((c) => c.id === conversationId)?.title) || 'Cuộc trò chuyện mới';
 
   return (
     <div className={`chat-layout shell--wide`}>
@@ -288,9 +292,12 @@ export function ChatWorkspace({ rail }: { rail?: ReactNode } = {}) {
       </aside>
 
       <div className="chat-main">
+        <PageHeader
+          breadcrumb={[{ label: 'Hỏi đáp', to: pathname }, { label: MODE_LABEL[mode] }]}
+          title={conversationTitle}
+          description={conversationId ? undefined : MODE_HINT[mode]}
+        />
         <div className="stack chat-scroll">
-          <PageHeader title={MODE_LABEL[mode]} description={MODE_HINT[mode]} />
-
           {mode === 'GIAOTRINH' && courses.length > 0 && (
             <div className="field" style={{ maxWidth: '26rem' }}>
               <label className="field__label" htmlFor="mon-hoc">

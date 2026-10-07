@@ -142,6 +142,22 @@
   flex-direction: column;
 }
 
+/* Tiêu đề trang nằm NGOÀI vùng cuộn: không trôi mất khi cuộn hội thoại. */
+.chat-main > .page-head {
+  flex: none;
+  position: static;
+  margin-block: 0 var(--gap-3);
+  padding-block: 0;
+}
+
+/* Tiêu đề hội thoại một dòng: câu hỏi dài bị cắt thay vì chiếm nhiều chỗ của vùng chat. */
+.chat-main > .page-head .page-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-wrap: nowrap;
+}
+
 .chat-scroll {
   flex: 1;
   min-height: 0;
