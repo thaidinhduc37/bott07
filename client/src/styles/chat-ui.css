@@ -211,3 +211,31 @@
   font-size: 0.8125rem;
   font-weight: 600;
 }
+
+/* ---------------------------------------------- hai nhóm hội thoại, mỗi nhóm cuộn riêng */
+
+/* Khi tổng chiều cao vượt khung, CẢ HAI nhóm co lại và tự cuộn danh sách của mình; tiêu đề nhóm luôn
+   hiện. Trước đây nhóm "Quy chế học tập" dài đẩy mất cả nhóm "Trợ lý học tập". */
+.chat-history__sections {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chat-history__section {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.chat-history__section-title {
+  flex: none;
+}
+
+.chat-history__section .chat-history__list {
+  flex: 1 1 auto;
+  min-height: 5rem;
+}
