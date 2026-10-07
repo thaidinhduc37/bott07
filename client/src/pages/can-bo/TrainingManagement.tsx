@@ -9,17 +9,17 @@ import { CoursesPanel } from '@/components/training/CoursesPanel';
 import { StudentsPanel } from '@/components/training/StudentsPanel';
 import { FacultiesPanel } from '@/components/training/FacultiesPanel';
 import { FacultyDetail } from '@/components/training/FacultyDetail';
+import { Icon } from '@/components/shared/Icon';
 import { RoomsPanel } from '@/components/training/RoomsPanel';
 import { facultyApi } from '@/services/faculty-api';
 import '@/styles/training.css';
 
-type Tab = 'khoa' | 'lop' | 'mon' | 'hoc-vien' | 'phong';
+type Tab = 'khoa' | 'lop' | 'mon' | 'phong';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'khoa', label: 'Khoa' },
   { id: 'lop', label: 'Lớp' },
   { id: 'mon', label: 'Môn học' },
-  { id: 'hoc-vien', label: 'Học viên' },
   { id: 'phong', label: 'Phòng học' },
 ];
 
@@ -60,7 +60,8 @@ function MyFaculty() {
 /**
  * Trang "Quản lý đào tạo".
  *
- * ADMIN / ACADEMIC_MANAGER: đủ 5 tab.
+ * ADMIN / ACADEMIC_MANAGER: đủ 4 tab (Khoa, Lớp, Môn học, Phòng học). Học viên nằm trong tab Lớp:
+ * bấm số học viên của một lớp (hoặc "Xếp học viên vào lớp") để mở danh sách và xếp lớp.
  * DEPARTMENT_HEAD (không có 2 vai trên): chỉ thấy tab "Khoa" (không thanh tab),
  * tiêu đề "Khoa của tôi", chỉ xem/phân công trong khoa mình.
  *
@@ -78,12 +79,16 @@ export default function TrainingManagement() {
   const raw = params.get('tab');
   const tab: Tab = isDeptHeadOnly
     ? 'khoa'
-    : raw === 'lop' || raw === 'mon' || raw === 'hoc-vien' || raw === 'phong'
-      ? raw
-      : 'khoa';
+    : raw === 'lop' || raw === 'hoc-vien'
+      ? 'lop' // `tab=hoc-vien` là đường dẫn cũ: nay là phần học viên của tab Lớp
+      : raw === 'mon' || raw === 'phong'
+        ? raw
+        : 'khoa';
 
   const facultyId = params.get('khoa') ?? undefined;
-  const classFilter = tab === 'hoc-vien' ? params.get('lop') ?? undefined : undefined;
+  // `?lop=<id>` mở học viên của một lớp; `?lop=tat-ca` mở toàn bộ học viên (để xếp lớp).
+  const lopParam = tab === 'lop' ? (params.get('lop') ?? (raw === 'hoc-vien' ? 'tat-ca' : null)) : null;
+  const classFilter = lopParam && lopParam !== 'tat-ca' ? lopParam : undefined;
 
   function changeTab(next: Tab) {
     const p = new URLSearchParams(params);
@@ -108,8 +113,15 @@ export default function TrainingManagement() {
 
   function showStudentsOf(classId: string) {
     const p = new URLSearchParams(params);
-    p.set('tab', 'hoc-vien');
+    p.set('tab', 'lop');
     p.set('lop', classId);
+    setParams(p, { replace: true });
+  }
+
+  function closeStudents() {
+    const p = new URLSearchParams(params);
+    p.set('tab', 'lop');
+    p.delete('lop');
     setParams(p, { replace: true });
   }
 
@@ -151,9 +163,21 @@ export default function TrainingManagement() {
           ) : (
             <FacultiesPanel onOpenDetail={openFacultyDetail} />
           ))}
-        {tab === 'lop' && <ClassesPanel onShowStudents={showStudentsOf} />}
+        {tab === 'lop' &&
+          (lopParam ? (
+            <div className="stack">
+              <div className="row">
+                <button type="button" className="btn btn--quiet" onClick={closeStudents}>
+                  <Icon name="chevronLeft" size={16} />
+                  Danh sách lớp
+                </button>
+              </div>
+              <StudentsPanel key={lopParam} initialClassId={classFilter} />
+            </div>
+          ) : (
+            <ClassesPanel onShowStudents={showStudentsOf} />
+          ))}
         {tab === 'mon' && <CoursesPanel />}
-        {tab === 'hoc-vien' && <StudentsPanel initialClassId={classFilter} />}
         {tab === 'phong' && (isManager ? <RoomsPanel /> : null)}
       </TabPanel>
     </div>

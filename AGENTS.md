@@ -42,7 +42,7 @@ React/Vite (5173) ──► FastAPI (5000, prefix /api) ──┬──► Postg
 | Review (quiz from curricula, wrong-answer book, notes, exam plan, reminders) | `learning` router, `learning_service`, `notes_service`, `exam_plan_service`, `study_reminders` | `StudyHub`, `QuizTake`, `ReviewBook`, `Notebook` |
 | Progress / lecturer insights | `progress_service`, `insights_service` (aggregate only, ≥2 learners) | `StudentHome`, `StaffHome`, `LearningInsights` |
 | Schedules | `schedules` router/service, `schedule_conflicts` (class/room/lecturer clash), CSV import | `StudentSchedule`, `StaffSchedule`, `SessionForm`, `ExamForm` |
-| Academic admin | `catalog` (classes, courses, students→class), `faculties`, `rooms` | `TrainingManagement` (tabs Khoa/Lớp/Môn/Học viên/Phòng) |
+| Academic admin | `catalog` (classes, courses, students→class), `faculties`, `rooms` | `TrainingManagement` (tabs Khoa/Lớp/Môn/Phòng; học viên nằm trong tab Lớp) |
 | Lecturer's classes (read-only) | `teaching` router/`teaching_service` (classes with a schedule of a course whose `lecturer_id` is the caller; roster = code + name only) | `MyClasses` (`/can-bo/lop`) |
 | Forms & approvals | `forms`, `approvals`, `signatures_service` | `Templates`, `NewSubmission`, `ApprovalInbox` |
 | Accounts, audit, health | `users` router (`/admin/*`), `audit_service`, `health` | `pages/quan-tri/*` |

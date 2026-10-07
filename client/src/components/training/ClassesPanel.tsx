@@ -6,8 +6,8 @@ import { ClassDialog } from './ClassDialog';
 import { ConfirmDeleteDialog } from './Dialogs';
 
 /**
- * Tab "Lớp": danh sách lớp + thêm / sửa / xóa. Số học viên là liên kết sang
- * tab Học viên lọc theo lớp đó (qua `onShowStudents`).
+ * Tab "Lớp": danh sách lớp + thêm / sửa / xóa. Số học viên là liên kết mở danh sách học viên
+ * của lớp đó (qua `onShowStudents`); "Xếp học viên vào lớp" mở toàn bộ học viên (`onShowStudents('tat-ca')`).
  */
 export function ClassesPanel({ onShowStudents }: { onShowStudents: (classId: string) => void }) {
   const [items, setItems] = useState<ClassItem[] | null>(null);
@@ -75,6 +75,10 @@ export function ClassesPanel({ onShowStudents }: { onShowStudents: (classId: str
         >
           <Icon name="plus" size={18} />
           Thêm lớp
+        </button>
+        <button type="button" className="btn btn--quiet" onClick={() => onShowStudents('tat-ca')}>
+          <Icon name="users" size={18} />
+          Xếp học viên vào lớp
         </button>
       </div>
 
