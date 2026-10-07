@@ -3,13 +3,6 @@
    Mỗi học kỳ là MỘT khối: thanh tiêu đề liền với bảng, bảng tràn sát mép khối (không thêm viền
    hay lề thứ hai quanh bảng), dòng điểm trung bình học kỳ ở chân khối. */
 
-/* Ô chọn học kỳ nằm trên hàng tiêu đề trang. */
-.grd-pick {
-  width: auto;
-  min-width: 14rem;
-  max-width: 100%;
-}
-
 .grd-term {
   overflow: hidden;
 }
@@ -225,8 +218,136 @@
   .grd-c-total {
     width: 4.75rem;
   }
+}
 
-  .grd-pick {
-    width: 100%;
-  }
+/* ---------------------------------------------- chọn kỳ, tiến độ tín chỉ, tổng kết kỳ */
+
+.grd-pick-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gap-3) var(--gap-4);
+  padding: var(--gap-2) var(--gap-3);
+}
+
+.grd-pick-bar__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+
+.grd-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  background: var(--sheet-2);
+  border-radius: var(--r-md);
+}
+
+.grd-chip {
+  min-height: 2rem;
+  padding: 0 var(--gap-4);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background-color 130ms var(--ease), color 130ms var(--ease);
+}
+
+.grd-chip:hover {
+  background: var(--sheet);
+  color: var(--ink);
+}
+
+.grd-chip--on {
+  background: var(--sheet);
+  color: var(--pen-ink);
+}
+
+.grd-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.grd-progress {
+  display: grid;
+  gap: var(--gap-3);
+  padding: var(--gap-4) var(--gap-5);
+}
+
+.grd-progress__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-3);
+}
+
+.grd-progress__head .aside-h {
+  margin: 0;
+}
+
+.grd-progress__num {
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.grd-progress__num strong {
+  font-size: 1.25rem;
+  color: var(--ink);
+}
+
+.grd-progress__track {
+  height: 0.5rem;
+  background: var(--sheet-2);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.grd-progress__fill {
+  display: block;
+  height: 100%;
+  background: var(--pen);
+  border-radius: var(--r-pill);
+}
+
+.grd-progress__note {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+}
+
+.grd-sum {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-3) var(--gap-8);
+  width: 100%;
+  margin: 0;
+}
+
+.grd-sum__item {
+  display: grid;
+  gap: 2px;
+}
+
+.grd-sum__item dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+
+.grd-sum__item dd {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.grd-sum__warn {
+  color: var(--seal-ink);
 }

@@ -72,6 +72,8 @@ function actionLink(c: GradeCourse, term: GradeTerm) {
 }
 
 function TermSheet({ term }: { term: GradeTerm }) {
+  const earned = term.courses.filter((c) => c.passed === true).reduce((n, c) => n + c.credits, 0);
+  const failed = term.courses.filter((c) => c.passed === false).length;
   return (
     <section className="sheet grd-term">
       <header className="grd-term__bar">
@@ -140,8 +142,22 @@ function TermSheet({ term }: { term: GradeTerm }) {
       </div>
 
       <footer className="grd-term__foot">
-        <span>Điểm trung bình học kỳ</span>
-        <strong>{term.gpa === null ? '—' : viScore(term.gpa)}</strong>
+        <dl className="grd-sum">
+          <div className="grd-sum__item">
+            <dt>Tín chỉ đạt trong kỳ</dt>
+            <dd>
+              {earned} / {term.credits} TC
+            </dd>
+          </div>
+          <div className="grd-sum__item">
+            <dt>Môn chưa đạt</dt>
+            <dd className={failed > 0 ? 'grd-sum__warn' : undefined}>{failed}</dd>
+          </div>
+          <div className="grd-sum__item">
+            <dt>Điểm trung bình học kỳ</dt>
+            <dd>{term.gpa === null ? '—' : viScore(term.gpa)}</dd>
+          </div>
+        </dl>
       </footer>
     </section>
   );
@@ -169,29 +185,13 @@ export default function AcademicResults() {
     [terms, termFilter],
   );
 
+  const scheduledCredits = terms.reduce((n, t) => n + t.credits, 0);
+  const creditPct =
+    scheduledCredits > 0 ? Math.round(((data?.summary.creditsEarned ?? 0) / scheduledCredits) * 100) : 0;
+
   return (
     <div className="stack">
-      <PageHeader
-        title="Kết quả học tập"
-        description="Điểm học phần theo từng học kỳ."
-        actions={
-          terms.length > 1 ? (
-            <select
-              className="field__input grd-pick"
-              aria-label="Học kỳ"
-              value={termFilter}
-              onChange={(e) => setTermFilter(e.target.value)}
-            >
-              <option value={ALL}>Tất cả học kỳ</option>
-              {terms.map((t) => (
-                <option key={`${t.academicYear}|${t.semester}`} value={`${t.academicYear}|${t.semester}`}>
-                  {t.semester} — Năm học {t.academicYear}
-                </option>
-              ))}
-            </select>
-          ) : undefined
-        }
-      />
+      <PageHeader title="Kết quả học tập" />
 
       {error && (
         <div className="notice notice--error" role="alert">
@@ -228,6 +228,58 @@ export default function AcademicResults() {
             ]}
           />
 
+          {scheduledCredits > 0 && (
+            <section className="sheet grd-progress" aria-label="Tiến độ tín chỉ">
+              <div className="grd-progress__head">
+                <h2 className="aside-h">Tiến độ tích lũy</h2>
+                <span className="grd-progress__num">
+                  <strong>{data.summary.creditsEarned}</strong> / {scheduledCredits} TC
+                </span>
+              </div>
+              <div
+                className="grd-progress__track"
+                role="img"
+                aria-label={`Đã tích lũy ${data.summary.creditsEarned} trên ${scheduledCredits} tín chỉ`}
+              >
+                <span className="grd-progress__fill" style={{ width: `${Math.min(100, creditPct)}%` }} />
+              </div>
+              <p className="grd-progress__note">
+                Tính trên các học phần đã có lịch học ({creditPct}%), không phải tổng số tín chỉ của chương trình đào
+                tạo. Còn {Math.max(0, scheduledCredits - data.summary.creditsEarned)} tín chỉ chưa tích lũy.
+              </p>
+            </section>
+          )}
+
+          {terms.length > 1 && (
+            <div className="sheet grd-pick-bar">
+              <span className="grd-pick-bar__label">Kỳ đánh giá</span>
+              <div className="grd-chips" role="group" aria-label="Chọn học kỳ">
+                {terms.map((t) => {
+                  const key = `${t.academicYear}|${t.semester}`;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`grd-chip${termFilter === key ? ' grd-chip--on' : ''}`}
+                      aria-pressed={termFilter === key}
+                      onClick={() => setTermFilter(key)}
+                    >
+                      {t.semester} ({t.academicYear})
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  className={`grd-chip${termFilter === ALL ? ' grd-chip--on' : ''}`}
+                  aria-pressed={termFilter === ALL}
+                  onClick={() => setTermFilter(ALL)}
+                >
+                  Toàn khóa
+                </button>
+              </div>
+            </div>
+          )}
+
           {terms.length === 0 ? (
             <div className="empty">
               <p className="empty__title">Chưa có dữ liệu học kỳ nào</p>
@@ -240,8 +292,8 @@ export default function AcademicResults() {
               ))}
 
               <p className="grd-note">
-                Thang điểm 10, đạt từ {viScore(data.passScore)}. Điểm học phần do giảng viên hoặc phòng đào tạo nhập;
-                hệ thống không tự tính từ các điểm thành phần.
+                Thang điểm 10, đạt từ {viScore(data.passScore)}. Điểm học phần do giảng viên hoặc phòng đào tạo nhập; hệ
+                thống không tự tính từ các điểm thành phần.
               </p>
             </>
           )}
