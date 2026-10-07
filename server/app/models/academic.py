@@ -56,6 +56,8 @@ class StudyClass(Base):
         "faculty_id", PGUUID(as_uuid=True), ForeignKey("faculties.id", ondelete="SET NULL"), nullable=True
     )
     cohort_year: Mapped[int | None] = mapped_column("cohort_year", Integer, nullable=True)
+    # Ngành / chuyên ngành đào tạo của lớp (chữ tự do, vd "An toàn thông tin"); lọc và nhóm lớp theo ngành.
+    major: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = created_at_col()
 
     students: Mapped[list["StudentProfile"]] = relationship(back_populates="study_class")

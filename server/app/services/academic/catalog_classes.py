@@ -54,6 +54,7 @@ class ClassesMixin:
                     "faculty": faculties.get(c.faculty_id, c.faculty) if c.faculty_id else c.faculty,
                     "facultyId": str(c.faculty_id) if c.faculty_id else None,
                     "cohortYear": c.cohort_year,
+                    "major": c.major,
                     "studentCount": student_counts.get(c.id, 0),
                     "sessionCount": session_counts.get(c.id, 0) + exam_counts.get(c.id, 0),
                 }
@@ -81,6 +82,7 @@ class ClassesMixin:
             faculty=faculty_row.name if faculty_row else (dto.faculty.strip() if dto.faculty else None),
             faculty_id=faculty_row.id if faculty_row else None,
             cohort_year=dto.cohort_year,
+            major=(dto.major or "").strip() or None,
         )
         self.db.add(row)
         await self.db.flush()
@@ -144,6 +146,11 @@ class ClassesMixin:
                 # Sửa chuỗi tự do thì rời khỏi khoa có thực thể (hai nguồn không được lệch nhau).
                 if row.faculty_id is not None:
                     row.faculty_id = None
+        if "major" in payload:
+            new_major = (payload["major"] or "").strip() or None
+            if new_major != row.major:
+                changes["major"] = {"from": row.major, "to": new_major}
+                row.major = new_major
         if "cohort_year" in payload and payload["cohort_year"] != row.cohort_year:
             changes["cohortYear"] = {"from": row.cohort_year, "to": payload["cohort_year"]}
             row.cohort_year = payload["cohort_year"]
@@ -214,6 +221,7 @@ class ClassesMixin:
             "faculty": row.faculty,
             "facultyId": str(row.faculty_id) if row.faculty_id else None,
             "cohortYear": row.cohort_year,
+            "major": row.major,
             "studentCount": n_students,
             "sessionCount": n_sessions + n_exams,
         }

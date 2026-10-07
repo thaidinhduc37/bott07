@@ -10,11 +10,14 @@ import { TrainingDialog } from './Dialogs';
  */
 export function ClassDialog({
   initial,
+  majors,
   openRef,
   onClose,
   onSaved,
 }: {
   initial: ClassItem | null;
+  /** Các ngành đã có, gợi ý khi nhập ngành. */
+  majors: string[];
   openRef: React.RefObject<HTMLElement | null>;
   onClose: () => void;
   onSaved: () => void;
@@ -22,6 +25,7 @@ export function ClassDialog({
   const [code, setCode] = useState(initial?.code ?? '');
   const [name, setName] = useState(initial?.name ?? '');
   const [facultyId, setFacultyId] = useState(initial?.facultyId ?? '');
+  const [major, setMajor] = useState(initial?.major ?? '');
   const [cohortYear, setCohortYear] = useState(
     initial?.cohortYear != null ? String(initial.cohortYear) : '',
   );
@@ -48,6 +52,7 @@ export function ClassDialog({
       code: code.trim(),
       name: name.trim(),
       facultyId: facultyId || null,
+      major: major.trim() || null,
       cohortYear: cohortYear.trim() ? Number(cohortYear) : null,
     };
     try {
@@ -56,6 +61,7 @@ export function ClassDialog({
         await catalogApi.updateClass(initial.id, {
           name: payload.name,
           facultyId: payload.facultyId,
+          major: payload.major,
           cohortYear: payload.cohortYear,
         });
       } else {
@@ -127,6 +133,26 @@ export function ClassDialog({
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="field">
+          <label className="field__label" htmlFor="train-class-major">
+            Ngành
+          </label>
+          <input
+            id="train-class-major"
+            className="field__input"
+            list="train-class-majors"
+            value={major}
+            maxLength={200}
+            onChange={(e) => setMajor(e.target.value)}
+            placeholder="VD: An toàn thông tin"
+          />
+          <datalist id="train-class-majors">
+            {majors.map((m) => (
+              <option key={m} value={m} />
+            ))}
+          </datalist>
         </div>
 
         <div className="field">

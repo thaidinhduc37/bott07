@@ -8,6 +8,9 @@ import {
 } from '@/services/catalog-api';
 import { CourseDialog } from './CourseDialog';
 import { ConfirmDeleteDialog } from './Dialogs';
+import { PAGE_SIZE, Pager } from './Pager';
+
+const NONE = '__none__';
 
 type CourseFilter = 'all' | 'no-lecturer';
 
@@ -24,6 +27,8 @@ export function CoursesPanel() {
 
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<CourseFilter>('all');
+  const [facultyF, setFacultyF] = useState('');
+  const [page, setPage] = useState(1);
 
   const addBtnRef = useRef<HTMLButtonElement>(null);
   const [form, setForm] = useState<{ mode: 'add' } | { mode: 'edit'; item: CourseItem } | null>(null);
@@ -60,10 +65,18 @@ export function CoursesPanel() {
     const q = search.trim().toLowerCase();
     return base.filter((c) => {
       if (filter === 'no-lecturer' && c.lecturer) return false;
+      if (facultyF && (facultyF === NONE ? !!c.facultyName : c.facultyName !== facultyF)) return false;
       if (!q) return true;
       return c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q);
     });
-  }, [items, search, filter]);
+  }, [items, search, filter, facultyF]);
+  const faculties = useMemo(
+    () => [...new Set((items ?? []).map((c) => c.facultyName).filter((f): f is string => !!f))].sort((a, b) => a.localeCompare(b, 'vi')),
+    [items],
+  );
+  const lastPage = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const cur = Math.min(page, lastPage);
+  const shown = visible.slice((cur - 1) * PAGE_SIZE, cur * PAGE_SIZE);
 
   async function confirmDelete() {
     if (!toDelete) return;
@@ -97,17 +110,46 @@ export function CoursesPanel() {
               id="train-course-search"
               className="field__input"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
               placeholder="Mã hoặc tên môn…"
             />
           </div>
+        </div>
+
+        <div className="field train-class-filter">
+          <label className="field__label" htmlFor="train-course-f-faculty">
+            Khoa
+          </label>
+          <select
+            id="train-course-f-faculty"
+            className="field__input"
+            value={facultyF}
+            onChange={(e) => {
+              setFacultyF(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="">Tất cả khoa</option>
+            <option value={NONE}>Chưa gắn khoa</option>
+            {faculties.map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="seg" role="group" aria-label="Lọc theo giảng viên">
           <button
             type="button"
             className={`seg__opt${filter === 'all' ? ' seg__opt--on' : ''}`}
-            onClick={() => setFilter('all')}
+            onClick={() => {
+              setFilter('all');
+              setPage(1);
+            }}
             aria-pressed={filter === 'all'}
           >
             Tất cả
@@ -115,7 +157,10 @@ export function CoursesPanel() {
           <button
             type="button"
             className={`seg__opt${filter === 'no-lecturer' ? ' seg__opt--on' : ''}`}
-            onClick={() => setFilter('no-lecturer')}
+            onClick={() => {
+              setFilter('no-lecturer');
+              setPage(1);
+            }}
             aria-pressed={filter === 'no-lecturer'}
           >
             Chưa có giảng viên
@@ -167,7 +212,7 @@ export function CoursesPanel() {
         <div className="table-wrap">
           <table className="data-table">
             <caption>
-              {visible.length} môn
+              {visible.length === (items?.length ?? 0) ? `${visible.length} môn` : `${visible.length} / ${items?.length ?? 0} môn`}
             </caption>
             <thead>
               <tr>
@@ -181,7 +226,7 @@ export function CoursesPanel() {
               </tr>
             </thead>
             <tbody>
-              {visible.map((c) => (
+              {shown.map((c) => (
                 <tr key={c.id}>
                   <td className="mono">{c.code}</td>
                   <td>{c.name}</td>
@@ -224,6 +269,7 @@ export function CoursesPanel() {
           </table>
         </div>
       )}
+      {!loading && !empty && !noMatch && <Pager page={cur} total={visible.length} onPage={setPage} />}
 
       {form && (
         <CourseDialog

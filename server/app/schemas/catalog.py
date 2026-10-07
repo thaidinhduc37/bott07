@@ -16,6 +16,7 @@ class CreateClassDto(CamelModel):
     faculty: str | None = Field(default=None, max_length=200)
     faculty_id: str | None = None
     cohort_year: int | None = Field(default=None, ge=1900, le=2200)
+    major: str | None = Field(default=None, max_length=200)
 
 
 class UpdateClassDto(CamelModel):
@@ -25,6 +26,7 @@ class UpdateClassDto(CamelModel):
     faculty: str | None = Field(default=None, max_length=200)
     faculty_id: str | None = None
     cohort_year: int | None = Field(default=None, ge=1900, le=2200)
+    major: str | None = Field(default=None, max_length=200)
 
 
 class CreateCourseDto(CamelModel):

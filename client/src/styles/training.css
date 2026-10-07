@@ -308,3 +308,29 @@
   width: min(28rem, calc(100% - 2rem));
   max-height: min(90dvh, 52rem);
 }
+
+
+/* Bộ lọc nhiều ô (khoa, ngành, khóa) và phân trang của các danh sách dài. */
+.train-filters {
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.train-filters .train-search {
+  flex: 2 1 11rem;
+  min-width: 10rem;
+}
+
+.train-filters .train-class-filter {
+  flex: 1 1 9rem;
+  min-width: 8rem;
+}
+
+.train-filters .train-class-filter--sm {
+  flex: 0 0 6.5rem;
+  min-width: 6.5rem;
+}
+
+.train-pager {
+  justify-content: center;
+}

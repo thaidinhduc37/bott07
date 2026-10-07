@@ -170,7 +170,9 @@ async def main() -> None:
             return
 
         for r in new_classes:
-            c = StudyClass(code=r["Lop"], name=f"Lớp {r['Lop']} — {_nganh_title(r['Nganh'])}")
+            c = StudyClass(
+                code=r["Lop"], name=f"Lớp {r['Lop']} — {_nganh_title(r['Nganh'])}", major=_nganh_title(r["Nganh"])
+            )
             db.add(c)
             have_classes[r["Lop"]] = c
         for code in new_courses:

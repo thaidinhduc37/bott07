@@ -15,6 +15,8 @@ export interface ClassItem {
   faculty: string | null;
   facultyId: string | null;
   cohortYear: number | null;
+  /** Ngành / chuyên ngành (chữ tự do). */
+  major: string | null;
   studentCount: number;
   sessionCount: number;
 }
@@ -73,6 +75,7 @@ export interface ClassPayload {
   faculty?: string | null;
   facultyId?: string | null;
   cohortYear?: number | null;
+  major?: string | null;
 }
 
 /** Dữ liệu form môn học — dùng chung cho thêm và sửa. */
