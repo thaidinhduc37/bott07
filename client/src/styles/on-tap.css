@@ -158,6 +158,17 @@
   min-height: 2.625rem;
 }
 
+/* Nhóm số câu cao đúng 42px (kể cả viền và đệm của `.seg`); các ô bên trong giãn đủ chiều cao và căn giữa chữ. */
+.oh-composer__row .seg {
+  height: 2.625rem;
+  box-sizing: border-box;
+  align-items: stretch;
+}
+
+.oh-composer__row .seg__opt {
+  padding-block: 0;
+}
+
 /* ===================================================== kế hoạch ôn thi (xp-) */
 
 /* ---- danh sách kỳ thi: mỗi dòng ~64px, trạng thái nằm cùng dòng với số ngày còn lại */

@@ -233,11 +233,7 @@ export default function QuestionBank() {
                   <span className="field__label" id="qb-format-label">
                     Định dạng tệp
                   </span>
-                  <fieldset
-                    className="seg"
-                    style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}
-                    aria-labelledby="qb-format-label"
-                  >
+                  <fieldset className="seg" aria-labelledby="qb-format-label">
                     <legend className="sr-only">Định dạng tệp</legend>
                     {(
                       [

@@ -449,6 +449,12 @@ a.picker-row:hover {
   flex-wrap: wrap;
 }
 
+/* `<fieldset class="seg">` (nhóm radio có nhãn): bỏ lề và min-width mặc định của fieldset nhưng GIỮ viền, đệm của `.seg`. */
+fieldset.seg {
+  margin: 0;
+  min-width: 0;
+}
+
 .seg__opt {
   position: relative;
   display: inline-flex;

@@ -72,11 +72,7 @@ export function QuizComposer(props: {
           <span className="field__label" id="on-tap-nguon-label">
             Nguồn câu hỏi
           </span>
-          <fieldset
-            className="seg"
-            style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}
-            aria-labelledby="on-tap-nguon-label"
-          >
+          <fieldset className="seg" aria-labelledby="on-tap-nguon-label">
             <legend className="sr-only">Nguồn câu hỏi</legend>
             <label className={`seg__opt${source === 'ai' ? ' seg__opt--on' : ''}`}>
               <input type="radio" name="on-tap-nguon" checked={source === 'ai'} onChange={() => setSource('ai')} />
@@ -133,11 +129,7 @@ export function QuizComposer(props: {
           <span className="field__label" id="on-tap-so-cau-label">
             Số câu
           </span>
-          <fieldset
-            className="seg"
-            style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}
-            aria-labelledby="on-tap-so-cau-label"
-          >
+          <fieldset className="seg" aria-labelledby="on-tap-so-cau-label">
             <legend className="sr-only">Số câu</legend>
             {[3, 5, 8, 10].map((n) => (
               <label key={n} className={`seg__opt${nQuestions === n ? ' seg__opt--on' : ''}`}>
