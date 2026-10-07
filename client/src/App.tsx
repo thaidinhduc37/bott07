@@ -23,6 +23,7 @@ import StaffLayout from '@/layout/StaffLayout';
 import StaffHome from '@/pages/can-bo/StaffHome';
 import LearningInsightsPage from '@/pages/can-bo/LearningInsights';
 import TrainingManagementPage from '@/pages/can-bo/TrainingManagement';
+import MyClassesPage from '@/pages/can-bo/MyClasses';
 import GradeEntryPage from '@/pages/can-bo/GradeEntry';
 import AcademicResultsPage from '@/pages/sinh-vien/AcademicResults';
 import SupportPage from '@/pages/sinh-vien/Support';
@@ -80,6 +81,7 @@ export function App() {
         <Route path="lich" element={<StaffSchedulePage />} />
         <Route path="hoc-tap" element={<LearningInsightsPage />} />
         <Route path="dao-tao" element={<TrainingManagementPage />} />
+        <Route path="lop" element={<MyClassesPage />} />
         <Route path="nhap-diem" element={<GradeEntryPage />} />
         <Route path="tai-lieu" element={<StaffDocumentsPage />} />
         <Route path="don-cho-xu-ly" element={<ApprovalInboxPage />} />

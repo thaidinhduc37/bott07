@@ -1,0 +1,63 @@
+/* Trang "Lớp của tôi" của giảng viên: danh sách lớp, danh sách học viên, cột phụ. */
+
+.mc-link {
+  font-weight: 600;
+  color: var(--pen-ink);
+  text-decoration: none;
+}
+
+.mc-link:hover {
+  text-decoration: underline;
+}
+
+.mc-link:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+.mc-sub {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.mc-roster {
+  display: grid;
+  gap: var(--gap-3);
+}
+
+.mc-roster__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-3);
+}
+
+.mc-roster__head .aside-h {
+  margin: 0;
+}
+
+.mc-note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.mc-card {
+  display: grid;
+  gap: var(--gap-3);
+  align-content: start;
+}
+
+.mc-card .aside-h {
+  margin: 0;
+}
+
+.mc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap-3);
+  font-size: 0.875rem;
+}

@@ -106,6 +106,12 @@ export const NAV: Record<Workspace, NavItem[]> = {
       roles: ['ACADEMIC_MANAGER', 'DEPARTMENT_HEAD'],
     },
     {
+      href: '/can-bo/lop',
+      label: 'Lớp của tôi',
+      icon: 'users',
+      roles: ['LECTURER'],
+    },
+    {
       href: '/can-bo/nhap-diem',
       label: 'Nhập điểm',
       icon: 'pencil',
