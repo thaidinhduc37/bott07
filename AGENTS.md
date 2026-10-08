@@ -76,8 +76,8 @@ the `login()` helper clears the rate-limit counters of the account it logs in, s
 Load: `python scripts/load_test.py --students 1500 --lecturers 100 --rounds 12 --think 8` (signs tokens directly, needs the `seed_demo_scale.py`
 data) and `python scripts/load_login.py --users 120` (simultaneous logins). Measured on a 12-core dev box: ≈130 requests/s per API process
 (≈420 with 4), median 17–28 ms and p95 < 55 ms for ~1,600 users with think time. Size for the school: ~1,600 concurrently active users ≈ 200 req/s,
-so run 4–6 workers (`API_WORKERS`) on Linux. On Windows keep `API_WORKERS=1`: with several workers a burst of ~100 new connections can leave
-some of them hanging for ~20–30 s.
+so run 4–6 workers (`API_WORKERS`) on Linux. On Windows `main.py` forces one worker: with several, the event loops of some workers stall for ~30 s under a burst of ~100 new
+connections (reproduced with both Selector and Proactor loops, so it is the OS sharing one listening socket, not our code).
 
 Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `khoa@` (faculty head),
 `gv.*@` (lecturers), `sv.*@` (students), all `@hvktcnan.edu.vn`. `python scripts/import_tkb.py --apply` loads the real timetable

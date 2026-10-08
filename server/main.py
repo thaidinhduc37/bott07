@@ -13,17 +13,25 @@ docker-compose.dev.yml):
 
 from __future__ import annotations
 
+import logging
+import sys
+
 import uvicorn
 
 from app.core.config import get_settings
 
 if __name__ == "__main__":
     settings = get_settings()
+    workers = settings.api_workers
+    if workers > 1 and sys.platform == "win32":
+        # Trên Windows nhiều tiến trình dùng chung một cổng làm một phần kết nối bị treo 20–30 giây khi mở đồng loạt.
+        logging.getLogger("uvicorn.error").warning("API_WORKERS=%d bị bỏ qua trên Windows: chạy 1 tiến trình (dùng Linux để chạy nhiều).", workers)
+        workers = 1
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
         port=settings.api_port,
-        workers=settings.api_workers,
+        workers=workers,
         # Mặc định uvicorn đóng kết nối nhàn rỗi sau 5 giây, ngắn hơn thời gian suy nghĩ giữa hai thao tác nên mỗi yêu cầu phải mở kết nối mới.
         timeout_keep_alive=65,
         reload=False,

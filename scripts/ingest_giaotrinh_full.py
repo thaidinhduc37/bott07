@@ -171,7 +171,7 @@ async def main() -> None:
 
     # Nạp model ngay để biết sớm nếu thiếu RAM.
     t0 = time.time()
-    container.models.tokenizer
+    container.models.tokenizer  # noqa: B018  (nạp sớm để biết ngay nếu thiếu RAM)
     log.info("Tokenizer sẵn sàng sau %.1fs", time.time() - t0)
 
     files = sorted(CORPUS_DIR.glob("*.md"))
