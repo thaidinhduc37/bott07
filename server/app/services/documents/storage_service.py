@@ -1,9 +1,4 @@
-"""Port of `common/storage/storage.service.ts`.
-
-Not DB-backed — pure filesystem service. Not wired into any route yet (that
-starts in Phase 2 with documents/forms/signatures); included now so later
-phases don't need to design it from scratch.
-"""
+"""Lưu tệp trên đĩa (không qua CSDL): kiểm đuôi và chữ ký tệp, tên lưu ngẫu nhiên, đường dẫn tương đối dưới `storage_root`."""
 
 from __future__ import annotations
 

@@ -53,17 +53,23 @@ class TeachingService:
                 select(StudentProfile.class_id, func.count()).where(StudentProfile.class_id.in_(taught)).group_by(StudentProfile.class_id)
             )).all()
         )
-        now = datetime.now(timezone.utc)
+        my_courses = {course_id for courses in taught.values() for course_id in courses}
+        next_session = dict(
+            (
+                await self.db.execute(
+                    select(Schedule.class_id, func.min(Schedule.starts_at))
+                    .where(
+                        Schedule.class_id.in_(taught),
+                        Schedule.course_id.in_(my_courses),
+                        Schedule.starts_at >= datetime.now(timezone.utc),
+                    )
+                    .group_by(Schedule.class_id)
+                )
+            ).all()
+        )
         items = []
         for cls in classes:
-            course_ids = list(taught[cls.id])
-            nxt = (
-                await self.db.execute(
-                    select(func.min(Schedule.starts_at)).where(
-                        Schedule.class_id == cls.id, Schedule.course_id.in_(course_ids), Schedule.starts_at >= now
-                    )
-                )
-            ).scalar_one()
+            nxt = next_session.get(cls.id)
             items.append(
                 {
                     "id": str(cls.id), "code": cls.code, "name": cls.name, "faculty": cls.faculty,

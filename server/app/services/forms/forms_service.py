@@ -1,30 +1,16 @@
-"""Forms: templates, submissions, autofill, validation, DOCX render, e-sign,
-submit. Port of the (deleted) NestJS `forms.service.ts`. This is the largest
-and most security-sensitive service in the port — every rule called out in
-the porting notes is preserved:
+"""Biểu mẫu: mẫu, đơn, điền sẵn, kiểm tra hợp lệ, dựng DOCX, ký, nộp. Dịch vụ lớn nhất và nhạy cảm nhất về bảo mật.
 
-- Autofill is resolved through an explicit whitelist (`_SOURCES`), never by
-  walking arbitrary attribute paths — a tampered `field_schema` can't be
-  used to read something like `user.password_hash`.
-- The 7 identity fields (fullName, dateOfBirth, className, cohort,
-  studentCode, phone, trainingSystem) are a fixed universal autofill set,
-  resolved from the caller's OWN profile every time — never declared in a
-  template's `field_schema.fields[]`, and never taken from client input.
-- `validate_against_schema` silently drops unknown/unschematized keys
-  rather than erroring on them (erroring would itself leak which field
-  names the server cares about).
-- Table fields: rows are filtered down to the declared columns, empty rows
-  dropped, `maxRows` enforced (default 20).
-- Two cross-field rules that are template-specific, not schema-driven: the
-  leave date range check, and the 1-3-day vs >3-day cutoff (checked by
-  `template_code`, since both leave templates share the same field names).
-- `is_editable = status in {DRAFT, NEEDS_REVISION} and not signed_hash` —
-  once signed, even a DRAFT submission is locked.
-- Every submission load is by-owner: 404 (not 403) if the caller isn't the
-  owner — anti-enumeration, matches the documents/chat pattern already in
-  this codebase.
-- File writes happen BEFORE the DB transaction commits, same latent
-  ordering as the reference — preserved deliberately, not "fixed".
+- Điền sẵn đi qua danh sách trắng tường minh (`_SOURCES`), không đi theo đường dẫn thuộc tính tùy ý: `field_schema` bị sửa
+  cũng không đọc được `user.password_hash`.
+- 7 trường định danh (fullName, dateOfBirth, className, cohort, studentCode, phone, trainingSystem) luôn lấy từ hồ sơ CỦA CHÍNH
+  người gọi; không khai báo trong `field_schema.fields[]` và không nhận từ client.
+- `validate_against_schema` im lặng bỏ khóa lạ (báo lỗi sẽ lộ tên trường mà máy chủ quan tâm).
+- Trường bảng: lọc về các cột đã khai báo, bỏ dòng trống, áp `maxRows` (mặc định 20).
+- Hai luật chéo trường theo mẫu, không theo schema: khoảng ngày nghỉ, và ngưỡng nghỉ 1–3 ngày so với trên 3 ngày (kiểm theo
+  `template_code` vì hai mẫu nghỉ dùng chung tên trường).
+- `is_editable = status in {DRAFT, NEEDS_REVISION} and not signed_hash`: đã ký thì khóa kể cả khi còn DRAFT.
+- Mọi lần tải đơn đều theo chủ sở hữu: 404 (không phải 403) nếu người gọi không phải chủ.
+- Tệp được ghi TRƯỚC khi giao dịch CSDL commit: thứ tự có chủ đích, đừng "sửa".
 """
 
 from __future__ import annotations

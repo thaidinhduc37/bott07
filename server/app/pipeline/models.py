@@ -1,19 +1,8 @@
-"""§2 Models — encoder và cross-encoder chạy trên CPU.
+"""§2 Models: encoder BGE-M3 và cross-encoder bge-reranker-v2-m3 chạy trên CPU (reader là Gemini, xem `llm.py`).
 
-Notebook tải ba model: reader Qwen2.5-7B 4-bit, encoder BGE-M3, và cross-encoder
-bge-reranker-v2-m3, tất cả trên GPU T4. Ở đây reader được thay bằng Gemini API
-(xem `llm.py`), còn hai model còn lại vẫn chạy cục bộ trên CPU vì:
-
-* **Encoder** phải chạy cùng chỗ với chỉ mục. Gọi API cho mỗi chunk lúc ingest và
-  mỗi truy vấn lúc hỏi vừa tốn quota vừa thêm độ trễ mạng vào đường nóng.
-* **Cross-encoder** là thứ tạo ra điểm số để đặt ngưỡng abstention (§14). Không
-  có nó thì lớp phòng thủ số 1 chống bịa câu trả lời biến mất, và không có API
-  công cộng nào trả về đúng điểm số đó.
-
-Hai model cộng lại chiếm khoảng 4.5 GB RAM ở fp32. Chúng được **nạp lười**: quá
-trình khởi động không đụng tới chúng, nên `/health` trả lời ngay và container
-lên nhanh. Đặt `PRELOAD_MODELS=1` nếu muốn trả cái giá đó lúc khởi động thay vì
-ở request đầu tiên.
+Encoder chạy cùng chỗ với chỉ mục để không tốn quota và độ trễ mạng cho mỗi chunk và mỗi truy vấn. Cross-encoder tạo điểm
+số để đặt ngưỡng abstention (§14) và không có API công cộng nào trả đúng điểm đó. Hai model chiếm ~4,5 GB RAM ở fp32 và
+được nạp lười ở request đầu tiên; đặt `PRELOAD_MODELS=1` để nạp ngay lúc khởi động.
 """
 
 from __future__ import annotations
@@ -91,12 +80,8 @@ class ModelRegistry:
 
     @property
     def tokenizer(self):
-        """Tokenizer của chính encoder.
-
-        Chunking đo ngân sách bằng token của encoder, nên đây phải là **cùng**
-        tokenizer chứ không phải một cái xấp xỉ. Dùng tokenizer khác thì chunk
-        400 token đo được có thể là 520 token thật và bị cắt cụt lúc nhúng.
-        """
+        """Tokenizer của chính encoder: chunking đo ngân sách bằng token này, dùng tokenizer khác thì chunk 400 token đo được có
+        thể là 520 token thật và bị cắt cụt lúc nhúng."""
         if self._tokenizer is None:
             with self._lock:
                 if self._tokenizer is None:
@@ -126,20 +111,9 @@ class ModelRegistry:
                         model = CrossEncoder(self.reranker_model, max_length=512, device="cpu")
 
                         if self.quantize_reranker:
-                            # Lượng tử hóa động: trọng số các lớp Linear về int8, kích
-                            # hoạt vẫn float. Không cần dữ liệu hiệu chỉnh.
-                            #
-                            # Đo được trên máy này: 3532 → 1471 ms mỗi cặp (2.4×), còn
-                            # điểm số gần như không đổi (0.9930 → 0.9864 ở câu trong
-                            # phạm vi; 0.0019 ở câu ngoài phạm vi). Điều đó quan trọng
-                            # hơn tốc độ: ngưỡng abstention τ được calibrate trên chính
-                            # thang điểm này, nên một phép tối ưu làm dịch điểm sẽ âm
-                            # thầm làm sai cổng chống bịa.
-                            #
-                            # Vẫn phải chạy lại scripts/calibrate_tau.py sau khi bật/tắt
-                            # tùy chọn này. Chuyển đổi lúc chạy: bản fp32 và bản int8
-                            # cùng tồn tại trong RAM một lúc — scripts/quantize_models.py
-                            # ghi sẵn file int8 để tránh đỉnh RAM này.
+                            # Lượng tử hóa động int8 cho các lớp Linear: nhanh gấp 2,4 lần (3532 → 1471 ms mỗi cặp), điểm gần như không đổi
+                            # (0.9930 → 0.9864 trong phạm vi). Phải chạy lại scripts/calibrate_tau.py sau khi bật hoặc tắt vì τ calibrate trên thang
+                            # điểm này; scripts/quantize_models.py ghi sẵn file int8 để tránh đỉnh RAM khi chuyển đổi lúc chạy.
                             model.model = torch.quantization.quantize_dynamic(
                                 model.model, {torch.nn.Linear}, dtype=torch.qint8
                             )
@@ -163,12 +137,8 @@ class ModelRegistry:
         ).astype(np.float32)
 
     def rerank_scores(self, pairs: list[tuple[str, str]], batch_size: int = 8) -> np.ndarray:
-        """Độ liên quan của cặp (truy vấn, đoạn văn), đưa về [0, 1].
-
-        Một số phiên bản sentence-transformers trả logit thô thay vì xác suất.
-        Đưa qua sigmoid khi phát hiện giá trị ngoài [0,1] — bước này bắt buộc, vì
-        ngưỡng τ được calibrate trên thang [0,1] và so logit với τ thì vô nghĩa.
-        """
+        """Độ liên quan của cặp (truy vấn, đoạn văn) trong [0, 1]. Một số phiên bản sentence-transformers trả logit thô nên đưa
+        qua sigmoid khi giá trị ngoài [0, 1]: τ được calibrate trên thang [0, 1]."""
         if not pairs:
             return np.zeros(0, dtype=np.float32)
         scores = np.asarray(

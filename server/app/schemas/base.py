@@ -1,12 +1,5 @@
-"""Shared Pydantic v2 base model.
-
-The React client sends/expects camelCase JSON (it talks to the Nest API
-today); Python code stays snake_case internally. `CamelModel` bridges the two
-via `alias_generator=to_camel` + `populate_by_name=True`, and sets
-`extra="forbid"` everywhere to replicate Nest's `whitelist: true,
-forbidNonWhitelisted: true` validation pipe (reject any field the DTO didn't
-declare). Every schema in every future phase should subclass this.
-"""
+"""Model Pydantic v2 nền: client React gửi và nhận JSON camelCase, mã Python giữ snake_case (`alias_generator=to_camel`,
+`populate_by_name=True`). `extra="forbid"` từ chối mọi trường mà DTO không khai báo."""
 
 from __future__ import annotations
 

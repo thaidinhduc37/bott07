@@ -1,15 +1,8 @@
-"""E-signature registration + lookup. Port of the (deleted) NestJS
-`signatures.service.ts`.
+"""Đăng ký và tra cứu chữ ký điện tử. Chỉ PNG, tối đa 2MB (`StorageService` kiểm chữ ký tệp và dung lượng).
 
-PNG-only, 2MB cap (enforced by `StorageService`'s magic-byte + size checks).
-Registering a new signature deactivates (never deletes) the previous active
-one — historical documents may still need to re-render with an old
-signature image (`get_image_by_id`), so nothing is ever hard-deleted here.
-
-Width/height are parsed straight from the PNG's IHDR chunk (bytes 16-23,
-big-endian uint32 pairs) rather than pulling in Pillow for two integers —
-every PNG file has this chunk as the very first chunk after the 8-byte
-signature, unconditionally, per the PNG spec.
+Đăng ký chữ ký mới sẽ vô hiệu (không xóa) chữ ký đang dùng: tài liệu cũ có thể cần dựng lại với ảnh chữ ký cũ
+(`get_image_by_id`). Rộng và cao đọc thẳng từ chunk IHDR của PNG (byte 16–23, cặp uint32 big-endian) thay vì kéo Pillow vào
+cho hai số nguyên.
 """
 
 from __future__ import annotations

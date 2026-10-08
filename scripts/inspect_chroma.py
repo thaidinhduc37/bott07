@@ -1,4 +1,6 @@
 """Kiểm tra metadata Chroma: phân bố course_id + llm_context (chạy một lần)."""
+from collections import Counter
+
 import chromadb
 
 c = chromadb.HttpClient(
@@ -9,7 +11,6 @@ tot = col.count()
 print("total sa_giaotrinh:", tot)
 
 # Quét toàn bộ để thống kê course_id (collection dev nhỏ, ~1844 điểm).
-from collections import Counter
 course_counter = Counter()
 ctx_counter = Counter()
 offset = 0

@@ -1,8 +1,5 @@
-"""Port of the (deleted) NestJS `forms.controller.ts` — three route groups
-mounted from one router module: `/signatures` (no role restriction —
-approvers must register a signature too), `/form-templates` (read-only,
-any authed user), `/submissions` (`STUDENT` only).
-"""
+"""Ba nhóm route: `/signatures` (không giới hạn vai trò, người duyệt cũng phải đăng ký chữ ký), `/form-templates` (chỉ đọc, mọi
+người dùng đã đăng nhập) và `/submissions` (chỉ STUDENT)."""
 
 from __future__ import annotations
 
@@ -12,7 +9,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, Upl
 from fastapi.responses import FileResponse, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles, user_rate_limit
 from app.models.enums import RoleCode, SubmissionStatus
 from app.schemas.forms import CreateSubmissionDto, SignSubmissionDto, UpdateSubmissionDto
 from app.services.forms.forms_service import FormsService
@@ -32,7 +29,7 @@ def _parse_uuid4(value: str) -> str:
 
 
 def _sign_rate_limit():
-    return rate_limit("form_sign", 5)
+    return user_rate_limit("form_sign", 5)
 
 
 # ------------------------------------------------------------- signatures

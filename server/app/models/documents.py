@@ -21,7 +21,7 @@ class Document(Base):
         "document_type", SAEnum(DocumentType, name="DocumentType", native_enum=True), nullable=False
     )
     course_id: Mapped[uuid.UUID | None] = mapped_column(
-        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="SET NULL"), nullable=True
+        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="SET NULL"), nullable=True, index=True
     )
     reference_no: Mapped[str | None] = mapped_column("reference_no", String, nullable=True)
     issued_at: Mapped[date | None] = mapped_column("issued_at", Date, nullable=True)

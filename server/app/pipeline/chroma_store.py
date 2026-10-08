@@ -1,23 +1,7 @@
-"""§7 Chỉ mục dense — ChromaDB.
+"""§7 Chỉ mục dense: ChromaDB chạy như container, nối vào qua `HttpClient`, để chỉ mục sống sót qua lần khởi động lại.
 
-Notebook giữ embedding trong một ma trận numpy và tìm kiếm tích vô hướng chính
-xác trên toàn bộ ma trận. Ở quy mô của notebook đó là lựa chọn đúng: chỉ mục xấp
-xỉ (HNSW, IVF) đánh đổi recall lấy tốc độ mà không có lợi ích độ trễ nào đáng kể.
-
-Ở đây phải đổi sang một kho vector chạy như dịch vụ vì một lý do khác hẳn: **chỉ
-mục phải sống sót qua lần khởi động lại**. Notebook dựng lại chỉ mục mỗi lần
-chạy; một dịch vụ thì không thể bắt cán bộ nạp lại toàn bộ giáo trình mỗi lần
-container restart.
-
-Trước đây dùng Qdrant; nay đổi sang ChromaDB (nhẹ hơn, đủ dùng cho quy mô dev
-của dự án này) chạy như container Docker ở chế độ server, dịch vụ RAG (chạy
-native trên host) nối vào qua `HttpClient`. Cùng dùng HNSW nên đánh đổi recall
-tương tự Qdrant.
-
-Chroma chỉ chấp nhận `str | int | float | bool` làm giá trị metadata — không
-`None`, không `list`. `_encode_metadata`/`_decode_metadata` làm việc chuyển đổi
-hai chiều giữa payload nội bộ (giữ nguyên hình dạng cũ, tương thích với phần còn
-lại của pipeline) và metadata Chroma chấp nhận được.
+Chroma chỉ nhận `str | int | float | bool` làm giá trị metadata (không `None`, không `list`); `_encode_metadata` và
+`_decode_metadata` chuyển đổi hai chiều giữa payload nội bộ và metadata Chroma.
 """
 
 from __future__ import annotations
@@ -100,8 +84,7 @@ class ChromaStore:
         embeddings = [vectors[i].tolist() for i in range(len(chunks))]
         documents = [c.text for c in chunks]
 
-        # Chia lô như bên Qdrant: một lần upsert vài nghìn vector 1024 chiều là
-        # payload HTTP hàng chục MB.
+        # Chia lô: một lần upsert vài nghìn vector 1024 chiều là payload HTTP hàng chục MB.
         BATCH = 128
         for i in range(0, len(ids), BATCH):
             j = i + BATCH
@@ -116,11 +99,9 @@ class ChromaStore:
     # ------------------------------------------------------------------ search
 
     def document_titles(self, collection: str) -> dict[str, str]:
-        """{document_id: title} của mọi tài liệu trong collection.
+        """{document_id: title} của mọi tài liệu trong collection, để nhận ra tài liệu mà câu hỏi nhắc tên.
 
-        Dùng để nhận ra tài liệu mà câu hỏi nhắc tên. Đọc metadata của cả
-        collection nên được nhớ lại theo số điểm hiện có: nạp thêm hay xóa tài
-        liệu đổi số điểm thì lần gọi sau tự đọc lại.
+        Đọc metadata của cả collection nên được nhớ lại theo số điểm hiện có: nạp thêm hay xóa tài liệu thì lần gọi sau đọc lại.
         """
         if not self._exists(collection):
             return {}
@@ -166,10 +147,7 @@ class ChromaStore:
         distances = res.get("distances") or [[]]
         out: list[tuple[dict, float]] = []
         for meta, dist in zip(metadatas[0], distances[0]):
-            # Chroma trả cosine *distance*; Qdrant trả cosine *similarity*. Đổi
-            # lại về similarity (1 - distance) để phần còn lại của pipeline
-            # (RRF, log, hiển thị) không phải biết kho vector nào đang chạy phía
-            # sau.
+            # Chroma trả cosine distance; đổi về similarity (1 - distance) để phần còn lại của pipeline không phụ thuộc kho vector.
             out.append((_decode_metadata(meta), 1.0 - float(dist)))
         return out
 
@@ -197,12 +175,7 @@ class ChromaStore:
     # ------------------------------------------------------------------ delete
 
     def delete_document(self, collection: str, document_id: str) -> int:
-        """Xóa mọi điểm thuộc một tài liệu.
-
-        Trả về số điểm đã xóa để phía api-py đối chiếu: nếu PostgreSQL nói tài
-        liệu có 240 chunk mà ở đây xóa được 0, thì hai bên đã lệch nhau và phải
-        báo chứ không được im lặng coi như thành công.
-        """
+        """Xóa mọi điểm của một tài liệu và trả số điểm đã xóa để bên gọi đối chiếu với PostgreSQL (lệch thì phải báo)."""
         if not self._exists(collection):
             return 0
         before = len(self.scroll_all(collection, document_id))

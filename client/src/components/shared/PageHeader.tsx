@@ -2,16 +2,9 @@ import type { ReactNode } from 'react';
 import { Breadcrumb, type Crumb } from './Breadcrumb';
 
 /**
- * Phần đầu trang dùng chung: nhãn nhỏ · tiêu đề · mô tả · nút hành động · tab.
- *
- * Trước đây mỗi trang tự dựng bằng ba kiểu markup khác nhau (`header.page-head`,
- * `header` trơn, `header.spread` kèm nút), khoảng cách tới nội dung lệch nhau, và
- * `.page-head` còn cộng thêm margin trên khoảng cách 24px của `.stack` nên từ tiêu đề
- * tới nội dung tốn tới 48px. Một component duy nhất giữ hai thứ này thống nhất:
- *
- *  - Không tự cộng khoảng cách: khoảng tới nội dung là của `.stack` cha (24px) — hoặc
- *    20px khi có tab, để tab dính sát nội dung nó điều khiển.
- *  - Có `tabs` thì header gọn lại: mô tả nhỏ hơn, tab nằm sát đáy với đường kẻ chung.
+ * Phần đầu trang dùng chung: nhãn nhỏ · tiêu đề · mô tả · nút hành động · tab. Không tự cộng khoảng cách: khoảng tới nội dung là của
+ * `.stack` cha (24px), hoặc 20px khi có tab để tab dính sát nội dung nó điều khiển. Có `tabs` thì header gọn lại (mô tả nhỏ hơn,
+ * tab nằm sát đáy với đường kẻ chung).
  *
  * ```tsx
  * <PageHeader eyebrow="Hành chính" title="Đơn của tôi" actions={<Link …>Tạo đơn mới</Link>} />

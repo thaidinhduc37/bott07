@@ -1,13 +1,16 @@
-"""Port of `auth/auth.controller.ts`. Routes mounted at `/api/auth/*`."""
+"""Đăng nhập, làm mới phiên, đăng xuất, đổi mật khẩu và PIN ký (`/api/auth/*`)."""
 
 from __future__ import annotations
+
+import hashlib
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit
+from app.core.config import get_settings
+from app.core.deps import AuthenticatedUser, check_rate_limit, get_current_user, get_db, rate_limit, user_rate_limit
 from app.models.users import StudentProfile, User, UserRole
 from app.schemas.auth import (
     AuthenticatedUserOut,
@@ -24,8 +27,13 @@ from app.services.accounts.auth_service import AuthService
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/login", response_model=LoginResponse, dependencies=[Depends(rate_limit("login", 5))])
+@router.post(
+    "/login",
+    response_model=LoginResponse,
+    dependencies=[Depends(rate_limit("login-ip", get_settings().rate_limit_login_ip_per_min))],
+)
 async def login(dto: LoginRequest, request: Request, response: Response, db: AsyncSession = Depends(get_db)):
+    await check_rate_limit("login-email", dto.email.strip().lower(), get_settings().rate_limit_login_per_min)
     result = await AuthService(db).login(dto.email, dto.password, request)
     set_auth_cookies(
         response,
@@ -47,13 +55,20 @@ async def login(dto: LoginRequest, request: Request, response: Response, db: Asy
     )
 
 
-@router.post("/refresh", response_model=RefreshResponse, dependencies=[Depends(rate_limit("refresh", 20))])
+@router.post(
+    "/refresh",
+    response_model=RefreshResponse,
+    dependencies=[Depends(rate_limit("refresh-ip", get_settings().rate_limit_refresh_ip_per_min))],
+)
 async def refresh(
     request: Request,
     response: Response,
     sa_refresh: str | None = Cookie(default=None),
     db: AsyncSession = Depends(get_db),
 ):
+    await check_rate_limit(
+        "refresh-token", hashlib.sha256((sa_refresh or "").encode()).hexdigest()[:16], get_settings().rate_limit_refresh_per_min
+    )
     try:
         tokens = await AuthService(db).refresh(sa_refresh or "", request)
     except HTTPException:
@@ -76,10 +91,8 @@ async def logout(
     sa_refresh: str | None = Cookie(default=None),
     db: AsyncSession = Depends(get_db),
 ):
-    # Public in Nest too: logout should succeed even with an expired/absent
-    # access token, so this route does NOT depend on get_current_user. We
-    # still try to attribute the audit entry to a user if the access cookie
-    # happens to be valid, matching `req.user?.id` in the Nest controller.
+    # Logout phải thành công cả khi access token hết hạn hoặc vắng nên route này không phụ thuộc get_current_user; nếu cookie
+    # còn hợp lệ thì vẫn ghi nhật ký cho đúng người.
     user_id: str | None = None
     try:
         user = await get_current_user(request, sa_access=request.cookies.get("sa_access"))
@@ -149,7 +162,7 @@ async def change_password(
 
 
 @router.post(
-    "/signature-pin", response_model=MessageResponse, dependencies=[Depends(rate_limit("signature-pin", 5))]
+    "/signature-pin", response_model=MessageResponse, dependencies=[Depends(user_rate_limit("signature-pin", 5))]
 )
 async def set_signature_pin(
     dto: SetSignaturePinRequest,

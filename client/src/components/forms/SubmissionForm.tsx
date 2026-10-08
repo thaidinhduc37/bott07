@@ -38,12 +38,7 @@ export interface SubmissionFormProps {
   onCancel?: () => void;
 }
 
-/**
- * Dòng gợi ý dưới ô nhập, tra theo (mã đơn, tên trường).
- *
- * Cố ý khóa theo cả hai: `leaveTo` có mặt ở cả hai đơn nghỉ học nhưng phạm vi
- * ngày của chúng ngược nhau.
- */
+/** Dòng gợi ý dưới ô nhập, tra theo (mã đơn, tên trường): `leaveTo` có ở cả hai đơn nghỉ học nhưng phạm vi ngày ngược nhau. */
 const HINTS: Record<string, Record<string, string>> = {
   DON_XIN_NGHI_HOC: {
     leaveTo: 'Biểu mẫu này dùng cho nghỉ từ 01 đến 03 ngày.',
@@ -58,12 +53,8 @@ const HINTS: Record<string, Record<string, string>> = {
 };
 
 /**
- * Bảng lặp dòng cho trường `type: 'table'`.
- *
- * Số thứ tự do đây tự đánh, giống hệt renderer DOCX — người dùng tự nhập STT thì
- * sớm muộn cũng có đơn nhảy số. Nút xóa bị vô hiệu khi chỉ còn một dòng: bảng
- * không còn dòng nào thì không có gì để bấm vào, và người dùng phải đoán rằng
- * nút "Thêm dòng" mới là đường quay lại.
+ * Bảng lặp dòng cho trường `type: 'table'`. Số thứ tự do đây tự đánh (giống renderer DOCX) để đơn không nhảy số; nút xóa bị vô hiệu
+ * khi chỉ còn một dòng.
  */
 function RepeatingTable({
   field,
@@ -168,12 +159,8 @@ function emptyRow(f: FormField): TableRowValue {
 }
 
 /**
- * Biểu mẫu lập đơn.
- *
- * Trường `autofill` được vẽ ra dưới dạng ô khóa, có nhãn nói rõ lấy từ đâu. Nó
- * **không** nằm trong dữ liệu gửi đi: máy chủ tự lấy từ hồ sơ của phiên đăng
- * nhập và bỏ qua mọi khóa autofill client gửi lên. Khóa ô ở đây là để người
- * dùng hiểu, không phải để bảo vệ — bảo vệ nằm ở `FormsService`.
+ * Biểu mẫu lập đơn. Trường `autofill` hiện dạng ô khóa có nhãn nói rõ lấy từ đâu và KHÔNG nằm trong dữ liệu gửi đi: máy chủ tự lấy
+ * từ hồ sơ của phiên và bỏ mọi khóa autofill client gửi lên. Khóa ô chỉ để người dùng hiểu; bảo vệ nằm ở `FormsService`.
  */
 export function SubmissionForm({
   fields,

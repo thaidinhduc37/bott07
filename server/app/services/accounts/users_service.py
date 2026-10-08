@@ -1,7 +1,8 @@
-"""Port of `users/users.service.ts`."""
+"""Tài khoản người dùng: hồ sơ cá nhân, quản trị tài khoản và vai trò, nhật ký thao tác."""
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 
 from fastapi import HTTPException
@@ -238,7 +239,7 @@ class UsersService:
                 raise HTTPException(status_code=400, detail={"message": "Khoa không hợp lệ", "code": "INVALID_FACULTY"})
             faculty_id = faculty.id
 
-        password_hash = hash_password(dto.password)
+        password_hash = await asyncio.to_thread(hash_password, dto.password)
         user = User(
             email=dto.email, full_name=dto.full_name, phone=dto.phone, password_hash=password_hash,
             faculty_id=faculty_id if RoleCode.STUDENT not in dto.roles else None,

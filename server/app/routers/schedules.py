@@ -1,9 +1,5 @@
-"""Port of the (deleted) NestJS `schedules.controller.ts`, mounted at
-`/schedules`. Student-self routes (`/me`, `/me/courses`) take no class
-parameter at all — the class is always resolved server-side from the
-caller's own `StudentProfile`, which is the anti-IDOR property called out
-in the porting notes.
-"""
+"""Lịch học và lịch thi (`/schedules`). Route của học viên (`/me`, `/me/courses`) không nhận tham số lớp: lớp luôn lấy từ
+`StudentProfile` của người gọi để chống IDOR."""
 
 from __future__ import annotations
 

@@ -12,7 +12,8 @@ import urllib.request
 for stream in (sys.stdout, sys.stderr):
     stream.reconfigure(encoding="utf-8", errors="replace")
 
-BASE = "http://localhost:5000/api"
+# 127.0.0.1 thay vì localhost: trên Windows `localhost` thử IPv6 trước nên mỗi lệnh gọi tốn thêm ~2 giây.
+BASE = "http://127.0.0.1:5000/api"
 PASSED = FAILED = 0
 
 
@@ -46,6 +47,12 @@ class Client:
 
 
 def login(email: str, password: str = "Demo@2026") -> Client:
+    # Các bộ test dùng lại cùng tài khoản liên tiếp, nhanh hơn giới hạn theo phút: xóa bộ đếm của email và của chính người dùng này.
+    mail = email.strip().lower()
+    psql(
+        "DELETE FROM rate_limits WHERE (bucket = 'login-email' AND key = '%s') "
+        "OR key = (SELECT id::text FROM users WHERE email = '%s')" % (mail, mail)
+    )
     c = Client()
     status, _ = c.req("POST", "/auth/login", {"email": email, "password": password})
     if status != 200 and status != 201:

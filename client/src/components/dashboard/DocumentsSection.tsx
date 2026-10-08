@@ -31,7 +31,7 @@ export function DocumentsSection({ state }: { state: Loaded<DocumentsAdminStats>
           />
 
           <p style={{ margin: 0, fontSize: '0.8125rem', color: 'var(--ink-soft)' }}>
-            Đồng bộ với Qdrant:{' '}
+            Đồng bộ với Chroma:{' '}
             <span className={`tag ${data.ragConsistency === 'in_sync' ? 'tag--ok' : 'tag--warn'}`}>
               {data.ragConsistency === 'in_sync' ? 'khớp' : data.ragConsistency}
             </span>

@@ -1,5 +1,4 @@
-"""Port of `users/users.controller.ts` — three route groups: self-service
-`/users/*`, admin `/admin/users/*`, and `/admin/audit-logs`."""
+"""Ba nhóm route: tự phục vụ `/users/*`, quản trị `/admin/users/*` và `/admin/audit-logs`."""
 
 from __future__ import annotations
 

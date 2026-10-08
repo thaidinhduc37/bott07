@@ -46,13 +46,13 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1g
+          memory: 2g
     command:
       - postgres
       - -c
-      - max_connections=60
+      - max_connections=200
       - -c
-      - shared_buffers=192MB
+      - shared_buffers=512MB
       - -c
       - work_mem=8MB
       - -c

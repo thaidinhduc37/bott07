@@ -1,28 +1,18 @@
-"""Shared FastAPI dependencies: DB session, current user, role guard, rate limit.
+"""Các dependency dùng chung của FastAPI: phiên DB, người dùng hiện tại, kiểm vai trò, giới hạn tần suất.
 
-Port of the JwtAuthGuard / RolesGuard / ThrottlerGuard trio + `@CurrentUser()`.
-`get_db` is re-exported from `app.core.db` so every router can `from app.core.deps import
-get_db, get_current_user, require_roles`.
-
-Fail-closed: `get_current_user` is meant to be a dependency on EVERY route by
-default. Routes that must be public (login, refresh, health) simply don't
-depend on it — there is no global-guard-plus-opt-out mechanism in FastAPI the
-way there is in Nest, so "public by omission" is the equivalent here: every
-router in this codebase must explicitly add `Depends(get_current_user)` (or a
-`require_roles(...)` dependency, which implies it) to every non-public route.
+Mọi route không công khai phải khai báo `Depends(get_current_user)` hoặc `require_roles(...)` (đã gồm cái trước); route công
+khai (đăng nhập, refresh, health) thì không. `get_db` được re-export từ `app.core.db`.
 """
 
 from __future__ import annotations
 
-import time
-from collections import defaultdict
 from dataclasses import dataclass
 
 from fastapi import Cookie, Depends, HTTPException, Request, status
 
-from app.core.config import get_settings
+from app.core import rate_limit as rate_limit_store
 from app.core.db import get_db  # noqa: F401  (re-exported)
-from app.core.security import TokenExpiredError, TokenInvalidError, decode_access_token
+from app.core.security import TokenExpiredError, TokenInvalidError, client_ip, decode_access_token
 
 
 @dataclass
@@ -67,11 +57,8 @@ async def get_current_user(
 
 
 def require_roles(*roles: str):
-    """Dependency factory: user must have AT LEAST ONE of the given roles.
-
-    Role check reads JWT claims only (not re-queried from DB) — same 15-minute
-    staleness tradeoff as the NestJS RolesGuard.
-    """
+    """Người dùng phải có ÍT NHẤT MỘT trong các vai trò đã cho. Chỉ đọc vai trò trong JWT, không truy vấn lại CSDL: vai trò đổi
+    có hiệu lực chậm nhất sau 15 phút."""
 
     async def _dep(user: AuthenticatedUser = Depends(get_current_user)) -> AuthenticatedUser:
         if not any(r in user.roles for r in roles):
@@ -90,45 +77,22 @@ def require_roles(*roles: str):
 
 # --------------------------------------------------------------- rate limit
 
-class _InMemoryRateLimiter:
-    """Small fixed-window in-memory limiter — single-process only, matches the
-    scope of a Phase 1 smoke-testable server. Good enough for `uvicorn` running
-    as one worker; a multi-worker/production deployment would need a shared
-    store (Redis) instead, same caveat `slowapi`'s default backend has.
-    """
-
-    def __init__(self):
-        self._hits: dict[tuple[str, str], list[float]] = defaultdict(list)
-
-    def check(self, bucket: str, key: str, limit: int, window_seconds: float = 60.0) -> None:
-        now = time.monotonic()
-        hits = self._hits[(bucket, key)]
-        cutoff = now - window_seconds
-        while hits and hits[0] < cutoff:
-            hits.pop(0)
-        if len(hits) >= limit:
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail={"message": "Quá nhiều yêu cầu, vui lòng thử lại sau", "code": "RATE_LIMITED"},
-            )
-        hits.append(now)
-
-
-_limiter = _InMemoryRateLimiter()
+check_rate_limit = rate_limit_store.check
 
 
 def rate_limit(bucket: str, limit: int):
-    """Dependency factory: `limit` requests per 60s per (bucket, client IP)."""
+    """Dependency: tối đa `limit` yêu cầu mỗi 60 giây cho mỗi (bucket, IP). Chỉ dùng cho route chưa đăng nhập."""
 
-    def _dep(request: Request) -> None:
-        ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (
-            request.client.host if request.client else "unknown"
-        )
-        _limiter.check(bucket, ip, limit)
+    async def _dep(request: Request) -> None:
+        await rate_limit_store.check(bucket, client_ip(request), limit)
 
     return _dep
 
 
-def default_rate_limit():
-    s = get_settings()
-    return rate_limit("default", s.rate_limit_default_per_min)
+def user_rate_limit(bucket: str, limit: int):
+    """Dependency: tối đa `limit` yêu cầu mỗi 60 giây cho mỗi người dùng đã đăng nhập, không theo IP (cả trường có thể chung một IP)."""
+
+    async def _dep(user: AuthenticatedUser = Depends(get_current_user)) -> None:
+        await rate_limit_store.check(bucket, user.id, limit)
+
+    return _dep

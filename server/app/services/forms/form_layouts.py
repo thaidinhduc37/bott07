@@ -1,34 +1,14 @@
-"""Print specs for the 7 demo administrative forms.
+"""Đặc tả in của 7 biểu mẫu hành chính demo, dựng từ tài liệu gốc `data/nguon/mau-don/*.doc(x)`: chữ, người nhận và thứ tự trường
+lấy nguyên văn; chỗ trống ("……………") thành tham chiếu `Seg(f=<khóa trường>)` được thay bằng dữ liệu đơn lúc dựng.
 
-Reconstructed directly from the ORIGINAL source documents at
-`data/nguon/mau-don/*.doc(x)` — extracted verbatim via `antiword`
-(the `.doc` files) and `python-docx` (`don-hoc-cai-thien.docx`) — rather than
-from the (now-deleted) NestJS `form-layouts.ts`, which itself was a port of
-these same source documents. Wording, recipients, and field order below are
-copied faithfully from those originals; blanks in the original paper form
-(the "……………" fill-in lines) become `Seg(f=<field key>)` references resolved
-against the submission's merged profile-snapshot + form-data at render time.
+Thuần đặc tả in, không có logic nghiệp vụ; `layout_for(code)` là điểm tra cứu duy nhất của `docx_renderer.render_form()`.
 
-This module is a pure print spec — no DB/business logic. `layout_for(code)`
-is the single lookup used by `docx_renderer.render_form()`.
-
-Deviations from the literal source, called out explicitly:
-- Every form's signature block is normalised to the shared renderer's fixed
-  "(Ký và ghi rõ họ tên)" caption (the originals vary between "Ký, ghi rõ họ tên"
-  and "Ký và ghi rõ họ tên"; Nghị định 30/2020/NĐ-CP uses the former) — the
-  renderer builds one signature row shape for all forms, matching the
-  architecture described in the porting notes (signatureTable() is shared
-  code, not per-template).
-- `DON_XIN_NGHI_HOC` add an optional `courseCode` line (flagged in the
-  porting notes as an optional field on this template) even though the
-  original paper form has no dedicated blank for it — shown only when
-  present (`only_if`).
-- `DON_HOC_CAI_THIEN` additionally surfaces `hocKy`/`namHoc`/
-  `soHocPhanDaThi`/`soHocPhanChuaDat` as scalar fields (visible as blanks in
-  the original paragraph) even though the porting notes describe this
-  template as "only the repeating table field" — the paragraph text in the
-  source document plainly has these blanks, so they are kept as fields
-  rather than dropped silently.
+Khác nguyên văn có chủ đích:
+- Khối chữ ký của mọi đơn dùng chú thích chung "(Ký và ghi rõ họ tên)" (bản gốc lúc "Ký, ghi rõ họ tên" lúc "Ký và ghi rõ họ
+  tên"; Nghị định 30/2020 dùng dạng đầu) vì bộ dựng có một hình dạng hàng chữ ký chung.
+- `DON_XIN_NGHI_HOC` thêm dòng `courseCode` tùy chọn (chỉ hiện khi có, qua `only_if`) dù đơn giấy không có chỗ trống riêng.
+- `DON_HOC_CAI_THIEN` thêm các trường vô hướng `hocKy`/`namHoc`/`soHocPhanDaThi`/`soHocPhanChuaDat` vì đoạn văn gốc có các chỗ
+  trống đó, thay vì chỉ có trường bảng lặp.
 """
 
 from __future__ import annotations

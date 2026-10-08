@@ -61,9 +61,6 @@ export interface DocumentList {
 
 export interface CollectionHealth {
   dense_points: number;
-  /** Chỉ có ở bản dùng Qdrant cũ; Chroma hiện tại không báo hai trường này. */
-  sparse_documents?: number;
-  in_sync?: boolean;
 }
 
 export interface IndexStatusReport {

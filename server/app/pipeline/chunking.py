@@ -1,18 +1,8 @@
-"""§5 Chunking.
+"""§5 Chunking theo token của encoder, không theo ký tự (1000 ký tự tiếng Việt có thể vượt 500 token nên ngân sách theo ký
+tự cắt cụt tiếng Việt mà không cắt tiếng Anh).
 
-Kích thước chunk là một đánh đổi bias–variance. Đoạn quá nhỏ mất ngữ cảnh cần để
-diễn giải; đoạn quá lớn làm loãng embedding qua nhiều chủ đề và tiêu tốn ngân
-sách chú ý của reader.
-
-Ngân sách ở đây **đo bằng token của encoder, không phải ký tự**. Một chunk 1000
-ký tự là khoảng 250 token tiếng Anh nhưng có thể vượt 500 token tiếng Việt, nên
-ngân sách theo ký tự sẽ âm thầm cắt cụt một ngôn ngữ mà không cắt ngôn ngữ kia.
-Với corpus quy chế và giáo trình tiếng Việt, đó không phải chi tiết nhỏ.
-
-Việc chia là phân cấp và tôn trọng cấu trúc tài liệu: ranh giới đoạn trước, ranh
-giới câu cho đoạn quá khổ, cắt cứng theo token chỉ là phương án cuối. Phần đuôi
-dài `chunk_overlap` token được mang sang chunk sau để một dữ kiện nằm vắt qua
-ranh giới vẫn còn nguyên trong ít nhất một chunk.
+Chia phân cấp theo cấu trúc: ranh giới đoạn, rồi câu, cắt cứng theo token là phương án cuối. `chunk_overlap` token cuối
+được mang sang chunk sau để dữ kiện vắt qua ranh giới vẫn còn nguyên ở ít nhất một chunk.
 """
 
 from __future__ import annotations
@@ -39,13 +29,8 @@ HEADING_RE = re.compile(
 
 @dataclass
 class Chunk:
-    """Một đoạn có thể truy xuất.
-
-    `text` là thứ reader nhìn thấy — không thêm bất kỳ nội dung tổng hợp nào.
-    `prefix` và `llm_context` chỉ tham gia vào chuỗi được **nhúng**. Tách hai thứ
-    này là điều làm cho trích dẫn sạch: người dùng mở nguồn ra và thấy đúng chữ
-    có trong tài liệu, không thấy câu mô tả do máy viết thêm.
-    """
+    """Một đoạn truy xuất được. `text` là thứ reader thấy; `prefix` và `llm_context` chỉ tham gia chuỗi được nhúng, để
+    trích dẫn hiển thị đúng chữ của tài liệu."""
 
     id: int
     text: str
@@ -60,7 +45,7 @@ class Chunk:
     articles: list[str] = field(default_factory=list)
     llm_context: str = ""
 
-    # Siêu dữ liệu nghiệp vụ, gắn từ phía NestJS lúc gọi /ingest.
+    # Siêu dữ liệu nghiệp vụ, gắn lúc ingest.
     document_id: str = ""
     document_type: str = ""
     title: str = ""
@@ -105,18 +90,10 @@ class Chunker:
     # ------------------------------------------------------------------ split
 
     def split_blocks(self, text: str) -> list[tuple[str, int]]:
-        """Đoạn văn, rồi câu, rồi cắt cứng theo token.
+        """Đoạn văn, rồi câu, rồi cắt cứng theo token. Trả `(nội_dung_khối, vị_trí_trong_text)`.
 
-        Trả về `(nội_dung_khối, vị_trí_trong_text)`.
-
-        Vị trí được mang theo chứ không tính lại về sau, vì tính lại là sai:
-        chunk được ghép từ nhiều khối nối bằng `"\\n\\n"`, trong khi văn bản gốc
-        có thể chỉ có một `"\\n"` ở đúng chỗ đó. Đi tìm thân chunk trong văn bản
-        gốc sẽ trượt, và độ dài chunk thì dài hơn khoảng nó thực sự chiếm — cả
-        hai đều làm việc gán số điều lệch về phía sau.
-
-        Con trỏ `cursor` quét tiến, nên một câu lặp lại ở chỗ khác không kéo vị
-        trí đi lung tung.
+        Vị trí được mang theo thay vì tính lại: chunk nối các khối bằng "\\n\\n" còn văn bản gốc có thể chỉ có "\\n", nên tìm lại
+        thân chunk trong văn bản gốc sẽ trượt và làm lệch số điều. `cursor` quét tiến để câu lặp lại không kéo vị trí đi lung tung.
         """
         paras = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
         # PDF thường chỉ có xuống dòng đơn; khi đó tách theo dòng.
@@ -281,14 +258,8 @@ class Chunker:
             article_starts = {pos for pos, _ in articles}
 
             def starts_new_article(block_pos: int, block_text: str) -> bool:
-                """Khối này có mở đầu một điều mới không?
-
-                Với văn bản quy phạm, **điều** mới là đơn vị ngữ nghĩa chứ không
-                phải ngân sách token. Một chunk trải từ Điều 16 sang Điều 21 vẫn
-                truy xuất được, nhưng trích dẫn của nó chỉ nói được "Điều 16–21",
-                và người dùng hỏi về Điều 17 nhận về một chỉ dẫn rộng gấp sáu lần
-                mức cần thiết.
-                """
+                """Khối này có mở đầu một điều mới không? Với quy chế, điều là đơn vị ngữ nghĩa: chunk trải nhiều điều chỉ trích dẫn được
+                "Điều 16–21" cho người hỏi về Điều 17."""
                 absolute = page_base + block_pos
                 if any(absolute <= pos < absolute + max(len(block_text), 1) for pos in article_starts):
                     return True

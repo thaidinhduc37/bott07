@@ -1,20 +1,9 @@
-"""Pure CSV parsing for class-session and exam schedules. Port of the
-(deleted) NestJS `schedule-csv.parser.ts` — no DB access, no FastAPI/Depends,
-so the exact same functions back both the CSV-import endpoint and any future
-seed script (matches the reference's own reason for keeping this DI-free).
+"""Phân tích CSV lịch học và lịch thi, thuần hàm (không đụng CSDL hay FastAPI).
 
-Design, preserved from the porting notes:
-- `check_headers()` validates required columns up front (fail fast on a
-  structurally wrong file).
-- Per-row validation accumulates `RowError` — one bad row does not abort
-  the whole parse; the caller decides whether to reject the batch
-  wholesale (`allow_partial=False`, the default) or import the good rows.
-- All date+time pairs are authored in VN local time and converted to UTC
-  via `zoneinfo` — storing the raw string directly would let Postgres
-  interpret it as UTC and silently shift by 7 hours.
-- `detect_conflicts()` sorts by start time then does a windowed scan,
-  early-breaking once a later row's start is at/after the current row's
-  end (rows are sorted, so nothing after that point can overlap).
+- `check_headers()` kiểm cột bắt buộc trước: tệp sai cấu trúc thì dừng ngay.
+- Kiểm từng dòng và gom `RowError`: một dòng lỗi không làm hỏng cả tệp; bên gọi quyết định từ chối cả lô hay nhập các dòng tốt.
+- Ngày giờ soạn theo giờ Việt Nam rồi đổi sang UTC bằng `zoneinfo` (lưu chuỗi thô thì Postgres hiểu là UTC và lệch 7 giờ).
+- `detect_conflicts()` sắp theo giờ bắt đầu rồi quét cửa sổ, dừng sớm khi dòng sau bắt đầu sau giờ kết thúc dòng hiện tại.
 """
 
 from __future__ import annotations

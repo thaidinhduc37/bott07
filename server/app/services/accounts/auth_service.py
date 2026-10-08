@@ -1,13 +1,10 @@
-"""Port of `auth/auth.service.ts`.
-
-Preserves: dummy-hash timing mitigation on login, Argon2id everywhere,
-refresh-token rotation + reuse detection (revoke-all on reuse), revoke-all on
-password change / non-ACTIVE status, PIN verification with the same timing
-mitigation as login.
-"""
+"""Đăng nhập và phiên: băm giả để thời gian đăng nhập không lộ email có tồn tại, Argon2id, xoay refresh token kèm phát hiện dùng
+lại (dùng lại thì thu hồi toàn bộ), thu hồi toàn bộ khi đổi mật khẩu hoặc tài khoản không còn ACTIVE, kiểm PIN ký với cùng
+cách chống đo thời gian."""
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
@@ -77,7 +74,7 @@ class AuthService:
         user = await self._get_user_with_roles(email=email)
 
         hash_to_verify = user.password_hash if user else dummy_hash()
-        password_ok = verify_password(hash_to_verify, password)
+        password_ok = await asyncio.to_thread(verify_password, hash_to_verify, password)
 
         if not user or not password_ok:
             await self.audit.log(
@@ -241,7 +238,7 @@ class AuthService:
         if user is None:
             raise HTTPException(status_code=404, detail={"message": "Không tìm thấy người dùng"})
 
-        ok = verify_password(user.password_hash, current)
+        ok = await asyncio.to_thread(verify_password, user.password_hash, current)
         if not ok:
             await self.audit.log(
                 action="PASSWORD_CHANGE_FAILED", user_id=user_id, entity_type="User", entity_id=user_id,
@@ -254,7 +251,7 @@ class AuthService:
         if current == next_:
             raise HTTPException(status_code=400, detail={"message": "Mật khẩu mới phải khác mật khẩu hiện tại"})
 
-        user.password_hash = hash_password(next_)
+        user.password_hash = await asyncio.to_thread(hash_password, next_)
         revoked = await self.revoke_all_sessions(user_id)
 
         await self.audit.log(
@@ -271,11 +268,11 @@ class AuthService:
         user = await self.db.get(User, user_id)
         if user is None:
             raise HTTPException(status_code=404, detail={"message": "Không tìm thấy người dùng"})
-        ok = verify_password(user.password_hash, password)
+        ok = await asyncio.to_thread(verify_password, user.password_hash, password)
         if not ok:
             raise HTTPException(status_code=400, detail={"message": "Mật khẩu không đúng", "code": "WRONG_PASSWORD"})
 
-        user.signature_pin_hash = hash_password(pin)
+        user.signature_pin_hash = await asyncio.to_thread(hash_password, pin)
         await self.audit.log(
             action="SIGNATURE_PIN_SET", user_id=user_id, entity_type="User", entity_id=user_id, request=request
         )
@@ -284,5 +281,5 @@ class AuthService:
     async def verify_signature_pin(self, user_id: str, pin: str) -> bool:
         user = await self.db.get(User, user_id)
         hash_ = user.signature_pin_hash if user and user.signature_pin_hash else dummy_hash()
-        ok = verify_password(hash_, pin)
+        ok = await asyncio.to_thread(verify_password, hash_, pin)
         return bool(user and user.signature_pin_hash) and ok

@@ -25,11 +25,8 @@ interface Lane {
 }
 
 /**
- * Xếp làn cho các mục trong MỘT ngày để mục trùng giờ nằm cạnh nhau thay vì đè
- * lên nhau (cán bộ quản lý xem lịch nhiều lớp cùng lúc, hay gặp hai lớp học cùng
- * giờ). Gom các mục chồng giờ bắc cầu thành cụm; trong cụm, mỗi mục nhận làn đầu
- * tiên đã trống; bề rộng chia đều theo số làn của cụm — mục không trùng ai vẫn
- * chiếm trọn cột.
+ * Xếp làn cho các mục trong MỘT ngày để mục trùng giờ nằm cạnh nhau thay vì đè lên nhau: gom các mục chồng giờ bắc cầu thành cụm,
+ * mỗi mục nhận làn đầu tiên còn trống, bề rộng chia đều theo số làn của cụm (mục không trùng ai vẫn chiếm trọn cột).
  */
 function layoutLanes(items: Entry[]): Map<string, Lane> {
   const sorted = [...items].sort(
@@ -70,12 +67,8 @@ function minutesOfDay(iso: string): number {
 }
 
 /**
- * Thời khóa biểu dạng lưới giờ × ngày, theo đúng mẫu tham chiếu: cột giờ bên
- * trái, 7 cột ngày, mỗi buổi học/ca thi là một khối màu đặt đúng vị trí theo
- * giờ thực — không còn danh sách xếp dọc theo ngày.
- *
- * `onSelect` có thì mỗi khối thành nút bấm mở chi tiết; `selectedKey`
- * (`${kind}-${id}`) đánh dấu khối đang mở.
+ * Thời khóa biểu lưới giờ × ngày: cột giờ bên trái, 7 cột ngày, mỗi buổi học hoặc ca thi là một khối đặt đúng vị trí theo giờ thực.
+ * Có `onSelect` thì mỗi khối là nút bấm mở chi tiết; `selectedKey` (`${kind}-${id}`) đánh dấu khối đang mở.
  */
 export function TimetableWeek({
   sessions,
@@ -208,12 +201,7 @@ function sessionTag(e: Session): { label: string; cls: string } | null {
   }
 }
 
-/**
- * Một khối buổi học/ca thi, đặt tuyệt đối theo giờ thực trong cột ngày của nó.
- * Nẹp trái theo loại — mực = lý thuyết, hổ phách = thực hành/lab, đỏ = thi.
- * Có `onSelect` thì khối là nút bấm (mở bảng chi tiết), không thì chỉ là khối
- * hiển thị như trước.
- */
+/** Một khối buổi học hoặc ca thi đặt tuyệt đối theo giờ thực. Nẹp trái theo loại: mực = lý thuyết, hổ phách = thực hành, đỏ = thi. */
 function EntryBlock({
   entry,
   startHour,

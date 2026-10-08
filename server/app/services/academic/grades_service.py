@@ -218,27 +218,35 @@ class GradesService:
 
         courses = {c.id: c for c in (await self.db.execute(select(Course).where(Course.id.in_({r[0] for r in rows})))).scalars().all()}
         classes = {c.id: c for c in (await self.db.execute(select(StudyClass).where(StudyClass.id.in_({r[1] for r in rows})))).scalars().all()}
-        students = {
-            cid: n
-            for cid, n in (
-                await self.db.execute(select(StudentProfile.class_id, func.count()).group_by(StudentProfile.class_id))
+        students = dict(
+            (
+                await self.db.execute(
+                    select(StudentProfile.class_id, func.count())
+                    .where(StudentProfile.class_id.in_(classes))
+                    .group_by(StudentProfile.class_id)
+                )
             ).all()
-            if cid is not None
+        )
+        graded = {
+            (course_id, class_id, year, semester): n
+            for course_id, class_id, year, semester, n in (
+                await self.db.execute(
+                    select(
+                        CourseGrade.course_id, StudentProfile.class_id, CourseGrade.academic_year, CourseGrade.semester,
+                        func.count(),
+                    )
+                    .join(StudentProfile, StudentProfile.user_id == CourseGrade.student_id)
+                    .where(
+                        CourseGrade.course_id.in_(courses), StudentProfile.class_id.in_(classes),
+                        CourseGrade.total.is_not(None),
+                    )
+                    .group_by(CourseGrade.course_id, StudentProfile.class_id, CourseGrade.academic_year, CourseGrade.semester)
+                )
+            ).all()
         }
         items = []
         for cid, clid, year, sem in rows:
             course, cls = courses[cid], classes[clid]
-            graded = (
-                await self.db.execute(
-                    select(func.count())
-                    .select_from(CourseGrade)
-                    .join(StudentProfile, StudentProfile.user_id == CourseGrade.student_id)
-                    .where(
-                        CourseGrade.course_id == cid, CourseGrade.academic_year == year, CourseGrade.semester == sem,
-                        StudentProfile.class_id == clid, CourseGrade.total.is_not(None),
-                    )
-                )
-            ).scalar_one()
             items.append(
                 {
                     "course": {"id": str(course.id), "code": course.code, "name": course.name, "credits": course.credits},
@@ -246,7 +254,7 @@ class GradesService:
                     "academicYear": year,
                     "semester": sem,
                     "studentCount": students.get(clid, 0),
-                    "gradedCount": graded,
+                    "gradedCount": graded.get((cid, clid, year, sem), 0),
                 }
             )
         items.sort(key=lambda x: (x["academicYear"], x["semester"], x["course"]["code"], x["class"]["code"]), reverse=False)

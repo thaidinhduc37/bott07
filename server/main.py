@@ -23,5 +23,8 @@ if __name__ == "__main__":
         "app.main:app",
         host="0.0.0.0",
         port=settings.api_port,
+        workers=settings.api_workers,
+        # Mặc định uvicorn đóng kết nối nhàn rỗi sau 5 giây, ngắn hơn thời gian suy nghĩ giữa hai thao tác nên mỗi yêu cầu phải mở kết nối mới.
+        timeout_keep_alive=65,
         reload=False,
     )

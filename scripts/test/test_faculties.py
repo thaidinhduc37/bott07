@@ -85,7 +85,7 @@ try:
     st, r = head.req("PUT", f"/faculties/{fid}/courses/{cid}", {"lecturerId": hoang_id})
     check("giảng viên ngoài khoa: trưởng khoa bị từ chối", st in (400, 403, 409), f"{st} {r}")
     st, ov = head.req("GET", f"/faculties/{fid}/overview")
-    check("tổng quan phản ánh môn và giảng viên", any(c["id"] == cid for c in ov.get("courses", [])) and any(l["id"] == minh_id for l in ov.get("lecturers", [])), str(ov)[:300])
+    check("tổng quan phản ánh môn và giảng viên", any(c["id"] == cid for c in ov.get("courses", [])) and any(lec["id"] == minh_id for lec in ov.get("lecturers", [])), str(ov)[:300])
     st, r = head.req("DELETE", f"/faculties/{fid}/lecturers/{minh_id}")
     check("bỏ giảng viên khỏi khoa → bỏ phân công môn", st == 200 and r.get("unassignedCourses") == 1, f"{st} {r}")
     check("môn không còn giảng viên", psql(f"select coalesce(lecturer_id::text,'') from courses where id='{cid}'") == "")

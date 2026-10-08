@@ -6,8 +6,8 @@ Hai loại nhắc:
 
 Chạy lặp trong tiến trình API (`start()` gọi ở startup), mỗi `INTERVAL_S`
 giây. Mỗi lượt đều idempotent — chạy lại bao nhiêu lần trong ngày cũng không
-sinh thông báo trùng — nên khởi động lại API hay chạy nhiều bản cùng lúc không
-làm học viên bị gửi dồn.
+sinh thông báo trùng — và khi có nhiều tiến trình API thì khóa tư vấn của
+PostgreSQL chỉ cho một tiến trình chạy mỗi lúc.
 
 Tắt bằng biến môi trường `STUDY_REMINDERS=0`.
 """
@@ -20,7 +20,7 @@ import os
 from datetime import datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.academic import ExamSchedule
@@ -35,6 +35,7 @@ VN_TZ = ZoneInfo("Asia/Ho_Chi_Minh")
 EXAM_MILESTONES = (7, 3, 1)
 INTERVAL_S = 3600
 REVIEW_LINK = "/sinh-vien/on-tap/so-cau-sai"
+ADVISORY_LOCK_KEY = 7_204_001
 
 
 def _vn_day_start_utc(now: datetime) -> datetime:
@@ -145,6 +146,9 @@ async def remind_exams(db: AsyncSession, now: datetime) -> int:
 
 async def run_once(db: AsyncSession, now: datetime | None = None) -> dict:
     now = now or datetime.now(timezone.utc)
+    # Nhiều tiến trình API cùng chạy vòng lặp này: chỉ tiến trình giữ được khóa (đến hết giao dịch) mới tạo thông báo.
+    if not (await db.execute(text("SELECT pg_try_advisory_xact_lock(:key)"), {"key": ADVISORY_LOCK_KEY})).scalar():
+        return {"review": 0, "exams": 0}
     review = await remind_review_due(db, now)
     exams = await remind_exams(db, now)
     await db.commit()

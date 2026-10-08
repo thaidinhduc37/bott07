@@ -43,12 +43,7 @@
   }
 }
 
-/* ------------------------------------------------------------ nhãn nhỏ
-
-   Viên thuốc nền nhạt, không viền. Bản trước dùng viền + nền + chữ hoa giãn:
-   ba tín hiệu cho một nhãn dài sáu chữ, và trên thẻ trả lời có ba cái cạnh
-   nhau. Bỏ viền, giảm giãn chữ, thêm một chấm màu — chấm nói được trạng thái
-   ngay cả khi in đen trắng. */
+/* ---- nhãn nhỏ: viên thuốc nền nhạt không viền, kèm chấm màu (nói được trạng thái cả khi in đen trắng). */
 
 .tag {
   display: inline-flex;
@@ -106,16 +101,7 @@
 
 .table-wrap {
   overflow: auto;
-  /* Giới hạn chiều cao để tiêu đề cột dính lại thật sự.
-
-     `overflow-x: auto` một mình đã biến khối này thành vùng cuộn theo cả hai
-     trục (quy tắc CSS: một trục khác `visible` thì trục kia thành `auto`), nên
-     `position: sticky` ở `<th>` neo vào khối này chứ không vào khung nhìn. Mà
-     khối này không có trần chiều cao thì nó không bao giờ cuộn dọc — nghĩa là
-     tiêu đề cột **không** dính, dù CSS trông như đã bảo nó dính.
-
-     Nhật ký có 430 dòng. Trần chiều cao làm bảng tự cuộn bên trong, và lúc đó
-     tiêu đề mới làm đúng việc của nó. Bảng ngắn hơn trần thì không đổi gì. */
+  /* Giới hạn chiều cao để tiêu đề cột dính thật: `overflow-x: auto` biến khối thành vùng cuộn hai trục nên `<th>` sticky neo vào khối, mà khối không có trần thì không cuộn dọc. Trần chiều cao làm bảng dài (nhật ký 430 dòng) tự cuộn bên trong; bảng ngắn không đổi. */
   max-height: min(75vh, 46rem);
   border: 1px solid var(--rule-faint);
   border-radius: var(--r-lg);
@@ -184,13 +170,7 @@
   color: var(--ink-faint);
 }
 
-/* ========================================================== đầu trang
-
-   Khối tiêu đề trang xuất hiện ở gần như mọi trang. Ba lớp độc lập chứ không
-   phải bộ chọn con của `.page-head`: thẻ bọc mỗi trang một khác, nên buộc trình
-   bày vào thẻ bọc thì mỗi lần thêm trang lại phải nhớ đúng cấu trúc. Đặt thẳng
-   lên phần tử mang nội dung thì không nhớ gì cả.
-   ======================================================================== */
+/* ---- đầu trang: ba lớp độc lập, đặt thẳng lên phần tử mang nội dung chứ không phải bộ chọn con của `.page-head`, vì thẻ bọc mỗi trang một khác. */
 
 /* Phần đầu trang (component `PageHeader`). KHÔNG có margin-bottom riêng: khoảng cách tới
    nội dung là của `.stack` cha (24px). Trước đây `.page-head` cộng thêm 24px nữa nên từ
@@ -323,15 +303,7 @@ p.page-sub {
   margin: var(--gap-2) 0 0;
 }
 
-/* ------------------------------------------------------- hero trang chủ
-
-   Ba trang chủ (học viên/cán bộ/quản trị) trước đây chỉ có `.page-head` +
-   `.page-title` — đúng một dòng chào, không nói gì thêm về tình trạng thực
-   tế của người dùng. `.home-stats` thêm một dải số thật lấy từ dữ liệu đã
-   tải sẵn ở nơi khác trong ứng dụng (đơn chờ xử lý, thông báo chưa đọc),
-   không phải trang trí — bỏ dải này thì thiếu thông tin, không chỉ thiếu
-   hình thức. Chấm màu dùng lại đúng ngữ nghĩa của `.tag` (mực = thao tác,
-   hổ phách = cần chú ý, lục = xong), không phát minh bảng màu riêng. */
+/* ---- hero trang chủ: `.home-stats` là dải số thật từ dữ liệu đã tải (đơn chờ xử lý, thông báo chưa đọc). Chấm màu theo ngữ nghĩa của `.tag`: mực = thao tác, hổ phách = cần chú ý, lục = xong. */
 
 .home-hero__eyebrow {
   margin: 0 0 var(--gap-2);
@@ -536,12 +508,7 @@ p.page-sub {
    không liên quan gì tới các trang khác). */
 
 
-/* Bố cục hai cột dùng chung: cột chính (nội dung) + cột phụ (tóm tắt, bộ lọc,
-   điều hướng). Chuyển hai cột theo bề rộng THẬT của vùng nội dung (container
-   query) chứ không theo màn hình — thanh bên chiếm 16rem nên màn 1280px chỉ còn
-   ~1000px cho nội dung; mốc 56rem để laptop 1280px vẫn có hai cột. Hẹp hơn thì
-   cột phụ xếp lên TRÊN cột chính (thông tin
-   tóm tắt đọc trước), trừ khi đánh dấu `.page-grid--aside-last`. */
+/* Bố cục hai cột dùng chung: cột chính + cột phụ (tóm tắt, bộ lọc). Đổi cột theo bề rộng THẬT của vùng nội dung (container query), mốc 56rem để laptop 1280px (còn ~1000px sau thanh bên) vẫn có hai cột. Hẹp hơn thì cột phụ lên TRÊN, trừ `.page-grid--aside-last`. */
 .app-main {
   container: main / inline-size;
 }
@@ -608,15 +575,7 @@ p.page-sub {
   animation: rise 260ms var(--ease) both;
 }
 
-/* ------------------------------------------------------- danh sách chức năng
-
-   Trước đây mỗi chức năng ở ba trang chủ là một ô thẻ rời, xếp lưới —
-   `.card-grid`. Ba/bốn ô cạnh nhau, hàng cuối lẻ một ô, và mỗi ô lại có viền
-   + bóng đổ riêng: quá nhiều ranh giới lặp lại cho một danh sách chỉ vài
-   mục. Thay bằng MỘT khối `.sheet` duy nhất, mỗi chức năng một dòng đầy đủ
-   chiều rộng, ngăn nhau bằng đúng một nét kẻ mảnh — giống một menu, không
-   phải một mảng ô vuông rời rạc. Mũi tên nhích sang phải khi rê chuột —
-   chuyển động nhỏ nhất nói được "cái này dẫn đi đâu đó". */
+/* ---- danh sách chức năng: MỘT `.sheet`, mỗi chức năng một dòng đầy chiều rộng ngăn bằng nét kẻ mảnh (như menu, không phải mảng ô rời); mũi tên nhích phải khi rê chuột. */
 
 .action-list {
   /* Cắt gọn theo bo góc của `.sheet`: dòng đầu/cuối không được thò góc vuông

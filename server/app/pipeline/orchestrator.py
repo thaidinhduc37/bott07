@@ -1,14 +1,7 @@
-"""§18 Điều phối — vòng lặp truy xuất, chấm, viết lại.
+"""§18 Điều phối: máy trạng thái truy xuất, chấm, viết lại (không phải một đường thẳng).
 
-Các stage phía trên được ghép thành một **máy trạng thái**, không phải một đường
-thẳng. Pipeline một lượt đặt trần độ chính xác của nó ngay ở truy xuất tầng một:
-nếu cách diễn đạt ban đầu trượt thì không gì phía sau cứu được. Cho hệ thống tự
-nhận ra bằng chứng của nó không đủ rồi thử một truy vấn khác là thứ biến một
-pipeline cố định thành một thứ có thể tự sửa.
-
-Mỗi lần chạy trả về một **trace** các trạng thái đã đi qua. Trace không phải log
-gỡ lỗi thừa: nó là bằng chứng về *cách* câu trả lời được tạo ra, và không có nó
-thì không kiểm chứng được rằng cổng abstention thực sự đã chạy.
+Pipeline một lượt bị chặn trên bởi truy xuất tầng một; cho hệ thống nhận ra bằng chứng chưa đủ rồi thử truy vấn khác thì
+mới tự sửa được. Mỗi lần chạy trả một trace các trạng thái đã đi qua: đó là bằng chứng cổng abstention thực sự đã chạy.
 
     định tuyến ──chitchat──────────────────────────────► trả lời trực tiếp
        │ simple / multihop
@@ -87,12 +80,7 @@ def cited_markers(answer: str, n_passages: int) -> list[int]:
 
 
 def build_context(hits: list[Hit]) -> str:
-    """Ngữ cảnh đánh số đưa cho reader.
-
-    Mỗi đoạn mang nhãn nguồn thật. Vì việc đánh số được chống lưng bởi siêu dữ
-    liệu có thật, một trích dẫn [n] giải được về một vị trí mà con người mở ra
-    kiểm tra được — đó chính là khác biệt giữa một trích dẫn và vẻ ngoài của nó.
-    """
+    """Ngữ cảnh đánh số đưa cho reader; mỗi đoạn mang nhãn nguồn thật nên trích dẫn [n] giải được về một vị trí kiểm tra được."""
     parts = []
     for i, h in enumerate(hits, start=1):
         p = h.payload
@@ -130,7 +118,7 @@ class Orchestrator:
             max_output_tokens=200,
             tag="decompose",
         )
-        parts = [l.strip(" -•\t") for l in raw.split("\n") if len(l.strip()) > 8]
+        parts = [line.strip(" -•\t") for line in raw.split("\n") if len(line.strip()) > 8]
         return parts[: self.settings.max_subqueries] or [question]
 
     async def rewrite(self, question: str, attempted: list[str]) -> str:
@@ -145,10 +133,8 @@ class Orchestrator:
     # -------------------------------------------------- §18 chấm bằng chứng
 
     async def grade_sufficiency(self, question: str, hits: list[Hit]) -> bool:
-        # Chấm trên cùng bộ đoạn văn mà bước sinh sẽ đọc, không cắt cụt. Trước đây
-        # chỉ lấy 3 đoạn đầu, mỗi đoạn 900 ký tự: đoạn chứa đáp án nằm ở hạng 1
-        # nhưng câu "Một tín chỉ bằng 15 giờ giảng… kèm 30 giờ tự học" bị cắt ngang
-        # nên bước chấm kết luận "thiếu" và hệ thống từ chối một câu hỏi có đáp án.
+        # Chấm trên đúng bộ đoạn văn mà bước sinh sẽ đọc, không cắt cụt: từng cắt còn 3 đoạn × 900 ký tự làm câu trả lời bị cắt
+        # ngang, bước chấm kết luận "thiếu" và từ chối nhầm một câu có đáp án.
         ctx = "\n\n".join(h.text[:GRADE_CHARS_PER_HIT] for h in hits)
         verdict = await self.reader.yes_no(
             prompts.GRADE_QUESTION.format(context=ctx, question=question), tag="grade"
@@ -220,10 +206,7 @@ class Orchestrator:
         def finish() -> RagResult:
             res.latency_ms = int((time.time() - t0) * 1000)
             res.llm_calls = sum(self.reader.usage.calls.values()) - calls_before
-            # Ghi nhà cung cấp thật sự đã phục vụ truy vấn này. Với chuỗi dự
-            # phòng, việc chuyển làn giữa chừng là thay đổi *có thể quan sát*
-            # đối với câu trả lời — model khác thì cách diễn đạt khác — nên nó
-            # phải nằm trong trace chứ không chỉ trong log của máy chủ.
+            # Ghi nhà cung cấp thật sự đã phục vụ truy vấn: chuyển làn giữa chừng làm đổi cách diễn đạt nên phải nằm trong trace.
             if res.llm_calls:
                 provider = getattr(self.reader, "last_provider", "") or self.reader.provider
                 model = getattr(self.reader, "last_model", "") or self.reader.model
@@ -271,21 +254,8 @@ class Orchestrator:
         hits: list[Hit] = []
         sufficient = False
 
-        # Vòng tốt nhất, không phải vòng cuối.
-        #
-        # Viết lại truy vấn là một phỏng đoán, và phỏng đoán thì có lúc sai. Quan
-        # sát được trên câu "Sinh viên bị cảnh báo học tập trong trường hợp nào?":
-        # vòng 1 đạt conf 0.361 — gấp mười hai lần τ — rồi bản viết lại tụt xuống
-        # 0.006, và hệ thống báo "độ tin cậy dưới ngưỡng".
-        #
-        # Câu đó nói dối. Truy xuất tốt nhất KHÔNG dưới ngưỡng; chỉ có lần đoán
-        # cuối cùng là dưới. Giữ vòng cuối biến một bản viết lại tồi thành lời
-        # kết tội nhắm vào tầng truy xuất, và người vận hành đọc thông báo đó sẽ
-        # đi chỉnh sai chỗ.
-        #
-        # Giữ vòng tốt nhất cũng là điều vòng lặp vốn đang cố đạt được: nó viết
-        # lại để tìm bằng chứng *tốt hơn*, nên khi không tốt hơn thì kết quả đúng
-        # là cái tốt nhất đã tìm được, không phải cái tìm sau cùng.
+        # Giữ vòng tốt nhất, không phải vòng cuối: bản viết lại là phỏng đoán và có thể tệ hơn (conf 0.361 → 0.006). Báo "dưới
+        # ngưỡng" theo vòng cuối sẽ đổ lỗi nhầm cho tầng truy xuất.
         best_hits: list[Hit] = []
         best_conf = -1.0
         best_round = 0

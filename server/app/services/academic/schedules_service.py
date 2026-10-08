@@ -1,23 +1,10 @@
-"""Class-session/exam schedules + CSV import. Port of the (deleted) NestJS
-`schedules.service.ts`. Key properties preserved from the porting notes:
+"""Lịch học và lịch thi cùng nhập CSV.
 
-- A student's own timetable is always resolved from THEIR OWN
-  `StudentProfile.class_id` — never accepted as a request parameter. This is
-  a structural anti-IDOR: there is no `classId` argument on the student-self
-  endpoints at all, so there is nothing a client could tamper with to see
-  another class's schedule.
-- All timestamps are stored in UTC but authored/displayed in VN local time
-  (`Asia/Ho_Chi_Minh`) — conversion happens at the read/write boundary, not
-  scattered through query logic.
-- CSV import: row-level errors accumulate (not fail-fast), conflicts are
-  checked both within the file and against the DB (excluding rows about to
-  be overwritten by their own external_id — a re-import of the same row is
-  an update, not a conflict with itself), and by default a file with ANY
-  error is rejected wholesale (`allow_partial=True` opts into importing the
-  good rows anyway). `dry_run=True` runs full validation without writing.
-  Upsert key is `(academic_year, semester, external_id)` — re-importing the
-  same `schedule_id`/`exam_id` updates the existing row rather than
-  duplicating it. Missing courses referenced in the CSV are auto-created.
+- Lịch của học viên luôn lấy từ `StudentProfile.class_id` của chính họ, không nhận tham số lớp (chống IDOR).
+- Thời điểm lưu UTC, soạn và hiển thị theo giờ Việt Nam (`Asia/Ho_Chi_Minh`); chuyển đổi ở biên đọc và ghi.
+- Nhập CSV: gom lỗi theo dòng, kiểm trùng trong tệp và với CSDL (bỏ qua dòng sắp bị chính nó ghi đè), mặc định từ chối cả tệp
+  nếu có bất kỳ lỗi nào (`allow_partial=True` để vẫn nhập các dòng tốt); `dry_run=True` kiểm tra đủ mà không ghi. Khóa
+  upsert là `(academic_year, semester, external_id)`; môn chưa có sẽ được tạo tự động.
 """
 
 

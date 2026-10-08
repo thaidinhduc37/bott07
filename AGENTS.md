@@ -69,9 +69,15 @@ the API must be restarted; Vite hot-reloads the client.
 
 `scripts/test/` holds acceptance tests that talk to a running API and the Docker Postgres
 (`sa-postgres-dev`). Run one with `python scripts/test/test_catalog.py`, or all with
-`pwsh scripts/test/chay-tat-ca.ps1`. Login is rate-limited to 5/min per IP, so the runner sleeps
-65 s between suites and you should too when running several by hand. Tests create data with a
+`pwsh scripts/test/chay-tat-ca.ps1`. Tests reach the API at `127.0.0.1` (on Windows `localhost` tries IPv6 first and costs ~2 s per call);
+the `login()` helper clears the rate-limit counters of the account it logs in, so suites can run back to back. Tests create data with a
 `ZT`/`zt-` prefix and clean up after themselves (also on failure).
+
+Load: `python scripts/load_test.py --students 1500 --lecturers 100 --rounds 12 --think 8` (signs tokens directly, needs the `seed_demo_scale.py`
+data) and `python scripts/load_login.py --users 120` (simultaneous logins). Measured on a 12-core dev box: ≈130 requests/s per API process
+(≈420 with 4), median 17–28 ms and p95 < 55 ms for ~1,600 users with think time. Size for the school: ~1,600 concurrently active users ≈ 200 req/s,
+so run 4–6 workers (`API_WORKERS`) on Linux. On Windows keep `API_WORKERS=1`: with several workers a burst of ~100 new connections can leave
+some of them hanging for ~20–30 s.
 
 Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `khoa@` (faculty head),
 `gv.*@` (lecturers), `sv.*@` (students), all `@hvktcnan.edu.vn`. `python scripts/import_tkb.py --apply` loads the real timetable
@@ -79,7 +85,7 @@ Demo accounts (password `Demo@2026`): `admin@`, `qldt@` (academic manager), `kho
 (codes `DEMO001`…, one per class, same password). Generated demo accounts use name-based emails like the real ones
 (`gv.nguyenvanan@…`, `sv.tranthuha@…`, a number appended on collision); demo data is recognised by faculty `DM-…` / student code `DM…`, not by email.
 `python scripts/seed_demo_scale.py --apply` generates throw-away multi-faculty test data (15 faculties, 31 majors, 124 classes, ~2,500
-students, 90 lecturers incl. 15 faculty heads, 180 courses, ~6,000 sessions; fictitious names; markers `DM-`/`DM…`/`dm.*@`); It also temporarily assigns the real-timetable classes/courses to demo faculties and lecturers (`--no-tkb` to skip); `--remove` deletes it all and
+students, 90 lecturers incl. 15 faculty heads, 180 courses, ~6,000 sessions; fictitious names; markers `DM-` faculties, `DM…` class/course/student codes); it also temporarily assigns the real-timetable classes/courses to demo faculties and lecturers (`--no-tkb` to skip); `--remove` deletes it all and
 clears those assignments.
 Classes carry a free-text `major` (ngành); the Lớp and Môn học tabs filter by faculty/major/cohort/search and paginate client-side (25 per page).
 
@@ -127,5 +133,11 @@ Classes carry a free-text `major` (ngành); the Lớp and Môn học tabs filter
   purple. Uppercase is allowed only for small labels (eyebrows, rail section titles, table headers, `dt` of fact
   grids: ≤ 0.6875rem, `letter-spacing`, `--ink-faint`) — never for titles, buttons or body text. Don't set `margin: 0`
   on a direct child of `.stack` (it cancels the vertical rhythm).
-- Source comments and commit messages are written in Vietnamese; match that when editing existing
-  files unless told otherwise.
+- Rate limits live in PostgreSQL (`rate_limits`, UNLOGGED, shared by all API workers): login is limited per EMAIL (5/min) and per IP (600/min),
+  refresh per token (20/min) and per IP (1200/min), and every authenticated action (chat, quiz, signing, approvals) per USER, never per IP — the whole
+  school may sit behind one NAT. Use `user_rate_limit` for authenticated routes and `rate_limit` (IP) only for anonymous ones.
+- Password hashing (Argon2) runs via `asyncio.to_thread`; never call `hash_password`/`verify_password` directly in an async handler.
+- Add indexes for new foreign keys that are filtered on (`index=True` plus a migration); avoid per-row queries inside loops — group instead.
+- Source comments and commit messages are written in Vietnamese; match that when editing existing files unless told otherwise. Comment only
+  the WHY that the code cannot show (a constraint, a trap, a measured result) in one to three lines; no history ("trước đây…", "port of…"),
+  no restating the code, no decorative banners. `server/ruff.toml` configures ruff (line length 120).

@@ -206,22 +206,6 @@ export function AppShell({
                 pathname === item.href ||
                 (item.href !== `/${workspace}` && pathname.startsWith(`${item.href}/`));
 
-              // Chưa mở thì hiện nhãn mờ, không phải liên kết: người dùng thấy
-              // trước lộ trình mà không bấm vào một trang chưa tồn tại.
-              if (item.blockedBy) {
-                return (
-                  <li key={item.href}>
-                    <span
-                      className="rail__link rail__link--blocked"
-                      title={`Chưa mở — ${item.blockedBy}`}
-                    >
-                      <Icon name={item.icon} />
-                      <span>{item.label}</span>
-                    </span>
-                  </li>
-                );
-              }
-
               return (
                 <li key={item.href}>
                   <Link

@@ -24,15 +24,8 @@ const MODE_HINT: Record<ChatMode, string> = {
 };
 
 /**
- * Câu hỏi mẫu bấm được.
- *
- * Không phải trang trí. Hệ thống có một hạn chế đã biết và chưa xử lý được:
- * truy vấn gõ **không dấu** sẽ trượt truy xuất, vì corpus có dấu đầy đủ. Dòng
- * chữ nhắc "gõ có dấu" ở dưới ô nhập là lời khuyên; một câu hỏi bấm được là
- * bằng chứng — người dùng lần đầu thấy ngay dạng câu hỏi nào cho ra kết quả.
- *
- * Cũng giải quyết vấn đề trang trắng: người mới không biết hệ thống *biết* gì,
- * và một ô nhập trống không nói cho họ điều đó.
+ * Câu hỏi mẫu bấm được. Truy vấn gõ không dấu trượt truy xuất (corpus có dấu đầy đủ) nên mẫu bấm được cho người dùng lần đầu thấy
+ * dạng câu hỏi cho ra kết quả, và giải quyết trang trắng: người mới không biết hệ thống biết gì.
  */
 const SUGGESTIONS: Record<ChatMode, string[]> = {
   QUYCHE: [
@@ -171,12 +164,7 @@ export function ChatWorkspace({ rail }: { rail?: ReactNode } = {}) {
 
   return (
     <div className={`chat-layout shell--wide`}>
-      {/* --------------------------------------------------- lịch sử hội thoại
-
-          Cột trái cố định, giống danh sách hội thoại của mọi ứng dụng chat —
-          không phải một danh sách rời nằm dưới ô nhập như bản trước. Luôn hiện
-          (kể cả rỗng) để cột không nhảy bề rộng khi hội thoại đầu tiên xuất
-          hiện. */}
+      {/* lịch sử hội thoại: cột trái cố định, luôn hiện (kể cả rỗng) để cột không nhảy bề rộng khi hội thoại đầu tiên xuất hiện. */}
       <aside className="chat-side">
         {rail && (
           <div className="chat-side__tabs" role="tablist" aria-label="Bảng bên">
@@ -326,12 +314,7 @@ export function ChatWorkspace({ rail }: { rail?: ReactNode } = {}) {
             </div>
           )}
 
-          {/* ---------------------------------------------------------- hội thoại
-
-          Chỉ dựng khối này khi có gì để hiện. Một `<div>` rỗng vẫn là một ô
-          trong lưới, nên nó vẫn ăn hai khoảng cách — và trên màn hình chưa hỏi
-          gì, hai khoảng cách đó thành một mảng trống giữa thẻ chọn chế độ và ô
-          nhập, trông như phần nội dung bị hỏng. */}
+          {/* hội thoại: chỉ dựng khi có gì để hiện; một `<div>` rỗng vẫn là một ô trong lưới và ăn hai khoảng cách, thành mảng trống giữa thẻ chọn chế độ và ô nhập. */}
           {/* Trạng thái ban đầu: gợi ý câu hỏi nằm ngay vùng trống phía trên ô nhập, thay vì chen vào ô nhập. */}
           {messages.length === 0 && !busy && modeReady && (
             <section className="chat-empty" aria-label="Gợi ý câu hỏi">
@@ -361,12 +344,7 @@ export function ChatWorkspace({ rail }: { rail?: ReactNode } = {}) {
                 ),
               )}
 
-              {/* Khung chờ thay cho dòng chữ "Đang tải".
-
-            Một truy vấn đi qua tối đa sáu lượt gọi mô hình và bước xếp hạng chạy
-            trên CPU, nên chờ vài chục giây là bình thường. Khung xám nhấp nháy
-            giữ đúng chỗ của câu trả lời sắp tới, nên khi nó về, trang không nhảy
-            — và nó nói được "đang chạy" mà không cần người dùng đọc chữ. */}
+              {/* Khung chờ thay cho "Đang tải": một truy vấn có thể chờ vài chục giây (tối đa sáu lượt gọi mô hình, xếp hạng trên CPU); khung xám giữ đúng chỗ câu trả lời nên trang không nhảy khi nó về. */}
               {busy && (
                 <div className="sheet sheet--evidence" style={{ padding: 'var(--gap-5)' }} aria-live="polite">
                   <span className="sr-only">Đang tìm câu trả lời</span>

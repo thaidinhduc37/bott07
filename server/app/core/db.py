@@ -1,10 +1,5 @@
-"""Async SQLAlchemy engine/session setup.
-
-Replaces Prisma. The shared root `.env`'s `DATABASE_URL` is written in Prisma's
-dialect (`postgresql://...?schema=public`) — asyncpg doesn't understand the
-`schema` query param and needs the `+asyncpg` driver marker, so we normalize it
-here rather than asking users to maintain two DSNs.
-"""
+"""Engine và phiên SQLAlchemy bất đồng bộ. `DATABASE_URL` viết dạng `postgresql://…?schema=public` nên được chuẩn hóa sang
+`postgresql+asyncpg://` và bỏ tham số `schema` mà asyncpg không hiểu."""
 
 from __future__ import annotations
 
@@ -18,12 +13,12 @@ from app.core.config import get_settings
 
 
 def to_asyncpg_dsn(raw: str) -> str:
-    """Convert a Prisma-style postgresql DSN to an asyncpg-compatible one."""
+    """Đổi DSN dạng `postgresql://` sang dạng asyncpg."""
     parts = urlsplit(raw)
     scheme = parts.scheme
     if scheme in ("postgresql", "postgres"):
         scheme = "postgresql+asyncpg"
-    # Drop Prisma-only query params (e.g. schema=public) that asyncpg rejects.
+    # Bỏ tham số truy vấn (vd schema=public) mà asyncpg từ chối.
     return urlunsplit((scheme, parts.netloc, parts.path, "", parts.fragment))
 
 
@@ -35,6 +30,8 @@ _settings = get_settings()
 
 engine = create_async_engine(
     to_asyncpg_dsn(_settings.database_url),
+    pool_size=_settings.db_pool_size,
+    max_overflow=_settings.db_max_overflow,
     pool_pre_ping=True,
     future=True,
 )

@@ -32,7 +32,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import hashlib
 import logging
 import sys
 import time
@@ -206,7 +205,6 @@ async def main() -> None:
             doc_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"giaotrinh:{name}"))
             title = _clean_title(name)
             data = f.read_bytes()
-            file_hash = hashlib.sha256(data).hexdigest()
 
             # Idempotent: đã có Document này và bản mới nhất đã INDEXED -> bỏ qua.
             doc = existing.get(doc_id)

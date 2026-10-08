@@ -1,7 +1,4 @@
-"""Python enums mirroring every Prisma enum in `server/api/prisma/schema.prisma`,
-1:1 (same members, same names). Stored as native Postgres enum types via
-SQLAlchemy's `Enum(..., name=...)`.
-"""
+"""Các enum dùng chung cho model, lưu dưới dạng enum gốc của Postgres qua `Enum(..., name=...)`."""
 
 from __future__ import annotations
 

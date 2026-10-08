@@ -1,11 +1,6 @@
-"""Port of `chat/dto/chat.dto.ts` (AskDto, ListConversationsDto only — Phase 2
-scope). Response shapes are intentionally NOT modeled as Pydantic response
-models: `ChatService.present_message()` builds plain dicts by hand so the
-documented casing quirk (camelCase message fields, but snake_case fields
-*inside* `retrievedChunks`, passed straight through from rag-service's JSON)
-is reproduced exactly. Wrapping that in a `CamelModel` would re-alias the
-inner snake_case keys too and silently "fix" a quirk the client depends on.
-"""
+"""DTO hỏi đáp (AskDto, ListConversationsDto). Phản hồi KHÔNG dùng model Pydantic: `ChatService.present_message()` dựng dict thủ
+công để trường tin nhắn là camelCase còn trường bên trong `retrievedChunks` giữ snake_case như client đang dùng; bọc bằng
+`CamelModel` sẽ đổi luôn khóa bên trong."""
 
 from __future__ import annotations
 

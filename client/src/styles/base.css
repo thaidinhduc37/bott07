@@ -1,59 +1,9 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Hệ thiết kế — "Trầm"
-
-   --------------------------------------------------------------------------
-   Vì sao viết lại
-
-   Bản trước dựng theo ẩn dụ "văn bản hành chính": không bo góc, không đổ bóng,
-   mọi khối là một hình chữ nhật viền 1px, mọi nhãn nhỏ viết hoa giãn chữ. Ẩn dụ
-   đúng, nhưng áp lên **toàn bộ** phần mềm thì nó tự chống lại mình. Đếm trên một
-   màn hình bất kỳ của bản cũ:
-
-     · 5–8 nhãn `eyebrow` viết hoa 11px — loại chữ dày đặc nhất, khó lướt qua nhất
-     · nền trang #edf0f3 và mặt giấy #fcfcfb chỉ lệch nhau ~3% độ sáng, nên thẻ
-       không tự tách khỏi nền; toàn bộ việc phân nhóm dồn lên những nét 1px
-     · nét 1px đó có cùng độ đậm ở thẻ, ở bảng, ở ô nhập, ở lưới thẻ — mắt không
-       phân biệt được cái nào bọc cái nào
-     · bốn giọng chữ cùng lúc: serif tiêu đề + sans nội dung + mono mã số + chữ
-       hoa giãn
-     · một sắc xanh nhạt `--pen-wash` mang sáu nghĩa khác nhau (rê chuột ở menu,
-       mục đang mở, rê chuột ở bảng, khối trích dẫn, chip, thẻ)
-
-   Không nét nào trong đó sai một mình. Cộng lại thì thành thứ người dùng gọi là
-   "rối mắt", và họ mô tả đúng: màn hình có quá nhiều đường ranh giới cùng trọng
-   số, và quá ít khoảng thở.
-
-   --------------------------------------------------------------------------
-   Quy tắc thay thế: **giấy chỉ ở nơi thật sự là giấy**
-
-   Ẩn dụ giấy tờ không bị vứt đi — nó bị **giới hạn lại cho đúng chỗ**, và nhờ
-   thế mới có nghĩa. Còn đúng **một** mô-típ, ở đúng **một** nơi:
-
-     · dòng chấm điền tay — chỉ trong `.paper-form`, tức đúng lúc người dùng
-       đang điền một tờ đơn sẽ được ký, kết xuất và in. Mọi ô nhập khác (đăng
-       nhập, tìm kiếm, lọc, ô hỏi đáp) dùng ô nền mềm bo góc.
-
-   Còn lại là phần mềm: mặt trắng bo góc, một bậc đổ bóng rất nhẹ, khoảng cách
-   rộng, và ranh giới do **độ sáng** tạo ra chứ không do nét kẻ.
-
-   --------------------------------------------------------------------------
-   Ba thứ đã bỏ hẳn
-
-   1. **Masthead quốc hiệu** ở đầu trang đăng nhập và trang hồ sơ. Masthead
-      thuộc về tờ đơn, và tờ đơn thật được dựng ở
-      `apps/api/src/forms/docx-renderer.service.ts` — nơi nó in ra giấy và mang
-      đúng nghĩa. Bản trên màn hình chiếm gần nửa chiều cao thẻ đăng nhập trước
-      khi người dùng thấy ô nhập đầu tiên, và không nói thêm điều gì.
-
-   2. **Chữ serif.** Nó tồn tại để phục vụ masthead và tiêu đề văn bản. Masthead
-      đi rồi thì nó không còn chỗ nào mang nghĩa, nên `Newsreader` bị gỡ khỏi
-      `layout.tsx` luôn — bớt một họ webfont ba trọng lượng với bộ dấu tiếng
-      Việt khỏi đường tải tới hạn.
-
-   3. **Dấu bắt góc** quanh thẻ trả lời. Trang trí thứ hai trên một khối đã có
-      nẹp màu và nhãn trạng thái.
+   Hệ thiết kế "Trầm": mặt trắng bo góc, đổ bóng rất nhẹ, khoảng cách rộng; ranh giới do độ sáng tạo ra chứ không do nét kẻ.
+   Ẩn dụ giấy chỉ còn ở một nơi: dòng chấm điền tay trong `.paper-form` (lúc người dùng điền tờ đơn sẽ được ký và in); mọi ô
+   nhập khác dùng ô nền mềm bo góc. Không masthead quốc hiệu, không chữ serif, không dấu bắt góc.
    ========================================================================== */
 
 :root {
@@ -68,11 +18,7 @@
      Ba mức, đo bằng tỉ lệ tương phản chứ không chọn bằng mắt. Mắt thích nghi với
      màn hình đang ngồi trước mặt, nên "trông ổn" là bằng chứng về màn hình chứ
      không phải về màu. `scripts/test/test-tuong-phan.py` đọc thẳng từ tệp này. */
-  /* Bảng màu lấy thẳng từ ba mockup tham chiếu (dashboard/lịch/biểu mẫu):
-     primary #002d8b, background #f7f9fb, text-main #0f172a, text-muted
-     #64748b, on-surface-variant #444653, border-subtle #e2e8f0, error
-     #ba1a1a. Ánh xạ theo GIÁ TRỊ vào tên biến CŨ, không đổi tên — mọi
-     `var(--ink)`, `var(--pen)`… trong toàn bộ CSS/JSX tiếp tục đúng. */
+  /* Bảng màu: primary #002d8b, nền #f7f9fb, chữ #0f172a, chữ phụ #64748b, viền #e2e8f0, lỗi #ba1a1a (giữ tên biến cũ). */
   --ink: #0f172a;          /* text-main                       — 17.5 : 1 trên giấy */
   --ink-soft: #444653;     /* on-surface-variant — nhãn phụ   —  9.9 : 1 */
   --ink-faint: #64748b;    /* text-muted — siêu dữ liệu, placeholder — 5.2 : 1
@@ -175,27 +121,9 @@
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* ---------------------------------------------------------------- chế độ tối
-
-   Đảo token, không đảo quy tắc. Vì mọi màu trong ứng dụng đều đi qua biến — kể
-   cả màu đặt trong thuộc tính `style` của React — nên khối này là chỗ duy nhất
-   cần sửa.
-
-   Hai điều chế độ tối làm khác chứ không chỉ đảo:
-
-   1. Bóng đổ gần như không đọc được trên nền tối, nên ranh giới chuyển từ bóng
-      sang **nét kẻ**: `--rule-faint` ở đây là một màu thật sự nhìn thấy, không
-      phải nét gần vô hình như ở chế độ sáng.
-   2. Nền không phải màu đen mà là xanh mực rất đậm, và "giấy" vẫn sáng hơn nền
-      một bậc — phép ẩn dụ tờ giấy đặt trên bàn còn giữ được.
-
-   Mặc định theo hệ điều hành (khối `@media` dưới đây), nhưng người dùng có
-   thể tự chọn qua nút trong `AppShell` (`useTheme` — `client/src/hooks/`):
-   khi đó `<html data-theme="dark">` hoặc `="light"` được set và phải THẮNG
-   `prefers-color-scheme`, nên khối `@media` tự loại trừ trường hợp đã chọn
-   "light" bằng tay (`:not([data-theme="light"])`), và có thêm một khối riêng
-   `:root[data-theme="dark"]` áp dụng bất kể hệ điều hành đang ở chế độ nào.
-   ------------------------------------------------------------------------- */
+/* ---- chế độ tối: đảo token, không đảo quy tắc (mọi màu đều đi qua biến). Bóng đổ khó đọc trên nền tối nên ranh giới chuyển
+   sang nét kẻ (`--rule-faint` ở đây nhìn thấy thật). Mặc định theo hệ điều hành; lựa chọn tay (`useTheme`) đặt `data-theme`
+   và phải thắng `prefers-color-scheme`, nên khối @media loại trừ `[data-theme="light"]` và có khối riêng `:root[data-theme="dark"]`. */
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -230,12 +158,7 @@
     --on-pen: #0a0f1a;
 
     --rule: #33415a;
-    /* Sáng hơn hẳn giá trị tương ứng ở chế độ sáng, và đó là chủ ý.
-
-       Ở chế độ sáng, mép thẻ do **bóng đổ** vẽ ra và `--rule-faint` chỉ là một
-       nét phụ gần vô hình (1.21 : 1). Ở chế độ tối bóng đổ gần như không đọc
-       được, nên toàn bộ việc tách thẻ khỏi nền dồn lên nét này — nó phải thật
-       sự nhìn thấy. `test-tuong-phan.py` đo riêng cặp này chỉ ở chế độ tối. */
+    /* Sáng hơn hẳn chế độ sáng có chủ ý: ở chế độ tối bóng đổ không đọc được nên việc tách thẻ khỏi nền dồn vào nét này; `test-tuong-phan.py` đo riêng cặp này. */
     --rule-faint: #24304a;
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -329,16 +252,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ====================================================================== chữ
-
-   Một họ chữ cho toàn bộ giao diện.
-
-   Bản trước dùng serif cho mọi tiêu đề, kể cả tiêu đề của một thẻ điều hướng.
-   Serif ở đó không nói thêm điều gì — nó chỉ là giọng thứ hai. Be Vietnam Pro
-   có bốn trọng lượng và ở 600/700 với letter-spacing âm, nó thừa sức làm tiêu
-   đề. Nó cũng là họ chữ được thiết kế riêng cho tiếng Việt: dấu thanh không va
-   vào dấu mũ ở những chữ như "ệ", "ỗ", "ữ".
-   ======================================================================== */
+/* ---- chữ: một họ chữ (Be Vietnam Pro) cho toàn bộ giao diện; thiết kế riêng cho tiếng Việt (dấu thanh không va dấu mũ), 600/700 với letter-spacing âm đủ làm tiêu đề. */
 
 .display {
   font-family: var(--font-sans), system-ui, sans-serif;
@@ -347,14 +261,7 @@ body {
   line-height: 1.25;
 }
 
-/* Nhãn nhỏ viết hoa.
-
-   Giữ lại, nhưng dịu đi và dùng ít hơn hẳn. Giãn chữ từ 0.14em xuống 0.09em:
-   giãn rộng làm chữ hoa cỡ nhỏ tan thành một dải hạt, và đó chính là thứ tạo
-   cảm giác nhiễu khi có năm cái trên một màn hình.
-
-   Quy tắc dùng: chỉ khi nhãn *phân biệt* được hai thứ cạnh nhau. Không dùng để
-   lặp lại điều tiêu đề đã nói. */
+/* Nhãn nhỏ viết hoa, giãn chữ 0.09em (rộng hơn thì chữ hoa cỡ nhỏ tan thành hạt). Chỉ dùng khi nhãn phân biệt được hai thứ cạnh nhau, không lặp lại điều tiêu đề đã nói. */
 .eyebrow {
   font-size: 0.6875rem;
   font-weight: 600;
@@ -368,12 +275,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* ------------------------------------------------------------- biểu tượng
-
-   Material Symbols Outlined thay cho SVG nội tuyến trước đây — xem lý do đổi
-   ở đầu `components/shared/Icon.tsx`. `Icon` render một `<span>` mang lớp
-   này; kích cỡ đặt qua `font-size` inline (prop `size`), màu thừa hưởng
-   `currentColor` giống SVG trước nên không cần khai báo lại ở nơi dùng. */
+/* ---- biểu tượng: Material Symbols Outlined; `Icon` render một <span> mang lớp này, cỡ qua `font-size` inline, màu thừa hưởng currentColor. */
 .material-symbols-outlined {
   font-family: var(--font-icon);
   font-weight: normal;
@@ -452,13 +354,8 @@ a:hover {
   color: var(--ink-faint);
 }
 
-/* Ba năng lực ngăn bằng dấu chấm giữa. Chỗ ngắt dòng hợp lệ duy nhất là **giữa
-   hai mục**, không phải giữa hai từ trong một mục.
-
-   `text-wrap: balance` không giải được: nó cân độ dài hai dòng và vì thế ngắt
-   ngay giữa "Lịch / học" — đều hơn nhưng sai hơn. Khóa từng mục lại rồi để dấu
-   chấm dính vào cuối mục trước, thì dù khung rộng bao nhiêu, dòng cũng chỉ ngắt
-   ở đúng chỗ nó được phép. */
+/* Ba năng lực ngăn bằng dấu chấm giữa: chỉ được ngắt dòng giữa hai mục, không giữa hai từ trong một mục. `text-wrap: balance`
+   không giải được (nó ngắt giữa "Lịch / học"); khóa từng mục và để dấu chấm dính cuối mục trước. */
 .login__what > span {
   white-space: nowrap;
 }
@@ -467,14 +364,7 @@ a:hover {
   content: ' ·';
 }
 
-/* ================================================================== ô nhập
-
-   Mặc định là ô nền mềm bo góc: nền lõm một bậc so với mặt giấy, viền mảnh, và
-   khi focus thì viền chuyển sang xanh mực kèm một vòng sáng.
-
-   Dòng chấm điền tay không biến mất — nó chuyển vào `.paper-form` ở dưới, tức
-   đúng lúc người dùng đang điền một tờ đơn thật.
-   ======================================================================== */
+/* ---- ô nhập: ô nền mềm bo góc (lõm một bậc so với mặt giấy, viền mảnh, focus viền xanh kèm vòng sáng); dòng chấm điền tay chỉ còn trong `.paper-form`. */
 
 .field {
   display: block;
@@ -658,19 +548,7 @@ select.field__input {
   box-shadow: 0 0 0 3px var(--pen-wash);
 }
 
-/* --------------------------------------------------- dòng chấm điền tay
-
-   Mô-típ đặc trưng của hệ thiết kế, nay chỉ sống trong `.paper-form` — khối bọc
-   một tờ đơn đang được điền:
-
-       Tên em là: …………………………………  Sinh ngày: ……………..
-
-   Vẽ bằng radial-gradient lặp, không phải `border-style: dotted` — dotted của
-   trình duyệt cho chấm vuông và khoảng cách không kiểm soát được.
-
-   Khi focus, các chấm rời hóa thành nét bút liền. Khi người dùng điền đơn thật,
-   ẩn dụ này thành nghĩa đen.
-   ------------------------------------------------------------------------- */
+/* ---- dòng chấm điền tay: chỉ trong `.paper-form` (tờ đơn đang được điền). Vẽ bằng radial-gradient lặp vì `border-style: dotted` cho chấm vuông và khoảng cách không kiểm soát được; khi focus, chấm hóa nét liền. */
 
 .paper-form .field__input {
   border: 0;
@@ -886,19 +764,8 @@ button.card:hover {
   border-color: color-mix(in oklab, var(--pen) 30%, var(--rule-faint));
 }
 
-/* --------------------------------------------------------- thẻ chức năng
-
-   `SectionCard` dùng lớp này ở HAI hình dạng khác nhau, và CSS phải phân biệt
-   được bằng cấu trúc chứ không phải bằng biến thể được truyền vào:
-
-     · Ô vuông trong `CardGrid` ở trang chủ — icon trong khối bo góc màu mực,
-       tiêu đề, mô tả, mũi tên đẩy xuống đáy. Nhận ra bằng việc bên trong có
-       `.section-card__icon`, có ở CẢ thẻ bấm được (`.card.section-card`) lẫn
-       thẻ chưa mở (`.section-card--off`, không mang `.card`) — nên chọn theo
-       `:has()` để không phải lặp cùng một layout ở hai nơi.
-     · Dòng đầy chiều rộng trong danh sách (biểu mẫu, đơn của tôi, đơn chờ
-       duyệt) — không có icon, không nổi lên khỏi các dòng cạnh nó, chỉ đổi
-       nền khi rê chuột giống mọi dòng danh sách khác trong ứng dụng. */
+/* ---- thẻ chức năng: `SectionCard` có hai hình dạng, phân biệt bằng cấu trúc (`:has(.section-card__icon)`) chứ không bằng biến thể:
+   ô vuông trong `CardGrid` ở trang chủ (icon, tiêu đề, mô tả, mũi tên) và dòng đầy chiều rộng trong danh sách (không icon, chỉ đổi nền khi rê chuột). */
 .section-card {
   transition: background-color 130ms var(--ease);
 }

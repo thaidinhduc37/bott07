@@ -1,0 +1,5 @@
+line-length = 120
+
+[lint.per-file-ignores]
+# Quan hệ SQLAlchemy tham chiếu model ở tệp khác bằng chuỗi; SQLAlchemy phân giải lúc chạy (xem app/models/__init__.py).
+"app/models/*" = ["F821"]

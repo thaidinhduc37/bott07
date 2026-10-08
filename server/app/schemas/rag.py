@@ -43,10 +43,7 @@ class IngestResult(BaseModel):
 # -------------------------------------------------------------------- /query
 
 class QueryPayload(BaseModel):
-    """NOTE: deliberately has NO `tau` field — the reference NestJS type omits
-    it so the API layer can never override the calibrated abstention
-    threshold. Do not add it, even though rag-service's own QueryRequest
-    schema accepts one."""
+    """KHÔNG có trường `tau` có chủ đích: tầng API không bao giờ được ghi đè ngưỡng abstention đã calibrate. Đừng thêm vào."""
 
     question: str
     mode: RagDocumentType

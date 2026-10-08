@@ -1,17 +1,8 @@
-"""§4 Chuẩn hóa — bỏ đi những gì lặp lại.
+"""§4 Chuẩn hóa: bỏ tiêu đề chạy, chân trang và số trang lặp ở gần mọi trang (nếu không chúng thành những đoạn văn hơi
+giống mọi truy vấn và chiếm chỗ nội dung thật).
 
-Tiêu đề chạy, chân trang và số trang xuất hiện ở gần như mọi trang. Một khi được
-nhúng, chúng trở thành những đoạn văn hơi giống *mọi* truy vấn, và chúng chiếm
-chỗ của nội dung thật trong danh sách ứng viên.
-
-Chúng được nhận diện theo cấu trúc chứ không bằng khớp mẫu: một dòng xuất hiện ở
-vùng đầu hoặc cuối của phần lớn số trang trong một tài liệu thì theo định nghĩa
-là boilerplate.
-
-Bước này có chốt an toàn. Nếu việc làm sạch xóa quá nửa corpus thì heuristic đã
-sai — rủi ro có thật với tài liệu ngắn, nơi nội dung thân bài có thể lặp lại — và
-văn bản gốc được giữ nguyên. Một bước tiền xử lý có thể âm thầm xóa sạch corpus
-còn tệ hơn là không có bước tiền xử lý nào.
+Nhận diện theo cấu trúc: dòng xuất hiện ở vùng đầu hoặc cuối của phần lớn số trang là boilerplate. Chốt an toàn: nếu việc
+làm sạch xóa quá nửa corpus thì heuristic đã sai (rủi ro với tài liệu ngắn) và giữ nguyên văn bản gốc.
 """
 
 from __future__ import annotations
@@ -62,7 +53,7 @@ def strip_boilerplate(pages: list[Page]) -> tuple[list[Page], NormalisationRepor
     for source, group in by_source.items():
         counter: Counter[str] = Counter()
         for p in group:
-            lines = [l.strip() for l in p.text.split("\n") if l.strip()]
+            lines = [line.strip() for line in p.text.split("\n") if line.strip()]
             # Dùng set để một dòng lặp nhiều lần trong cùng một trang vẫn chỉ
             # tính một lần — nếu không, một trang có bảng lặp sẽ tự đẩy nội dung
             # của chính nó lên trên ngưỡng.
@@ -83,7 +74,7 @@ def strip_boilerplate(pages: list[Page]) -> tuple[list[Page], NormalisationRepor
         }
 
         for p in group:
-            text = "\n".join(l for l in p.text.split("\n") if l.strip() not in boiler)
+            text = "\n".join(line for line in p.text.split("\n") if line.strip() not in boiler)
             text = re.sub(r"[ \t]+", " ", text)
             text = re.sub(r"\n{3,}", "\n\n", text).strip()
             if text:

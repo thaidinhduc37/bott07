@@ -1,9 +1,5 @@
-"""`GET /courses` (Phase 2 — any authed user, minimal fields, backs the
-document-upload and chat course-pickers) plus `GET /classes` (Phase 4 —
-staff-only, list classes with student/session-count aggregates). Kept in one
-file since both are small, read-only, and reference-adjacent
-(`courses.controller.ts` + `classes.controller.ts` were two thin sibling
-controllers in the original)."""
+"""`GET /courses` (mọi người dùng đã đăng nhập, trường tối thiểu, cho ô chọn môn ở tải tài liệu và hỏi đáp) và `GET /classes`
+(chỉ cán bộ, kèm số học viên và số buổi học)."""
 
 from __future__ import annotations
 

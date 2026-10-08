@@ -36,7 +36,7 @@ class QuizSession(Base):
         "user_id", PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     course_id: Mapped[uuid.UUID | None] = mapped_column(
-        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="SET NULL"), nullable=True
+        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="SET NULL"), nullable=True, index=True
     )
     # NULL = lượt ôn câu sai, không sinh câu mới.
     topic: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -94,7 +94,7 @@ class ReviewItem(Base):
         "user_id", PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     course_id: Mapped[uuid.UUID | None] = mapped_column(
-        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="SET NULL"), nullable=True
+        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="SET NULL"), nullable=True, index=True
     )
     # sha256 của nội dung câu hỏi — cùng một câu sai hai lần thì chỉ một dòng.
     question_hash: Mapped[str] = mapped_column("question_hash", String, nullable=False)

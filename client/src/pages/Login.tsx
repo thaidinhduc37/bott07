@@ -6,19 +6,8 @@ import { authApi } from '@/services/api';
 import { homePathOf } from '@/utils/roles';
 
 /**
- * Cửa vào.
- *
- * Trước đây trang này mở đầu bằng masthead văn bản hành chính — quốc hiệu, tiêu
- * ngữ, gạch ngắn — rồi tới tiêu đề serif viết hoa. Ba khối chiếm gần nửa chiều
- * cao thẻ trước khi người dùng thấy ô nhập đầu tiên.
- *
- * Masthead thuộc về **tờ đơn**, và tờ đơn thật được dựng ở
- * `server/api/src/forms/docx-renderer.service.ts`, nơi nó in ra giấy và mang đúng
- * nghĩa. Đặt thêm một bản trên màn hình đăng nhập không làm hệ thống chính
- * thống hơn; nó chỉ đẩy việc người dùng tới đây để làm xuống dưới màn hình.
- *
- * Thay bằng phần đầu nói đúng ba điều cần thiết: đây là hệ thống gì, của ai, và
- * làm được gì.
+  * Cửa vào. Không đặt masthead quốc hiệu ở đây: nó thuộc về tờ đơn (`server/app/services/forms/docx_renderer.py`) và chiếm
+  * gần nửa chiều cao thẻ đăng nhập. Phần đầu chỉ nói ba điều: đây là hệ thống gì, của ai, làm được gì.
  */
 export default function LoginPage() {
   useDocumentTitle('Đăng nhập');

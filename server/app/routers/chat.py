@@ -1,5 +1,4 @@
-"""Port of `chat/chat.controller.ts`. Mounted at `/chat`. Every route requires
-auth (current user from the JWT cookie/bearer token)."""
+"""Hỏi đáp (`/chat`); mọi route cần đăng nhập."""
 
 from __future__ import annotations
 
@@ -9,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
-from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles, user_rate_limit
 from app.models.enums import RoleCode
 from app.schemas.chat import AskDto, FeedbackDto
 from app.services.accounts.admin_dashboard_service import AdminDashboardService
@@ -31,9 +30,8 @@ def _parse_uuid4(value: str) -> str:
 
 def _chat_rate_limit():
     s = get_settings()
-    # A single query can cost up to 6 Gemini calls, so disabling the Send
-    # button client-side isn't enough — the limit must be enforced server-side.
-    return rate_limit("chat_ask", s.rate_limit_chat_per_min)
+    # Một truy vấn có thể tốn tới 6 lời gọi Gemini nên giới hạn phải ở máy chủ, tính theo người dùng.
+    return user_rate_limit("chat_ask", s.rate_limit_chat_per_min)
 
 
 @router.post("/ask", dependencies=[Depends(_chat_rate_limit())])

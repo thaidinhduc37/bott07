@@ -1,9 +1,5 @@
-"""`AdminDashboardService.get_activity_stats()` — port of the (deleted)
-NestJS service of the same name. Placed in its own module (not
-`users_service.py` or `schedules_service.py`) because, per the porting
-notes, it "bridges two domains" (users + schedules) and doesn't obviously
-belong to either.
-"""
+"""`AdminDashboardService.get_activity_stats()`: thống kê hoạt động cho trang chủ quản trị. Đặt riêng vì nối hai miền (người dùng và
+lịch) nên không thuộc rõ về `users_service.py` hay `schedules_service.py`."""
 
 from __future__ import annotations
 

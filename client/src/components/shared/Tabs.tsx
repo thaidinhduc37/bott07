@@ -10,14 +10,9 @@ export interface TabItem<T extends string> {
 }
 
 /**
- * Thanh tab dùng chung — mô hình WAI-ARIA "tabs": `role=tablist/tab`, chỉ tab đang chọn
- * nằm trong thứ tự Tab (roving tabindex), ← → Home End đổi tab và dời focus theo.
- *
- * Kiểu gạch chân, đặt SÁT ĐÁY `PageHeader` và ngay trên nội dung nó điều khiển. Dùng
- * `TabPanel` cùng `idPrefix` để nối `aria-controls` / `aria-labelledby` cho khớp.
- *
- * Chỉ dành cho việc ĐỔI PHẦN NỘI DUNG của trang. Bộ lọc (tất cả / chưa đọc…) hay điều
- * hướng tuần vẫn dùng nhóm `.seg`.
+ * Thanh tab dùng chung theo WAI-ARIA "tabs": `role=tablist/tab`, chỉ tab đang chọn nằm trong thứ tự Tab (roving tabindex), ← → Home End
+ * đổi tab và dời focus. Kiểu gạch chân, đặt sát đáy `PageHeader`; dùng `TabPanel` cùng `idPrefix` để nối `aria-controls` /
+ * `aria-labelledby`. Chỉ để ĐỔI PHẦN NỘI DUNG của trang; bộ lọc và điều hướng tuần dùng nhóm `.seg`.
  */
 export function Tabs<T extends string>({
   items,

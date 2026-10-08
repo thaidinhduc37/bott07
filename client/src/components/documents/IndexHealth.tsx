@@ -24,7 +24,7 @@ export function IndexHealth({ report }: { report: IndexStatusReport }) {
         !inSync && (
           <div className="notice notice--warn" style={{ fontSize: '0.8125rem' }}>
             {report.consistency === 'unknown'
-              ? 'Chưa đối chiếu được PostgreSQL với Qdrant.'
+              ? 'Chưa đối chiếu được PostgreSQL với Chroma.'
               : report.consistency}
           </div>
         )
@@ -55,13 +55,7 @@ export function IndexHealth({ report }: { report: IndexStatusReport }) {
                 <span className="mono doc-idx__name">{name}</span>
                 <span className="mono doc-idx__nums">
                   {c.dense_points}
-                  {c.sparse_documents !== undefined && ` · ${c.sparse_documents}`}
                 </span>
-                {c.in_sync !== undefined && (
-                  <span className={`tag ${c.in_sync ? 'tag--ok' : 'tag--warn'}`}>
-                    {c.in_sync ? 'khớp' : 'lệch'}
-                  </span>
-                )}
               </li>
             ))}
           </ul>

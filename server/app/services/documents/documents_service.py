@@ -1,4 +1,4 @@
-"""Port of `documents/documents.service.ts`."""
+"""Tài liệu nguồn: tải lên, phiên bản, lập chỉ mục, xóa và đối chiếu PostgreSQL với kho vector."""
 
 from __future__ import annotations
 
@@ -340,16 +340,14 @@ class DocumentsService:
 
         vectors_removed = 0
         if doc.document_type in INDEXABLE:
-            # Vectors are deleted BEFORE the Postgres row. If the Postgres
-            # delete ran first and Qdrant then failed, we'd be left with
-            # orphaned vectors still cited for a document that no longer
-            # exists — and no row left to know to clean them up.
+            # Xóa vector TRƯỚC dòng Postgres: xóa Postgres trước rồi xóa vector lỗi thì vector mồ côi vẫn bị trích dẫn mà không còn dòng nào
+            # để biết đường dọn.
             result = await self.rag.delete_document(str(id), _rag_type(doc.document_type))
             vectors_removed = result.total
 
             indexed_chunks = sum(v.chunk_count or 0 for v in doc.versions)
             if indexed_chunks > 0 and vectors_removed == 0:
-                logger.warning(f"Tài liệu {id} ghi nhận {indexed_chunks} đoạn nhưng Qdrant không xóa được điểm nào")
+                logger.warning(f"Tài liệu {id} ghi nhận {indexed_chunks} đoạn nhưng kho vector không xóa được điểm nào")
 
         for v in doc.versions:
             self.storage.remove(v.file_path)
@@ -400,8 +398,7 @@ class DocumentsService:
     # -------------------------------------------------------------- trạng thái
 
     async def index_status(self) -> dict:
-        """Reconcile PostgreSQL against Qdrant. A mismatch is a sign ingestion
-        broke halfway through."""
+        """Đối chiếu PostgreSQL với kho vector: lệch nhau là dấu hiệu lần nạp đã hỏng giữa chừng."""
         rows = (
             await self.db.execute(
                 select(DocumentVersion.index_status, func.count(), func.sum(DocumentVersion.chunk_count)).group_by(
@@ -434,7 +431,7 @@ class DocumentsService:
         elif actual_points == expected_chunks:
             consistency = "in_sync"
         else:
-            consistency = f"lệch: PostgreSQL ghi {expected_chunks} đoạn, Qdrant có {actual_points} điểm"
+            consistency = f"lệch: PostgreSQL ghi {expected_chunks} đoạn, Chroma có {actual_points} điểm"
 
         return {
             "postgres": {k.value: v for k, v in by_status.items()},

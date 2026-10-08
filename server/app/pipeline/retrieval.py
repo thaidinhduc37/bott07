@@ -1,20 +1,7 @@
-"""§10–§11 Xếp lại hạng, và giao diện truy xuất.
+"""Xếp lại hạng bằng cross-encoder và giao diện truy xuất (chỉ còn tầng dense của Chroma).
 
-Truy xuất chỉ còn một tầng dense (Chroma). Hợp nhất RRF với BM25 đã bị bỏ —
-xem lịch sử git nếu cần lại retrieval thưa.
-
-**Rerank (§10).** Truy xuất tầng một so vector truy vấn với vector đoạn văn được
-tính độc lập với nó. Cross-encoder thì đọc cặp đã nối và cho ra một điểm liên
-quan duy nhất, nên xử lý được phủ định, mệnh đề giới hạn và sai lệch thực thể mà
-độ tương tự vector không làm được. Chạy nó trên toàn corpus thì quá đắt, nhưng
-trên vài chục ứng viên thì hoàn toàn chấp nhận được.
-
-Hai hệ quả quan trọng. Thứ nhất, mức tăng độ chính xác thường lớn nhất trong các
-thành phần. Thứ hai — và ít được khai thác hơn — điểm số của nó **đủ được
-calibrate để đặt ngưỡng**, và đó là thứ làm cho cơ chế abstention ở §14 khả thi.
-Điểm tương tự của tầng một không dùng được cho việc này: giá trị tuyệt đối của
-chúng mang tính tương đối theo corpus, và một truy vấn vô nghĩa vẫn trả về láng
-giềng gần nhất với cosine trông rất khả quan.
+Điểm cross-encoder đủ calibrate để đặt ngưỡng abstention; điểm tương tự vector của tầng một thì không (giá trị tuyệt đối
+tương đối theo corpus, truy vấn vô nghĩa vẫn có láng giềng cosine cao).
 """
 
 from __future__ import annotations
@@ -56,16 +43,9 @@ class Hit:
         return self.payload.get("text", "")
 
     def citation(self, marker: int) -> dict:
-        """Trích dẫn hiển thị cho người dùng.
+        """Trích dẫn hiển thị cho người dùng: `page` cho giáo trình, `article_number` cho quy chế; trường nào không có thì để trống.
 
-        Trả cả `page` lẫn `article_number`: quy chế được viện dẫn theo điều
-        ("Điều 12"), giáo trình được viện dẫn theo trang. Trường nào không có thì
-        để trống chứ không bịa.
-
-        Khi một đoạn trải qua nhiều điều, `article_range` nói rõ ("Điều 17–20").
-        Ghi một số điều duy nhất cho một đoạn phủ bốn điều là một trích dẫn sai
-        theo cách khó phát hiện: nó trỏ tới một chỗ có thật, chỉ là không phải
-        chỗ chứa câu trả lời.
+        Đoạn trải qua nhiều điều ghi `article_range` ("Điều 17–20"); chỉ ghi một điều là trích dẫn sai khó phát hiện.
         """
         articles = self.payload.get("articles") or []
         article_range = None
@@ -102,17 +82,10 @@ class Retriever:
         self.settings = settings
 
     def scope_documents(self, query: str, collection: str) -> list[str] | None:
-        """Các tài liệu mà câu hỏi nhắc tên, hoặc None nếu không nhắc tài liệu nào.
+        """Các tài liệu mà câu hỏi nhắc nguyên văn tên (không phân biệt dấu, hoa thường), hoặc None.
 
-        Phần đầu của các đề cương học phần có văn phong gần như giống hệt nhau, nên
-        câu như "học phần tiên quyết của Cơ sở dữ liệu" bị hàng chục đề cương khác
-        chen vào top ứng viên và đoạn của đúng môn tụt xuống hạng 20-50. Khi câu
-        hỏi nêu nguyên văn tên một tài liệu (không phân biệt dấu, hoa thường) thì
-        thu hẹp việc tìm vào đúng tài liệu đó.
-
-        Chỉ giữ lần xuất hiện dài nhất: "Hệ quản trị cơ sở dữ liệu" chứa "cơ sở dữ
-        liệu", nhưng nhắc tên môn dài thì không có nghĩa là hỏi cả môn ngắn. Nếu
-        tên ngắn còn xuất hiện ở chỗ khác trong câu thì vẫn được tính.
+        Phần đầu các đề cương gần như giống nhau nên không thu hẹp thì đoạn của đúng môn tụt xuống hạng 20–50. Chỉ giữ tên dài
+        nhất: "Hệ quản trị cơ sở dữ liệu" chứa "cơ sở dữ liệu" nhưng không có nghĩa là hỏi cả môn ngắn.
         """
         titles = self.store.document_titles(collection)
         if not titles:
@@ -181,11 +154,5 @@ class Retriever:
         return self.rerank(query, self.candidates(query, collection, n_candidates, course_id), top_k)
 
     def confidence(self, hits: list[Hit]) -> float:
-        """Độ tin cậy = điểm cross-encoder cao nhất trong các đoạn truy xuất được.
-
-        Lấy max chứ không lấy trung bình: câu hỏi chỉ cần **một** đoạn văn trả
-        lời được. Trung bình sẽ phạt những truy vấn có đúng một đoạn hoàn hảo kèm
-        bốn đoạn không liên quan — mà đó lại chính là hình dạng của một lần truy
-        xuất thành công cho câu hỏi hẹp.
-        """
+        """Độ tin cậy = điểm cross-encoder cao nhất. Lấy max, không lấy trung bình: câu hỏi chỉ cần một đoạn trả lời được."""
         return max((h.score for h in hits), default=0.0)

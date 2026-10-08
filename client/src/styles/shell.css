@@ -1,18 +1,5 @@
-/* ============================================================== thanh bên
-
-   Điều hướng là thanh bên dọc.
-
-   Lý do là số đo, không phải sở thích: khu vực học viên có bảy mục, và trên dải
-   ngang 1180px chúng vừa đủ chật để phải `overflow-x: auto`. Một thanh điều
-   hướng phải cuộn ngang là thanh điều hướng có mục người dùng không bao giờ
-   thấy. Xếp dọc thì bảy mục là thoải mái, và còn chỗ cho biểu tượng.
-
-   Dưới 60rem, thanh bên thành **ngăn kéo trượt từ trái kèm tấm phủ mờ**, mở từ
-   một thanh trên cùng. Bản trước để nó xổ xuống đè lên nội dung; ngăn kéo tốt
-   hơn ở hai điểm cụ thể: nó giữ nguyên thứ tự dọc của các mục (menu xổ xuống
-   phải nén lại), và tấm phủ cho người dùng một chỗ bấm để đóng ở bất kỳ đâu
-   trên màn hình thay vì phải quay lại đúng cái nút đã mở nó.
-   ========================================================================= */
+/* ---- thanh bên dọc: bảy mục không vừa dải ngang 1180px mà không phải cuộn ngang (mục người dùng không thấy). Dưới 60rem thành ngăn
+   kéo trượt từ trái kèm tấm phủ mờ: giữ thứ tự dọc và cho một chỗ bấm để đóng ở bất kỳ đâu. */
 
 .shell {
   min-height: 100dvh;
@@ -146,23 +133,7 @@
   font-weight: 600;
 }
 
-.rail__link--blocked {
-  color: var(--ink-faint);
-  cursor: default;
-  opacity: 0.75;
-}
-
-.rail__link--blocked:hover {
-  background: transparent;
-  color: var(--ink-faint);
-}
-
-/* Một dải NGANG duy nhất: danh tính bên trái (co giãn, cắt chữ khi chật),
-   ba nút icon (thông báo/giao diện/đăng xuất) bên phải, cố định bề rộng.
-   Trước đây đây là ba dòng riêng xếp chồng — `rail__me` rồi hai nút
-   `btn--sm` đầy chiều rộng — trông như ba viên bo tròn rời rạc chứ không
-   phải một khối có trật tự. `justify-content: space-between` + `min-width: 0`
-   trên danh tính là hai điều bắt buộc để dải không vỡ dòng ở khung 16rem. */
+/* Một dải NGANG: danh tính bên trái (co giãn, cắt chữ), ba nút icon bên phải cố định. `justify-content: space-between` và `min-width: 0` trên danh tính để dải không vỡ dòng ở khung 16rem. */
 .rail__foot {
   margin-top: auto;
   padding: var(--gap-3);
@@ -295,13 +266,7 @@
     box-shadow: var(--shadow-lg);
     transform: translateX(-100%);
 
-    /* Ngăn kéo đóng phải biến mất khỏi **cả** khung nhìn lẫn thứ tự Tab.
-       `transform` một mình chỉ đẩy nó ra ngoài màn hình: bảy liên kết vẫn nhận
-       được tiêu điểm và trình đọc màn hình vẫn đọc chúng, nên người dùng bàn
-       phím phải Tab qua một menu vô hình trước khi tới nội dung.
-
-       `visibility: hidden` xử lý cả hai, và độ trễ 240ms đúng bằng thời gian
-       trượt để nó không biến mất giữa chừng khi đang đóng lại. */
+    /* Ngăn kéo đóng phải biến mất khỏi cả khung nhìn lẫn thứ tự Tab: `transform` một mình vẫn để bảy liên kết nhận tiêu điểm. `visibility: hidden` xử lý cả hai; độ trễ 240ms bằng thời gian trượt. */
     visibility: hidden;
     transition: transform 240ms var(--ease), visibility 0s linear 240ms;
   }
@@ -393,12 +358,7 @@ a.picker-row:hover {
   color: var(--ink-faint);
 }
 
-/* ------------------------------------------------------------- chip gợi ý
-
-   Câu hỏi mẫu bấm được. Không phải trang trí: hạn chế đã biết của hệ thống là
-   truy vấn gõ không dấu sẽ trượt truy xuất, và một câu hỏi mẫu bấm được là cách
-   chắc chắn nhất để người dùng lần đầu gõ đúng.
-   ------------------------------------------------------------------------- */
+/* ---- chip gợi ý: câu hỏi mẫu bấm được; truy vấn gõ không dấu trượt truy xuất nên mẫu bấm được là cách chắc chắn để người dùng lần đầu gõ đúng. */
 
 .chip {
   display: inline-flex;
@@ -428,15 +388,7 @@ a.picker-row:hover {
   cursor: not-allowed;
 }
 
-/* ------------------------------------------------------- nút chọn nhóm
-
-   Hai lựa chọn loại trừ nhau, đứng cạnh nhau trong một khung lõm. Thay cho hai
-   thẻ radio viền dày của bản trước, thứ chiếm gần một phần ba màn hình đầu tiên
-   của trang hỏi đáp để hỏi một câu có hai đáp án.
-
-   Vẫn là `<input type="radio">` thật bên dưới, chỉ ẩn đi — bàn phím, trình đọc
-   màn hình và việc gửi biểu mẫu đều không đổi.
-   ------------------------------------------------------------------------- */
+/* ---- nút chọn nhóm: lựa chọn loại trừ nhau trong một khung lõm. Vẫn là `<input type="radio">` thật bị ẩn nên bàn phím, trình đọc màn hình và gửi biểu mẫu không đổi. */
 
 .seg {
   display: inline-flex;

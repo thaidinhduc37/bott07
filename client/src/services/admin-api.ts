@@ -51,7 +51,7 @@ export interface ServiceStatus {
       ok: boolean;
       detail: string;
       url: string;
-      collections: Record<string, { dense_points: number; sparse_documents?: number; in_sync?: boolean }>;
+      collections: Record<string, { dense_points: number }>
     };
     llm: { ok: boolean; detail?: string } | null;
   };

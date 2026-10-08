@@ -1,25 +1,12 @@
-"""Approval engine: state machine + per-step access control + the
-signature-composition side effect coupled to APPROVE. Port of the (deleted)
-NestJS `approvals.service.ts` — the hardest piece of this port to get right,
-per the porting notes:
+"""Luồng phê duyệt: máy trạng thái, kiểm quyền từng bước và ký ghép vào hành động APPROVE.
 
-- `TRANSITIONS` is the ONLY place that decides valid status changes. Every
-  action not present for the submission's current status is rejected —
-  this IS the "no skipping approval levels" enforcement.
-- `can_act` is a triple check: right step, right step status, right
-  assignee-or-unassigned — AND the caller must hold the step's role.
-- APPROVE embeds the approver's signature and re-renders the WHOLE document
-  from scratch every time (never patches an existing file) — "approving IS
-  signing", not a separate step.
-- REQUEST_REVISION clears the submission's `signed_path`/`signed_hash` —
-  the student must re-sign after editing.
-- REJECT is terminal — no `next_step_order`.
-- 404-not-403 on `detail()`/`file_of()` (confirming a submission exists to
-  someone with no matching step is itself a leak); 403 `NOT_YOUR_STEP` on
-  `act()` (the caller reached this submission via a shared inbox, so its
-  existence is already known — no anti-enumeration concern there).
-- File writes happen BEFORE the DB transaction commits, same ordering as
-  the reference — preserved, not "fixed".
+- `TRANSITIONS` là nơi DUY NHẤT quyết định chuyển trạng thái hợp lệ; hành động không có trong bảng của trạng thái hiện tại bị
+  từ chối, nên không thể bỏ qua cấp duyệt.
+- `can_act` kiểm đủ: đúng bước, đúng trạng thái bước, đúng người được giao (hoặc chưa giao), và người gọi giữ vai trò của bước.
+- APPROVE nhúng chữ ký người duyệt và dựng lại TOÀN BỘ tài liệu mỗi lần (không vá tệp cũ): duyệt là ký.
+- REQUEST_REVISION xóa `signed_path`/`signed_hash` (học viên phải ký lại sau khi sửa); REJECT là trạng thái cuối.
+- `detail()`/`file_of()` trả 404 (xác nhận đơn tồn tại với người không có bước phù hợp đã là rò rỉ); `act()` trả 403 `NOT_YOUR_STEP`.
+- Tệp được ghi TRƯỚC khi giao dịch CSDL commit: thứ tự có chủ đích, đừng "sửa".
 """
 
 from __future__ import annotations

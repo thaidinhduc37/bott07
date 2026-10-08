@@ -1,10 +1,5 @@
-/* ------------------------------------------------------------- ôn tập
-
-   Ẩn dụ: tờ đề thi giấy. Tất cả câu nằm trên MỘT `.sheet`, ngăn nhau bằng
-   đường kẻ mảnh — không mỗi câu một thẻ. Mỗi câu là một `<fieldset>` với các
-   `<label>` bọc radio thật: bấm vào cả dòng được, bàn phím đi bằng mũi tên
-   như mọi nhóm radio; sau khi nộp fieldset bị `disabled` nên không đổi đáp án.
-   Phương án là dòng gọn, không viền hộp — chỉ có vòng chữ cái A/B/C/D. */
+/* ---- ôn tập: tờ đề thi giấy. Mọi câu nằm trên MỘT `.sheet` ngăn bằng nét kẻ mảnh; mỗi câu là `<fieldset>` với `<label>` bọc radio
+   thật (bấm cả dòng, bàn phím đi bằng mũi tên); sau khi nộp fieldset `disabled`. */
 
 /* Tờ đề: một mặt giấy duy nhất chứa mọi câu. */
 .quiz-sheet {
@@ -655,14 +650,7 @@
   flex-wrap: wrap;
 }
 
-/* ==========================================================================
-   Vòng 4 — bố cục hai cột cho khu học tập
-
-   Sáu trang học tập chuyển từ khung hẹp `shell--read` sang khung mặc định
-   1440px + `.page-grid`: bề rộng thêm dùng cho CỘT PHỤ (thông tin hữu ích),
-   KHÔNG kéo dài dòng chữ. Khối này chỉ dùng biến có sẵn và nằm ở cuối tệp
-   để không đụng CSS chung phía trên.
-   ======================================================================== */
+/* ---- bố cục hai cột của khu học tập: khung mặc định + `.page-grid`; bề rộng thêm dành cho cột phụ, không kéo dài dòng chữ. */
 
 /* Tiêu đề nhỏ của các khối cột phụ. */
 .aside-h {

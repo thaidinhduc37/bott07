@@ -1,10 +1,4 @@
-/* ==========================================================================
-   Khu cán bộ — đồng bộ ngôn ngữ thiết kế của khu học viên
-
-   Năm trang cán bộ chuyển sang `.page-grid` (cột chính + cột phụ) theo đúng
-   mẫu vòng 4: bề rộng thêm dành cho cột phụ, dòng chữ không kéo dài. Chỉ dùng
-   biến có sẵn; class tiền tố `staff-`, `doc-`, `appr-` để không đụng CSS chung.
-   ======================================================================== */
+/* Khu cán bộ: các trang dùng `.page-grid`; class tiền tố `staff-`, `doc-`, `appr-` để không đụng CSS chung. */
 
 /* ------------------------------------------------------ hộp đơn chờ xử lý */
 
@@ -272,15 +266,7 @@ a.appr-row:hover {
   color: var(--ink-faint);
 }
 
-/* ==========================================================================
-   Khu quản trị — đồng bộ ngôn ngữ thiết kế của khu học viên
-
-   Bốn trang quản trị chuyển sang `.page-grid` (cột chính + cột phụ) theo đúng
-   mẫu vòng 4/5: bề rộng thêm dành cho cột phụ, dòng chữ không kéo dài. Dashboard
-   giữ lưới `.dash-grid` nhưng số lớn đổi sang font thường + tabular-nums (mono
-   chỉ dành cho mã). Chỉ dùng biến có sẵn; class tiền tố `admin-`, `acct-`,
-   `svc-`, `dash-` để không đụng CSS chung phía trên.
-   ======================================================================== */
+/* Khu quản trị: các trang dùng `.page-grid`; dashboard giữ `.dash-grid`, số lớn dùng font thường + tabular-nums (mono chỉ cho mã). Tiền tố `admin-`, `acct-`, `svc-`, `dash-`. */
 
 /* ------------------------------------------------------------- dashboard */
 

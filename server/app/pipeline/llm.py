@@ -1,36 +1,8 @@
-"""Reader — bản thay thế cho Qwen2.5-7B cục bộ của notebook.
+"""Client LLM (Gemini) cho mọi stage sinh văn bản của pipeline.
 
-Notebook dùng một model duy nhất cho *mọi* stage cần sinh văn bản: viết ngữ cảnh
-cho chunk (§6), sinh bộ câu hỏi đánh giá (§12), định tuyến và phân rã truy vấn
-(§15), chấm đủ căn cứ (§18), sinh câu trả lời (§16), và kiểm chứng groundedness
-(§17). Module này giữ nguyên cấu trúc đó, chỉ đổi chỗ thực thi: máy demo không có
-GPU nên chạy 7B cục bộ là không khả thi.
-
-Ba điều được giữ nguyên từ notebook vì chúng ảnh hưởng tới kết quả:
-
-1. **Sinh văn bản là greedy** (`temperature=0`). Với hệ thống có căn cứ, khả năng
-   lặp lại quan trọng hơn sự đa dạng; giải mã ngẫu nhiên làm mọi số đo bên dưới
-   không lặp lại được.
-2. **Đếm số lời gọi theo từng stage.** Notebook có `LLM_CALLS = Counter()` để
-   biết mỗi stage tốn bao nhiêu lần sinh. Ở đây nó còn quan trọng hơn vì mỗi lời
-   gọi là tiền và là quota.
-3. **`yes_no` trả về `None` khi không phân tích được.** Ép một câu trả lời không
-   rõ ràng thành `False` sẽ âm thầm biến lỗi phân tích thành "không đủ căn cứ".
-
---------------------------------------------------------------------------------
-Cấu trúc: một lớp cơ sở, một nhà cung cấp (Gemini)
---------------------------------------------------------------------------------
-
-`BaseReader` giữ toàn bộ phần khó: cầu dao, lùi-thử-lại theo `retryDelay` của nhà
-cung cấp, phân biệt hết-hạn-mức với bị-chặn-tốc-độ, đếm lời gọi theo stage, và
-ngân sách token nới cho model có thinking. Nhà cung cấp chỉ phải cài đúng một
-hàm `_generate()`.
-
-Điều đó quan trọng vì phần dễ sai không nằm ở lời gọi HTTP mà ở cách xử lý lỗi.
-Viết lại nó cho mỗi nhà cung cấp là cách chắc chắn để hai đường đi hành xử khác
-nhau dưới áp lực — và áp lực chính là lúc ta cần chúng giống nhau.
-
-Hiện chỉ còn Gemini; muốn thêm nhà cung cấp khác thì kế thừa `BaseReader` và cài `_generate()`.
+`BaseReader` giữ phần khó: cầu dao, lùi-thử-lại theo `retryDelay`, phân biệt hết hạn mức với chặn tốc độ, đếm lời gọi
+theo stage và ngân sách token cho model có thinking; nhà cung cấp chỉ cài `_generate()`. Sinh văn bản greedy
+(`temperature=0`) để kết quả lặp lại được; `yes_no` trả `None` khi không phân tích được thay vì ép thành `False`.
 """
 
 from __future__ import annotations
@@ -52,9 +24,7 @@ class LlmUnavailable(RuntimeError):
 # "retryDelay": "37s" trong phần chi tiết lỗi của Google API.
 _RETRY_DELAY_RE = re.compile(r"retryDelay['\"]?\s*[:=]\s*['\"]?(\d+)s")
 
-# Dấu hiệu hết hạn mức hẳn, khác với bị chặn tốc độ trong một cửa sổ ngắn.
-#
-# Các dấu hiệu của Google API khi khóa hết hạn mức (không phải 429 tạm thời).
+# Dấu hiệu Google API khi khóa hết hạn mức (khác với 429 tạm thời).
 _HARD_QUOTA_MARKERS = (
     "exceeded your current quota",
     "check your plan and billing",
@@ -63,12 +33,10 @@ _HARD_QUOTA_MARKERS = (
 )
 
 
-# Mã trạng thái 400/401/403 đứng thành từ riêng, không phải chữ số nằm trong một
-# số dài hơn.
+# Mã 400/401/403 đứng thành từ riêng, không phải một phần của số dài hơn.
 _STATUS_CODE_RE = re.compile(r"\b(400|401|403)\b")
 
-# Lỗi cấu hình: khóa sai, không đủ quyền, tên model không tồn tại. Thử lại không
-# bao giờ sửa được những thứ này.
+# Lỗi cấu hình (khóa sai, thiếu quyền, model không tồn tại): thử lại không sửa được.
 _NOT_RETRYABLE_MARKERS = (
     "api key not valid",
     "api_key_invalid",
@@ -102,9 +70,7 @@ def _is_not_retryable(error: Exception) -> bool:
     low = str(error).lower()
     if any(marker in low for marker in _NOT_RETRYABLE_MARKERS):
         return True
-    # 401/403 luôn là cấu hình. 400 thì hoặc là prompt sai hoặc là tham số sai —
-    # cả hai đều không đổi giữa các lần thử. Cần biên từ: không có nó thì một
-    # thông báo chứa "11400" cũng bị coi là lỗi cấu hình.
+    # 401/403 luôn là cấu hình; 400 là prompt hoặc tham số sai, không đổi giữa các lần thử. Cần biên từ để "11400" không khớp.
     return bool(_STATUS_CODE_RE.search(low))
 
 
@@ -156,33 +122,16 @@ class LlmUsage:
         }
 
 
-# =============================================================================
-#  Lớp cơ sở — mọi thứ trừ lời gọi mạng
-# =============================================================================
+# --- Lớp cơ sở — mọi thứ trừ lời gọi mạng ---
 
 
 class BaseReader:
     #: Tên ngắn hiện trong `/health` và trong trace. Nhà cung cấp phải đặt lại.
     provider: str = "base"
 
-    # Hệ số nới ngân sách token đầu ra.
-    #
-    # `gemini-flash-latest` bật thinking mặc định, và token suy nghĩ tính vào
-    # chính `max_output_tokens`. Triệu chứng quan sát được: câu trả lời bị cắt
-    # giữa chừng ("* Điểm trung") dù ngân sách 1024 token lẽ ra thừa sức, và
-    # các stage chấm điểm với ngân sách 8 token trả về chuỗi rỗng nên
-    # `grounded` luôn là None.
-    #
-    # SDK `google-genai==0.8.0` chưa có `ThinkingConfig.thinking_budget` để tắt
-    # thinking — phiên bản này chỉ có `include_thoughts`. Nâng SDK sẽ kéo theo
-    # rủi ro đổi API ở khắp pipeline, nên cách ít rủi ro nhất là nới ngân sách
-    # để cả phần suy nghĩ lẫn phần trả lời cùng vừa.
-    #
-    # Với các model không có thinking (phần lớn model trên HF), nới ngân sách chỉ
-    # là nới trần — không tốn thêm token nào, vì chúng dừng khi nói xong.
-    #
-    # `_MIN_OUTPUT_TOKENS` bảo đảm các stage chỉ cần một từ khóa
-    # (SUPPORTED / SIMPLE) vẫn còn chỗ để nói ra nó sau khi đã suy nghĩ.
+    # `gemini-flash-latest` bật thinking và token suy nghĩ tính vào `max_output_tokens`: ngân sách nhỏ làm câu trả lời bị cắt
+    # hoặc stage chấm điểm trả chuỗi rỗng. SDK đang dùng chưa tắt được thinking nên nới ngân sách thay vì nâng SDK.
+    # `_MIN_OUTPUT_TOKENS` chừa chỗ cho stage chỉ cần một từ khóa (SUPPORTED / SIMPLE).
     _THINKING_HEADROOM = 3
     _MIN_OUTPUT_TOKENS = 256
 
@@ -201,24 +150,16 @@ class BaseReader:
         self.usage = LlmUsage()
         self._enabled = enabled
 
-        # Chặn số lời gọi song song. Contextualisation ở §6 sinh một lời gọi cho
-        # mỗi chunk; bắn cả nghìn lời gọi cùng lúc sẽ bị nhà cung cấp chặn tốc độ
-        # và làm hỏng cả lần ingest.
+        # Giới hạn lời gọi song song: ingest sinh một lời gọi cho mỗi chunk, bắn cả nghìn lời gọi sẽ bị chặn tốc độ.
         self._sem = asyncio.Semaphore(concurrency)
 
-        # Cầu dao. Khi phát hiện hết hạn mức, mọi lời gọi tiếp theo hỏng ngay
-        # trong `_breaker_cooldown_s` giây thay vì lặp lại vòng chờ vô ích.
-        # Pipeline hạ cấp có kiểm soát: truy xuất, xếp hạng và cổng abstention
-        # vẫn chạy, chỉ phần sinh văn bản là báo lỗi rõ ràng.
+        # Cầu dao hạn mức: sau khi hết hạn mức mọi lời gọi hỏng ngay trong `_breaker_cooldown_s` giây; truy xuất và cổng
+        # abstention vẫn chạy, chỉ phần sinh văn bản báo lỗi rõ ràng.
         self._breaker_open_until: float = 0.0
         self._breaker_reason: str = ""
         self._breaker_cooldown_s: int = 900
 
-        # Cầu dao ngắn cho việc bị chặn tốc độ. Ngắn hơn hẳn cầu dao hạn mức vì
-        # hai thứ này khác nhau: hết hạn mức theo ngày thì không quay lại trước
-        # nửa đêm, còn bị chặn theo phút thì hết phút là dùng lại được. Nghỉ 15
-        # phút cho một giới hạn tính theo phút là tự cấm mình dùng một khóa vẫn
-        # còn tốt.
+        # Cầu dao chặn tốc độ ngắn hơn hẳn: chặn theo phút thì hết phút là dùng lại được, không cần nghỉ cả 15 phút.
         self._rate_limit_cooldown_s: int = 60
 
     # ------------------------------------------------------------------ trạng thái
@@ -344,18 +285,8 @@ class BaseReader:
                 log.debug("Chờ %.1fs rồi thử lại stage %s", delay, tag)
                 await asyncio.sleep(delay)
 
-        # Hết lượt thử vì bị chặn tốc độ: mở cầu dao ngắn thay vì để stage sau
-        # khám phá lại đúng điều vừa biết, với đúng cái giá vừa trả.
-        #
-        # Đây là lập luận đã dùng cho khóa sai ở `_is_not_retryable`, áp cho một
-        # nguyên nhân khác. Một truy vấn gọi LLM bốn lần; nếu nhà cung cấp vừa
-        # hỏng ba lượt liền vì 429 thì stage tiếp theo gần như chắc chắn cũng
-        # hỏng, và backoff 20s + 40s sẽ được trả lại nguyên vẹn cho từng stage.
-        # Đo được ngày 12/08/2026: truy vấn 37.7s kéo lên 89.8–105.9s vì đúng
-        # chuyện này.
-        #
-        # Chỉ mở cho chặn tốc độ. Lỗi thoáng qua (503, đứt mạng) không phải lý
-        # do cấm cả một nhà cung cấp.
+        # Hết lượt thử vì bị chặn tốc độ: mở cầu dao ngắn để các stage sau không lặp lại backoff (đo được một truy vấn từ
+        # 37,7s lên ~90–106s). Lỗi thoáng qua (503, đứt mạng) không mở cầu dao.
         if last_error is not None and _is_rate_limited(last_error):
             self._open_circuit(
                 f"{self.provider} đang bị chặn tốc độ. Tạm nghỉ "
@@ -411,9 +342,7 @@ class BaseReader:
         return None
 
 
-# =============================================================================
-#  Gemini
-# =============================================================================
+# --- Gemini ---
 
 
 class GeminiReader(BaseReader):

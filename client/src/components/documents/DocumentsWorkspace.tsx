@@ -15,12 +15,8 @@ import { IndexHealth } from './IndexHealth';
 import { UploadForm } from './UploadForm';
 
 /**
- * Màn hình quản lý nguồn tài liệu.
- *
- * Dùng chung cho `/quan-tri/tai-lieu` và `/can-bo/tai-lieu`: cùng một API, cùng
- * một quyền hạn ở phía máy chủ. Khác biệt duy nhất giữa hai vai trò là loại tài
- * liệu được phép nạp, và điều đó được suy ra từ phiên đăng nhập chứ không phải
- * từ đường dẫn — hai trang khác nhau chỉ để menu điều hướng đúng chỗ.
+ * Quản lý nguồn tài liệu, dùng chung cho `/quan-tri/tai-lieu` và `/can-bo/tai-lieu`: cùng API, cùng quyền ở máy chủ; loại tài liệu
+ * được phép nạp suy ra từ phiên đăng nhập chứ không từ đường dẫn.
  */
 export function DocumentsWorkspace() {
   const { user } = useSession();
@@ -39,13 +35,7 @@ export function DocumentsWorkspace() {
   const [error, setError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
 
-  /**
-   * `quiet` dùng cho các lần hỏi lại tự động.
-   *
-   * Một lần hỏi nền trượt không phải là chuyện người dùng cần biết: dữ liệu cũ
-   * vẫn đúng và lần sau sẽ lấy lại được. Dựng banner lỗi cho nó chỉ dạy người
-   * dùng bỏ qua banner lỗi.
-   */
+  /** `quiet` cho các lần hỏi lại tự động: một lần hỏi nền trượt không đáng dựng banner lỗi (dữ liệu cũ vẫn đúng). */
   const load = useCallback(
     async (quiet = false) => {
       try {
@@ -75,14 +65,9 @@ export function DocumentsWorkspace() {
   }, []);
 
   /**
-   * Lập chỉ mục chạy nền ở máy chủ, nên trạng thái trên màn hình sẽ cũ dần.
-   *
-   * Chỉ hỏi lại khi thực sự có tài liệu đang xử lý — không polling vô cớ. Nhịp
-   * 10 giây được chọn theo thời gian thật của công việc: nạp một tài liệu mất
-   * hàng chục giây tới hàng chục phút, nên hỏi mỗi 2-3 giây không cho biết thêm
-   * gì mà chỉ đốt hạn mức 120 request/phút của API — và khi đã cạn hạn mức thì
-   * chính màn hình này ngừng cập nhật.
-   */
+     * Lập chỉ mục chạy nền ở máy chủ nên trạng thái cũ dần. Chỉ hỏi lại (mỗi 10 giây) khi có tài liệu đang xử lý: nạp một tài liệu mất
+     * hàng chục giây tới hàng chục phút, hỏi dày hơn chỉ đốt hạn mức yêu cầu của API.
+     */
   const processing = items.some((d) => d.latestVersion?.indexStatus === 'PROCESSING');
   useEffect(() => {
     if (!processing) return;

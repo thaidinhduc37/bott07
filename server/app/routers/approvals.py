@@ -1,9 +1,5 @@
-"""Port of the (deleted) NestJS `approvals.controller.ts`, mounted at
-`/approvals`. Access is entirely step-based (any authed user whose roles
-match a step on the submission) — there is no coarse `@Roles` guard here,
-matching the reference (approvers/managers/department heads all reach the
-same endpoints, distinguished only by which step their role unlocks).
-"""
+"""Phê duyệt đơn (`/approvals`). Quyền truy cập hoàn toàn theo bước duyệt (người dùng có vai trò khớp một bước của đơn), không có
+`require_roles` thô: người duyệt, cán bộ và lãnh đạo khoa dùng chung endpoint, khác nhau ở bước mà vai trò mở ra."""
 
 from __future__ import annotations
 
@@ -13,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, user_rate_limit
 from app.schemas.forms import ApprovalActionDto
 from app.services.forms.approvals_service import ApprovalsService
 
@@ -29,7 +25,7 @@ def _parse_uuid4(value: str) -> str:
 
 
 def _action_rate_limit():
-    return rate_limit("approval_action", 30)
+    return user_rate_limit("approval_action", 30)
 
 
 @router.get("")

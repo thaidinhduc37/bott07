@@ -1,8 +1,5 @@
-"""Request DTOs for forms/approvals/signatures. Port of (the deleted)
-`dto/forms.dto.ts`. Response shapes are plain dicts built by hand in the
-service layer, same convention as `documents_service.py`/`chat_service.py`
-in this codebase — not modeled as Pydantic response classes.
-"""
+"""DTO yêu cầu cho biểu mẫu, phê duyệt và chữ ký. Phản hồi là dict dựng thủ công ở tầng service (như `documents_service.py` và
+`chat_service.py`), không dùng model Pydantic."""
 
 from __future__ import annotations
 

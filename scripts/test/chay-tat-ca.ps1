@@ -9,11 +9,9 @@
   không liên quan gì tới thứ nó định kiểm.
 
     pwsh scripts/test/chay-tat-ca.ps1
-    pwsh scripts/test/chay-tat-ca.ps1 -BoQuaRag    # bỏ phần cần dịch vụ RAG
 #>
 
 param(
-  [switch]$BoQuaRag,
   [int]$NghiGiay = 65
 )
 
@@ -60,24 +58,6 @@ foreach ($s in $suites) {
   }
 }
 
-# --- phần RAG chạy bằng Python, tách riêng vì cần venv của dịch vụ ---
-if (-not $BoQuaRag) {
-  $py = Join-Path $Root 'server/rag-service/.venv/Scripts/python.exe'
-  $ragTest = Join-Path $Root 'scripts/test/test_rag_pipeline.py'
-  if ((Test-Path $py) -and (Test-Path $ragTest)) {
-    Write-Host ("`n" + ('=' * 66)) -ForegroundColor Blue
-    Write-Host "  Ngày 4  — Pipeline RAG (truy xuất + cổng abstention)" -ForegroundColor Blue
-    Write-Host ('=' * 66) -ForegroundColor Blue
-    & $py -u $ragTest --no-llm
-    $results += [pscustomobject]@{
-      Bo     = 'Ngày 4  — Pipeline RAG'
-      KetQua = $(if ($LASTEXITCODE -eq 0) { 'ĐẠT' } else { "TRƯỢT (mã $LASTEXITCODE)" })
-    }
-  } else {
-    Write-Host "`nBỎ QUA  Pipeline RAG — chưa có venv hoặc tệp kiểm thử" -ForegroundColor Yellow
-  }
-}
-
 # --- học tập (ôn tập, sổ tay, kế hoạch ôn thi, thống kê): Python hệ thống, gọi API qua HTTP ---
 $learning = @(
   @{ ten = 'Học tập — Ôn tập và sổ câu sai';       tep = 'test_learning.py' },
@@ -91,6 +71,10 @@ $learning = @(
   @{ ten = 'Đào tạo — Danh mục phòng học';           tep = 'test_rooms.py' },
   @{ ten = 'Kết quả học tập — Điểm và học kỳ';       tep = 'test_grades.py' },
   @{ ten = 'Trợ lý — Phản hồi hữu ích / chưa đúng';  tep = 'test_feedback.py' },
+  @{ ten = 'Đào tạo — Nhập học viên từ CSV';         tep = 'test_student_import.py' },
+  @{ ten = 'Giảng dạy — Lớp của giảng viên';         tep = 'test_teaching.py' },
+  @{ ten = 'Ôn tập — Ngân hàng câu hỏi (GIFT, CSV)';  tep = 'test_question_bank.py' },
+  @{ ten = 'Ôn tập — Bộ phân tích GIFT';             tep = 'test_gift_parser.py' },
   @{ ten = 'RAG — Dò số điều trong quy chế';       tep = 'test_article_detection.py' }
 )
 foreach ($s in $learning) {

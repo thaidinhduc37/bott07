@@ -32,7 +32,7 @@ class StudyNote(Base):
         "user_id", PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     course_id: Mapped[uuid.UUID | None] = mapped_column(
-        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="SET NULL"), nullable=True
+        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="SET NULL"), nullable=True, index=True
     )
     source_type: Mapped[str] = mapped_column("source_type", String, nullable=False)
     # id tin nhắn / câu hỏi gốc — chỉ để chống lưu trùng, không khóa ngoại.

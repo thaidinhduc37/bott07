@@ -1,4 +1,4 @@
-"""Port of `chat/chat.service.ts`."""
+"""Hỏi đáp: gọi pipeline RAG, lưu hội thoại và tin nhắn kèm trích dẫn."""
 
 from __future__ import annotations
 
@@ -75,9 +75,7 @@ class ChatService:
                 raise HTTPException(status_code=404, detail={"message": "Không tìm thấy môn học"})
             course_id = str(course.id)
 
-        # Call RAG BEFORE writing anything to the DB. If rag-service dies
-        # mid-request, we must not leave an orphaned conversation row with a
-        # question and no answer.
+        # Gọi RAG TRƯỚC khi ghi CSDL: pipeline chết giữa chừng thì không để lại hội thoại có câu hỏi mà không có câu trả lời.
         result = await self.rag.query(
             QueryPayload(question=dto.question, mode=_rag_mode(dto.mode), course_id=course_id)
         )
@@ -156,9 +154,7 @@ class ChatService:
             "latencyMs": message.latency_ms,
             "trace": message.trace,
             "citations": [self._present_citation(c) for c in message.citations],
-            # The chunks the reader actually sees, so the UI can open them
-            # side by side. Passed straight through in snake_case — NOT
-            # remapped to camelCase, matching rag-service's raw JSON shape.
+            # Các đoạn reader thực sự thấy, để giao diện mở cạnh nhau; giữ snake_case, KHÔNG đổi sang camelCase.
             "retrievedChunks": (
                 [c.model_dump(mode="json") for c in result.retrieved_chunks] if result is not None else None
             ),

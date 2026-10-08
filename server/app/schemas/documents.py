@@ -1,8 +1,5 @@
-"""Port of `documents/dto/documents.dto.ts`. Upload is multipart (fields come
-in as `Form(...)` params in the router, not a JSON body), so `UploadDocumentDto`
-here is used only to validate/normalize the non-file fields collected from the
-form — mirrors the shape class-validator enforced in the reference DTO.
-"""
+"""DTO tải tài liệu. Tải lên là multipart (các trường vào router dưới dạng `Form(...)`) nên `UploadDocumentDto` chỉ kiểm tra và
+chuẩn hóa các trường không phải tệp."""
 
 from __future__ import annotations
 

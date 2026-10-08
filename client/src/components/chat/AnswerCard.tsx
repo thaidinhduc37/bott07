@@ -5,14 +5,7 @@ import type { AssistantMessage, Citation } from '@/services/chat-api';
 import { AnswerFeedback } from './AnswerFeedback';
 import { learningApi } from '@/services/learning-api';
 
-/**
- * Vị trí của một trích dẫn, viết cho người đọc.
- *
- * Quy chế được viện dẫn theo điều, giáo trình theo trang. Khi một đoạn trải qua
- * nhiều điều thì nói rõ dải — ghi một số điều duy nhất cho đoạn phủ bốn điều là
- * trích dẫn sai theo cách khó phát hiện: nó trỏ tới một chỗ có thật, chỉ không
- * phải chỗ chứa câu trả lời.
- */
+/** Vị trí của một trích dẫn: quy chế theo điều, giáo trình theo trang. Đoạn trải nhiều điều thì ghi dải ("Điều 17–20"): chỉ ghi một điều là trích dẫn sai khó phát hiện. */
 function locator(c: Citation): string {
   const parts: string[] = [];
   if (c.articleRange) parts.push(c.articleRange);
@@ -22,19 +15,8 @@ function locator(c: Citation): string {
 }
 
 /**
- * Dựng nội dung câu trả lời.
- *
- * Hai việc, và cả hai đều là *đọc được hay không*, không phải trang trí:
- *
- * 1. `[1]`, `[2]` thành nút neo tới đúng khối trích dẫn bên dưới.
- * 2. `**…**` thành chữ đậm. Mô hình luôn trả về Markdown, và trước đây phần này
- *    được đổ ra nguyên văn — nên câu trả lời hiện đúng như thế này:
- *
- *        1. **Theo Điều 12, Khoản 2** (xét theo thang điểm 10) [1]:
- *
- *    Người đọc thấy một rừng dấu sao giữa văn bản quy chế. Đây không phải hiển
- *    thị Markdown đầy đủ — chỉ một quy tắc, đúng cái mô hình thật sự sinh ra.
- *    Thêm bảng, liên kết, tiêu đề vào đây là mở một cửa mà không ai cần.
+ * Dựng nội dung câu trả lời: `[1]`, `[2]` thành nút neo tới khối trích dẫn bên dưới và `**…**` thành chữ đậm (mô hình luôn trả
+ * Markdown). Cố ý không hiển thị Markdown đầy đủ, chỉ đúng quy tắc mô hình thật sự sinh ra: thêm bảng, liên kết, tiêu đề là mở cửa không ai cần.
  */
 const TOKEN = /(\*\*[^*\n]+\*\*|\[\d+\])/g;
 
@@ -70,12 +52,8 @@ type Block =
   | { kind: 'p'; lines: string[] };
 
 /**
- * Gom các dòng thô thành khối đoạn văn / danh sách có thứ tự / danh sách
- * chấm đầu dòng, dựa trên tiền tố mỗi dòng ("1. ", "- ", "• "…).
- *
- * Mô hình trả Markdown tối giản (đoạn văn + list phẳng, không lồng nhau), nên
- * chỉ cần nhận diện tiền tố dòng — không cần một trình phân tích Markdown đầy
- * đủ, thứ sẽ kéo theo bảng/liên kết/tiêu đề mà câu trả lời không bao giờ dùng.
+ * Gom các dòng thô thành đoạn văn, danh sách có thứ tự hoặc danh sách chấm theo tiền tố dòng ("1. ", "- ", "• "). Mô hình trả
+ * Markdown tối giản (list phẳng, không lồng) nên không cần trình phân tích Markdown đầy đủ.
  */
 function toBlocks(text: string): Block[] {
   const blocks: Block[] = [];
@@ -172,14 +150,7 @@ export function AnswerCard({ message }: { message: AssistantMessage }) {
         <div className="answer-body">{renderAnswer(message.content, jumpTo)}</div>
       )}
 
-      {/* ---------------------------------------------------------- nguồn
-
-          Thu gọn theo mặc định — mỗi khối trích dẫn mang cả đoạn văn nguyên
-          gốc, và với ba-bốn nguồn mỗi câu trả lời, hiện sẵn hết đẩy câu trả
-          lời kế tiếp ra xa khỏi tầm mắt. Vẫn nhìn thấy NGAY có bao nhiêu nguồn
-          (số trong nút) mà không cần mở ra mới biết. Bấm số `[n]` trong câu
-          trả lời (`jumpTo`) tự mở khối này ra, không chỉ dành cho ai chủ động
-          bấm nút. */}
+      {/* nguồn: thu gọn theo mặc định vì mỗi khối mang cả đoạn nguyên gốc; số nguồn vẫn hiện trên nút, và bấm `[n]` trong câu trả lời (`jumpTo`) tự mở khối này. */}
       {message.citations.length > 0 && (
         <section style={{ marginTop: 'var(--gap-5)' }}>
           <button

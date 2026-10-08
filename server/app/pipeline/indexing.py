@@ -1,21 +1,9 @@
 """§6 Contextualisation và luồng ingest đầy đủ.
 
-**Vì sao cần contextualise.** Một chunk tách khỏi tài liệu của nó thường không tự
-diễn giải được. "Quy định này chỉ áp dụng cho trường hợp thứ hai" hay một dòng
-bảng trần mang gần như không tín hiệu truy xuất nào, dù nó có thể chứa đúng câu
-trả lời. Cách chữa là **nhúng một dạng đã được đặt vào ngữ cảnh** của chunk trong
-khi vẫn cho reader xem văn bản gốc, để trích dẫn giữ được sự sạch sẽ.
-
-Hai biến thể, đúng như notebook:
-
-*Cấu trúc (tất định, miễn phí).* Ghép tiêu đề tài liệu, số trang và đề mục gần
-nhất vào trước. Không tốn gì và luôn áp dụng được.
-
-*LLM viết.* Reader được xem chunk cùng một cửa sổ văn bản xung quanh và được yêu
-cầu viết một câu định vị. Đây là *contextual retrieval*; nó thường cho mức tăng
-recall lớn nhất so với chi phí, nhưng đòi hỏi một lời gọi sinh cho mỗi chunk lúc
-lập chỉ mục. Vì mỗi lời gọi bây giờ là tiền và quota thật, nó bị chặn bởi
-`MAX_CONTEXT_CHUNKS` và tự tắt khi vượt ngưỡng.
+Một chunk tách khỏi tài liệu thường không tự diễn giải được, nên ta nhúng dạng đã đặt vào ngữ cảnh nhưng vẫn cho reader xem
+văn bản gốc. Hai biến thể: cấu trúc (tất định, miễn phí: tiêu đề, số trang, đề mục gần nhất ghép vào trước) và LLM viết một
+câu định vị cho mỗi chunk (contextual retrieval: tăng recall nhiều nhất nhưng tốn một lời gọi mỗi chunk, nên bị chặn bởi
+`MAX_CONTEXT_CHUNKS`).
 """
 
 from __future__ import annotations
@@ -182,18 +170,8 @@ class IndexingService:
 
         # --- §7 nhúng và lập chỉ mục ---------------------------------------
         mode = "llm" if contextualised > 0 else "structural"
-        # Nhúng cả tài liệu là việc dài nhất trong dịch vụ — đo được 615 giây cho
-        # một giáo trình PDF 1 MB. Chạy nó trên event loop làm treo toàn bộ dịch
-        # vụ, kể cả /health, cho tới khi xong.
-        #
-        # Cắt thành lô thay vì gọi encode một lần: luồng worker chỉ có một, nên
-        # một lời gọi mười phút sẽ bắt mọi truy vấn của học viên xếp hàng sau nó
-        # và NestJS sẽ hết giờ ở giây 120. Chia lô thì truy vấn đến giữa chừng
-        # chỉ phải chờ hết một lô. Việc nạp không chậm đi — vẫn từng ấy chunk,
-        # chỉ khác chỗ nhả quyền điều khiển.
-        # Lô 8 để khớp `batch_size` nội bộ của encoder: nhỏ hơn thì phí một lượt
-        # gọi cho mỗi lô, lớn hơn thì giữ luồng worker lâu hơn mà không nhúng
-        # nhanh thêm — encoder vẫn cắt thành lô 8 ở bên trong.
+        # Nhúng cả tài liệu là việc dài nhất (615 giây cho một giáo trình PDF 1 MB) và luồng worker chỉ có một: chia lô 8 (khớp
+        # `batch_size` của encoder) để truy vấn của học viên đến giữa chừng chỉ chờ hết một lô thay vì cả lần nạp.
         texts = [c.embed_text(mode) for c in chunks]
         EMBED_BATCH = 8
         parts = [
@@ -202,13 +180,8 @@ class IndexingService:
         ]
         vectors = parts[0] if len(parts) == 1 else np.vstack(parts)
 
-        # Xóa điểm cũ của tài liệu này trước khi ghi điểm mới: `upsert_chunks`
-        # chỉ upsert theo id xác định bởi (document_id, chunk.id), nên nếu lần
-        # lập lại chỉ mục này sinh ra ÍT chunk hơn lần trước (nội dung đổi,
-        # chunking không tất định tuyệt đối), các điểm thừa của lần trước sẽ
-        # mồ côi lại trong store — PostgreSQL ghi đúng số chunk mới nhưng
-        # Qdrant/Chroma còn giữ thêm điểm cũ, khiến "Trạng thái chỉ mục" báo
-        # lệch mãi sau mỗi lần lập lại chỉ mục dù lần lập lại đó thành công.
+        # Xóa điểm cũ của tài liệu trước khi ghi: `upsert_chunks` chỉ ghi đè theo id, nên lần lập lại chỉ mục sinh ít chunk hơn sẽ
+        # để điểm mồ côi trong store và "Trạng thái chỉ mục" báo lệch mãi.
         self.store.delete_document(collection, document_id)
         points = self.store.upsert_chunks(collection, chunks, vectors)
 
@@ -237,12 +210,7 @@ class IndexingService:
     # ------------------------------------------------------------------ delete
 
     def delete_document(self, document_id: str, document_type: str | None = None) -> dict:
-        """Xóa một tài liệu khỏi chỉ mục dense.
-
-        Không biết loại tài liệu thì quét cả hai collection: thà làm thừa một
-        truy vấn còn hơn để lại vector mồ côi mà về sau vẫn được trích dẫn cho
-        một tài liệu PostgreSQL đã coi là đã xóa.
-        """
+        """Xóa một tài liệu khỏi chỉ mục dense. Không biết loại tài liệu thì quét cả hai collection để không để lại vector mồ côi."""
         types = [document_type] if document_type else ["quyche", "giaotrinh"]
         removed: dict[str, int] = {}
         for t in types:

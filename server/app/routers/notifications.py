@@ -1,11 +1,5 @@
-"""Port of the (deleted) NestJS notifications controller — deliberately NO
-service class, matching the reference's own choice ("the controller injects
-Prisma directly, an indirection layer would only reduce readability"). Two
-straight queries, both always scoped by `user_id` from the session — a
-foreign notification id in `MarkReadRequest.ids` simply matches zero rows,
-not an error (same anti-enumeration shape as everywhere else: no leak about
-whether that id belongs to someone else).
-"""
+"""Thông báo của người dùng: hai truy vấn thẳng, luôn lọc theo `user_id` của phiên; id của người khác trong
+`MarkReadRequest.ids` chỉ khớp 0 dòng (không lộ id đó thuộc về ai)."""
 
 from __future__ import annotations
 

@@ -3,24 +3,9 @@ import { viDateTime, type SubmissionStatus } from '@/services/forms-api';
 import { ROLE_LABEL, type RoleCode } from '@/utils/roles';
 
 /**
- * Dải các cấp duyệt.
- *
- * Trước đây các bước được xếp dọc thành danh sách, mỗi bước một dòng có nẹp
- * trái. Đọc được, nhưng nó trả lời sai câu hỏi. Câu người dùng thực sự hỏi khi
- * mở một tờ đơn là *đơn của tôi đang nằm ở đâu* — một câu hỏi về **vị trí trên
- * chặng đường**, thứ mà dải ngang trả lời trong một cái liếc còn danh sách dọc
- * bắt đọc từng dòng rồi tự dựng lại.
- *
- * Ô số mang trạng thái chứ không phải là số thứ tự trang trí:
- *
- *   viền mảnh  — chưa tới
- *   viền đậm   — đang ở đây
- *   tô xanh    — đã xong
- *   tô đỏ      — đã từ chối hoặc trả lại
- *
- * Màu lặp lại nội dung của nhãn chữ bên cạnh, và đó là chủ ý: người không phân
- * biệt được màu vẫn đọc được nhãn, người liếc nhanh vẫn thấy được màu. Không
- * kênh nào là kênh duy nhất.
+ * Dải các cấp duyệt: trả lời "đơn của tôi đang nằm ở đâu" trong một cái liếc, thay cho danh sách dọc. Ô số mang trạng thái: viền
+ * mảnh = chưa tới, viền đậm = đang ở đây, tô xanh = đã xong, tô đỏ = từ chối hoặc trả lại. Màu lặp lại nhãn chữ bên cạnh có chủ ý để
+ * không kênh nào là kênh duy nhất.
  */
 
 export interface FlowStep {
@@ -28,16 +13,9 @@ export interface FlowStep {
   title: string;
   roleCode: string;
   /**
-   * Trạng thái thật của bước, nếu bên gọi có.
-   *
-   * Hai trang dùng component này có hai lượng thông tin khác nhau, và đó là
-   * thực tế của API chứ không phải thiếu sót: hộp thư cán bộ đọc bảng
-   * `approval_steps` nên biết từng bước đã quyết ra sao; trang của học viên chỉ
-   * có định nghĩa luồng trong biểu mẫu cộng với bước hiện hành.
-   *
-   * Bỏ trống thì trạng thái được **suy ra**, và suy ra thì phải suy cho đúng —
-   * xem `derive()`.
-   */
+     * Trạng thái thật của bước, nếu bên gọi có: hộp thư cán bộ đọc `approval_steps` nên biết từng bước đã quyết ra sao, trang học viên
+     * chỉ có định nghĩa luồng và bước hiện hành. Bỏ trống thì trạng thái được suy ra (xem `derive()`).
+     */
   status?: StepStatus;
   decidedAt?: string | null;
   comment?: string | null;
@@ -47,12 +25,8 @@ const DONE: StepStatus[] = ['APPROVED', 'SKIPPED'];
 const BAD: StepStatus[] = ['REJECTED', 'REVISION_REQUESTED'];
 
 /**
- * Suy trạng thái một bước khi chỉ biết bước hiện hành.
- *
- * Chỗ dễ sai: đơn bị **từ chối** hoặc bị **trả lại** thì bước hiện hành không
- * phải "đang chờ" mà là "đã có quyết định xấu". Suy nó thành "đang chờ" sẽ vẽ ra
- * một tờ đơn đang trôi bình thường trong khi thực tế nó đã dừng — đúng loại sai
- * khiến người nộp ngồi đợi một việc không bao giờ tới.
+ * Suy trạng thái một bước khi chỉ biết bước hiện hành. Đơn bị từ chối hoặc trả lại thì bước hiện hành là "đã có quyết định xấu",
+ * không phải "đang chờ" (nếu không người nộp ngồi đợi một việc không bao giờ tới).
  */
 function derive(
   order: number,

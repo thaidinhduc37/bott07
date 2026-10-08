@@ -1,21 +1,12 @@
-"""`python-docx`-based DOCX builder — port of the (now-deleted) NestJS
-`docx-renderer.service.ts`. No template files are used (there never were
-any — `server/storage/templates/` is empty); every form is built purely in
-code against a `FormLayout` from `form_layouts.py`.
+"""Dựng DOCX bằng `python-docx`, không dùng tệp mẫu: mọi biểu mẫu được dựng bằng mã theo một `FormLayout` trong `form_layouts.py`.
 
-Layout follows Nghị định 30/2020/NĐ-CP formatting conventions (Phụ lục I,
-Mẫu 1.1) and the original forms in `data/nguon/mau-don`: A4, margins
-top 20mm / bottom 20mm / left 30mm / right 15mm, Times New Roman 14pt body text
-(13pt for the masthead and signature block), line spacing 1.15, body lines justified with a 1.27cm
-first-line indent.
+Trình bày theo Nghị định 30/2020/NĐ-CP (Phụ lục I, Mẫu 1.1) và đơn gốc trong `data/nguon/mau-don`: A4, lề trên và dưới 20mm,
+trái 30mm, phải 15mm, Times New Roman 14pt (13pt cho đầu trang và khối chữ ký), giãn dòng 1.15, đoạn thân căn đều thụt đầu
+dòng 1.27cm.
 
-Entry point: `render_form(layout, data, slots)` -> raw .docx bytes.
-`data` is the submission's merged data (profileSnapshot overlaid by
-formData — the caller's job, not this module's) with every value already a
-display-ready string (dates already dd/mm/yyyy, etc — this module does no
-type coercion, it only substitutes `Seg(f=...)` references literally).
-`slots` is the ordered list of signature columns (built by the caller from
-the approval flow + owner) — see `SignatureSlot` below.
+Điểm vào: `render_form(layout, data, slots)` trả byte .docx. `data` là dữ liệu đơn đã gộp (profileSnapshot phủ bởi formData, do
+bên gọi làm) với mọi giá trị đã là chuỗi hiển thị; module chỉ thay `Seg(f=...)` nguyên văn. `slots` là danh sách cột chữ ký
+theo thứ tự do bên gọi dựng (xem `SignatureSlot`).
 """
 
 from __future__ import annotations

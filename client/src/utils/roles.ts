@@ -11,13 +11,7 @@ export const ROLE_LABEL: Record<RoleCode, string> = {
   DEPARTMENT_HEAD: 'Lãnh đạo Khoa',
 };
 
-/**
- * Ba nhóm giao diện, không phải năm.
- *
- * Năm vai trò nhưng chỉ ba dashboard: một người vừa là LECTURER vừa là APPROVER
- * không cần hai giao diện, họ cần một giao diện có cả hai mục. Nhóm hóa ở đây để
- * menu và trang chủ không phải tự suy diễn ở mỗi chỗ dùng.
- */
+/** Ba nhóm giao diện (không phải năm vai trò): người vừa là LECTURER vừa là APPROVER cần một giao diện có cả hai mục. */
 export type Workspace = 'sinh-vien' | 'can-bo' | 'quan-tri';
 
 export function workspaceOf(roles: RoleCode[]): Workspace {
@@ -36,38 +30,16 @@ export function homePathOf(roles: RoleCode[]): string {
 export interface NavItem {
   href: string;
   label: string;
-  /**
-   * Biểu tượng cạnh nhãn.
-   *
-   * Bắt buộc, không phải tùy chọn: một mục thiếu biểu tượng trong danh sách dọc
-   * sẽ lệch hẳn 1.75rem so với các mục còn lại, và chỗ trống đó trông giống lỗi
-   * hiển thị. Bắt buộc ở kiểu dữ liệu thì trình biên dịch nhắc, không cần ai nhớ.
-   */
+  /** Biểu tượng cạnh nhãn; bắt buộc vì một mục thiếu biểu tượng lệch hẳn 1.75rem so với các mục còn lại và trông như lỗi hiển thị. */
   icon: IconName;
   /** Người dùng phải có ít nhất một trong các vai trò này. Bỏ trống = mọi vai trò. */
   roles?: RoleCode[];
-  /**
-   * Vì sao mục này chưa mở — một câu ngắn, hiển thị khi rê chuột.
-   *
-   * Có mặt nghĩa là trang chưa tồn tại: menu hiển thị nhãn mờ thay vì liên kết.
-   * Nếu để nguyên `<Link>`, Next.js sẽ prefetch và ghi một loạt lỗi 404 vào
-   * console, còn người dùng bấm vào thì gặp trang lỗi. Xóa thuộc tính này khi
-   * trang tương ứng đã xong.
-   *
-   * Trước đây trường này là `availableFromDay: number` và menu hiện "Sẽ mở ở
-   * Ngày 7". Mốc đó trôi qua mà trang vẫn chưa có, nên giao diện quay ra hứa
-   * một ngày đã ở trong quá khứ. Một lời hứa tự hết hạn thì tệ hơn không hứa:
-   * nêu điều kiện thật thì nó vẫn đúng ở bất kỳ thời điểm nào người dùng đọc.
-   */
-  blockedBy?: string;
 }
 
 /**
  * Menu điều hướng.
  *
- * Đây thuần túy là trải nghiệm người dùng. Việc một mục không hiện lên **không**
- * bảo vệ gì cả — mọi endpoint tương ứng đều có `@Roles()` ở NestJS. Nếu chỉ ẩn ở
- * đây thì bất kỳ ai gõ thẳng URL cũng vào được.
+  * Chỉ là trải nghiệm người dùng: ẩn một mục không bảo vệ gì vì máy chủ kiểm vai trò ở mọi endpoint (`require_roles`).
  */
 export const NAV: Record<Workspace, NavItem[]> = {
   'sinh-vien': [

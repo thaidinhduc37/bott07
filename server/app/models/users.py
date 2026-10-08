@@ -28,7 +28,7 @@ class User(Base):
     signature_pin_hash: Mapped[str | None] = mapped_column("signature_pin_hash", String, nullable=True)
     # Khoa của giảng viên / cán bộ (học viên thuộc khoa qua lớp). NULL = chưa xếp khoa.
     faculty_id: Mapped[uuid.UUID | None] = mapped_column(
-        "faculty_id", PGUUID(as_uuid=True), ForeignKey("faculties.id", ondelete="SET NULL"), nullable=True
+        "faculty_id", PGUUID(as_uuid=True), ForeignKey("faculties.id", ondelete="SET NULL"), nullable=True, index=True
     )
     last_login_at: Mapped[datetime | None] = mapped_column("last_login_at", TIMESTAMPTZ, nullable=True)
     created_at: Mapped[datetime] = created_at_col()
@@ -77,7 +77,7 @@ class UserRole(Base):
         "user_id", PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
     role_id: Mapped[uuid.UUID] = mapped_column(
-        "role_id", PGUUID(as_uuid=True), ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True
+        "role_id", PGUUID(as_uuid=True), ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True, index=True
     )
     assigned_at: Mapped[datetime] = created_at_col()
     assigned_by: Mapped[uuid.UUID | None] = mapped_column("assigned_by", PGUUID(as_uuid=True), nullable=True)

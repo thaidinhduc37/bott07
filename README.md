@@ -112,8 +112,8 @@ python scripts/test/test_catalog.py          # một bộ
 pwsh scripts/test/chay-tat-ca.ps1            # tất cả (cần PowerShell 7)
 ```
 
-Đăng nhập bị giới hạn 5 lần/phút theo IP, nên giữa các bộ chạy tay cần nghỉ khoảng 65 giây. Dữ liệu thử có
-tiền tố `ZT`/`zt-` và được dọn sau mỗi lần chạy, kể cả khi lỗi. Kiểm tra giao diện: `npm run build:web` (gồm
+Giới hạn tần suất (đăng nhập 5 lần/phút theo email, thao tác đã đăng nhập theo người dùng) được hàm `login()` của bộ test tự dọn nên các
+bộ chạy liền nhau được. Dữ liệu thử có tiền tố `ZT`/`zt-` và được dọn sau mỗi lần chạy, kể cả khi lỗi. Kiểm tra giao diện: `npm run build:web` (gồm
 type-check) và `npm --prefix client run lint`.
 
 ## Những chỗ dễ vấp

@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
-from app.core.deps import AuthenticatedUser, get_current_user, get_db, rate_limit, require_roles
+from app.core.deps import AuthenticatedUser, get_current_user, get_db, require_roles, user_rate_limit
 from app.models.enums import RoleCode
 from app.schemas.learning import CreateQuizDto, CreateReviewDto, SubmitQuizDto
 from app.schemas.notes import CreateNoteDto, NoteFromSourceDto, UpdateNoteDto
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/learning", tags=["learning"])
 def _quiz_rate_limit():
     # Mỗi lần sinh đề là một lượt truy xuất + một lượt LLM, và nộp bài thêm một
     # lượt nhận xét — dùng chung hạn mức với hỏi đáp.
-    return rate_limit("learning_quiz", get_settings().rate_limit_chat_per_min)
+    return user_rate_limit("learning_quiz", get_settings().rate_limit_chat_per_min)
 
 
 @router.post("/quiz", dependencies=[Depends(_quiz_rate_limit())])

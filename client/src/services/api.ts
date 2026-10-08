@@ -16,17 +16,17 @@ export class ApiError extends Error {
   }
 }
 
-interface NestErrorBody {
+interface ErrorBody {
   message?: string | string[] | { message?: string; code?: string };
   code?: string;
   statusCode?: number;
 }
 
-/** Chuẩn hóa mọi hình dạng lỗi mà NestJS có thể trả về thành một `ApiError`. */
+/** Chuẩn hóa mọi hình dạng lỗi của API thành một `ApiError`. */
 async function toApiError(res: Response): Promise<ApiError> {
-  let body: NestErrorBody | null = null;
+  let body: ErrorBody | null = null;
   try {
-    body = (await res.json()) as NestErrorBody;
+    body = (await res.json()) as ErrorBody;
   } catch {
     return new ApiError(res.status, `Máy chủ trả về lỗi ${res.status}`);
   }

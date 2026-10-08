@@ -53,7 +53,7 @@ class StudyClass(Base):
     # Tên khoa dạng chữ (cũ) — giữ đồng bộ với `faculty_id` để không vỡ chỗ đang đọc.
     faculty: Mapped[str | None] = mapped_column(String, nullable=True)
     faculty_id: Mapped[uuid.UUID | None] = mapped_column(
-        "faculty_id", PGUUID(as_uuid=True), ForeignKey("faculties.id", ondelete="SET NULL"), nullable=True
+        "faculty_id", PGUUID(as_uuid=True), ForeignKey("faculties.id", ondelete="SET NULL"), nullable=True, index=True
     )
     cohort_year: Mapped[int | None] = mapped_column("cohort_year", Integer, nullable=True)
     # Ngành / chuyên ngành đào tạo của lớp (chữ tự do, vd "An toàn thông tin"); lọc và nhóm lớp theo ngành.
@@ -74,10 +74,10 @@ class Course(Base):
     credits: Mapped[int] = mapped_column(Integer, nullable=False)
     description: Mapped[str | None] = mapped_column(String, nullable=True)
     faculty_id: Mapped[uuid.UUID | None] = mapped_column(
-        "faculty_id", PGUUID(as_uuid=True), ForeignKey("faculties.id", ondelete="SET NULL"), nullable=True
+        "faculty_id", PGUUID(as_uuid=True), ForeignKey("faculties.id", ondelete="SET NULL"), nullable=True, index=True
     )
     lecturer_id: Mapped[uuid.UUID | None] = mapped_column(
-        "lecturer_id", PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+        "lecturer_id", PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
     )
     created_at: Mapped[datetime] = created_at_col()
 
@@ -150,7 +150,7 @@ class ExamSchedule(Base):
         "class_id", PGUUID(as_uuid=True), ForeignKey("classes.id", ondelete="CASCADE"), nullable=False
     )
     course_id: Mapped[uuid.UUID] = mapped_column(
-        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="RESTRICT"), nullable=False
+        "course_id", PGUUID(as_uuid=True), ForeignKey("courses.id", ondelete="RESTRICT"), nullable=False, index=True
     )
     exam_date: Mapped[date] = mapped_column("exam_date", Date, nullable=False)
     shift: Mapped[str | None] = mapped_column(String, nullable=True)

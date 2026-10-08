@@ -1,17 +1,7 @@
-"""§3 Ingestion — nguồn gốc được thiết lập ở đây hoặc không bao giờ.
+"""§3 Ingestion: nguồn gốc (tên file, số trang) được gắn ngay lúc nạp, một bản ghi cho mỗi trang.
 
-Một đoạn văn được truy xuất chỉ có ích nếu hệ thống nói được nó đến từ đâu.
-Nguồn gốc không thể tái tạo về sau, nên nó được gắn ngay lúc nạp: **một bản ghi
-cho mỗi trang**, mang theo tên file và số trang; mọi cấu trúc phía sau kế thừa
-các trường đó.
-
-Nối cả tài liệu thành một chuỗi rồi mới chunk — lối tắt phổ biến nhất trong các
-hướng dẫn RAG — phá hủy điều này không thể đảo ngược, và cùng với nó là mọi khả
-năng trích dẫn thật.
-
-Bộ nạp cũng kiểm tra xem việc trích xuất có thực sự cho ra chữ hay không. PDF
-scan ảnh trả về các trang gần như không ký tự; phát hiện ở đây thay vì sau khi
-đã dựng xong chỉ mục tiết kiệm rất nhiều nhầm lẫn.
+Không nối cả tài liệu rồi mới chunk: mất nguồn gốc là mất khả năng trích dẫn. Bộ nạp cũng phát hiện PDF scan ảnh (trang
+gần như không ký tự) ngay tại đây thay vì sau khi đã dựng chỉ mục.
 """
 
 from __future__ import annotations
@@ -46,13 +36,8 @@ def load_pdf_pages(path: Path) -> list[Page]:
 
 
 def load_docx(path: Path) -> list[Page]:
-    """DOCX không có khái niệm trang cho tới khi được render.
-
-    Trả về một Page duy nhất là trung thực: bịa ra số trang bằng cách đếm ký tự
-    sẽ tạo ra trích dẫn trỏ tới trang không tồn tại — tệ hơn là không có số trang.
-    Bảng được đọc cùng với đoạn văn vì đề cương học phần đặt phần lớn nội dung
-    trong bảng.
-    """
+    """DOCX không có trang cho tới khi render nên trả một Page duy nhất (không bịa số trang). Bảng được đọc cùng đoạn
+    văn vì đề cương đặt phần lớn nội dung trong bảng."""
     from docx import Document as DocxDocument
 
     doc = DocxDocument(str(path))
@@ -152,16 +137,8 @@ def load_and_report(path: str | Path) -> tuple[list[Page], IngestionReport]:
 #  Nhận diện điều/khoản — cần cho trích dẫn quy chế
 # ---------------------------------------------------------------------------
 
-# Tiêu đề điều: "Điều 12." hoặc "Điều 12:" theo sau là tên điều.
-#
-# Phần `(?=[^\n]{3,})` là bắt buộc. Không có nó, mẫu này khớp cả tham chiếu chéo
-# — và PDF ngắt dòng thường xuyên đẩy chúng xuống đầu dòng:
-#
-#     ...theo quy định tại điểm e Khoản 2,
-#     Điều 2 của Quy chế này.
-#
-# Ở đây "Điều 2" nằm đầu dòng nhưng là một tham chiếu, không phải chỗ bắt đầu
-# Điều 2. Nhận nhầm nó làm hỏng nhãn của mọi chunk phía sau.
+# Tiêu đề điều: "Điều 12." hoặc "Điều 12:" kèm tên điều. `(?=[^\n]{3,})` bắt buộc để không khớp tham chiếu chéo bị PDF
+# ngắt xuống đầu dòng ("...theo điểm e Khoản 2,\nĐiều 2 của Quy chế này."): nhận nhầm sẽ làm hỏng nhãn mọi chunk sau.
 ARTICLE_RE = re.compile(
     # Cho phép tiền tố tiêu đề Markdown ("## Điều 27.") và chữ đậm ("**Điều 27.**"):
     # tài liệu nạp dạng .md viết tiêu đề điều như vậy; trước đây chúng không bao
@@ -179,28 +156,11 @@ CROSS_REFERENCE_TAIL = re.compile(r"^\s*(?:của|nêu|này|trên|tại|và|,)", 
 
 
 def find_articles(text: str) -> list[tuple[int, str]]:
-    """Trả về [(vị_trí_ký_tự, "Điều 12"), ...] các chỗ **bắt đầu** một điều.
+    """[(vị_trí_ký_tự, "Điều 12"), ...] các chỗ bắt đầu một điều (quy chế được viện dẫn theo điều, không theo trang).
 
-    Quy chế được viện dẫn theo điều chứ không theo trang: "Điều 12 khoản 3" là
-    thứ người đọc tra lại được, còn "trang 7" thì phụ thuộc bản in. Cả hai đều
-    được lưu, nhưng số điều là cái phải đúng.
-
-    Hai bộ lọc, vì một mình biểu thức chính quy không đủ:
-
-    1. **Đuôi tham chiếu.** Bỏ những chỗ mà ngay sau số điều là "của", "này",
-       "nêu trên" — đó là cách người ta viện dẫn, không phải cách người ta mở đầu
-       một điều.
-
-    2. **Số điều phải tăng dần.** Văn bản quy phạm đánh số điều tuần tự. "Điều 2"
-       xuất hiện sau "Điều 16" chắc chắn là tham chiếu chéo. Ràng buộc này bắt
-       được cả những trường hợp mà bộ lọc đuôi bỏ lọt.
-
-    3. **Mục lục.** Văn bản có mục lục liệt kê "Điều 1 … Điều 41" ở đầu. Không bỏ
-       thì bộ lọc (2) nhận mục lục làm tiêu đề, đẩy mốc lên 41 và loại MỌI tiêu
-       đề thật phía sau như tham chiếu chéo — cả văn bản mang nhãn "Điều 41".
-       Chỉ bỏ dòng giống mục lục (kết thúc bằng số trang) khi cùng số điều còn
-       xuất hiện lại phía sau: tiêu đề thật tình cờ kết thúc bằng con số, như
-       "Điều 5. Thang điểm 10", không bị bỏ nhầm.
+    Ba bộ lọc: bỏ chỗ ngay sau số điều là "của", "này", "nêu trên" (đó là tham chiếu); số điều phải tăng dần ("Điều 2" sau
+    "Điều 16" là tham chiếu chéo); bỏ dòng mục lục (kết thúc bằng số trang) khi cùng số điều còn xuất hiện lại phía sau, để
+    "Điều 5. Thang điểm 10" không bị bỏ nhầm.
     """
     candidates: list[tuple[int, int, bool]] = []
     for m in ARTICLE_RE.finditer(text):
@@ -247,17 +207,8 @@ def articles_in_span(
 ) -> list[str]:
     """Mọi điều mà khoảng [start, end) chạm tới, theo thứ tự văn bản.
 
-    Một chunk 400 token thường phủ nhiều hơn một điều — ở cuối quy chế, nơi các
-    điều chỉ dài vài dòng, một chunk có thể phủ trọn bốn điều. Ép về một nhãn
-    duy nhất là làm mất thông tin dù chọn quy tắc nào:
-
-    * Lấy điều ở vị trí bắt đầu → bỏ qua ba điều còn lại.
-    * Lấy điều chiếm nhiều ký tự nhất → một chunk mở đầu bằng "Điều 17." bị gán
-      "Điều 20" chỉ vì Điều 20 dài hơn, và người bấm vào trích dẫn tới nhầm chỗ.
-
-    Nên trả về cả danh sách. Bên gọi lấy phần tử đầu làm nhãn hiển thị — đó là
-    chỗ người đọc nên bắt đầu tìm — và giữ phần còn lại để nói rõ chunk trải dài
-    tới đâu.
+    Một chunk có thể phủ nhiều điều; ép về một nhãn là mất thông tin. Bên gọi lấy phần tử đầu làm nhãn hiển thị và giữ phần
+    còn lại để nói chunk trải tới đâu.
     """
     if not articles or end <= start:
         found = article_at(articles, start)

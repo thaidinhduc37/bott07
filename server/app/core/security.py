@@ -1,16 +1,10 @@
-"""Password/PIN hashing, JWT, refresh tokens, cookie helpers.
+"""Băm mật khẩu và PIN, JWT, refresh token, cookie.
 
-Ports `auth/auth.service.ts` (hashing, JWT, timing-safe login) and
-`auth/auth.controller.ts` (cookie options). Every security property called out
-in the porting notes is preserved:
-
-- Argon2id for both login password and signature PIN, cost params from env.
-- A dummy Argon2id hash (generated once at import time) is verified even when
-  the looked-up user doesn't exist, so "unknown email" and "wrong password"
-  take the same wall-clock time.
-- Refresh tokens are opaque `secrets.token_urlsafe` strings; only their
-  SHA-256 hash is ever persisted — the raw token lives in the cookie only.
-- `sa_access` / `sa_refresh` cookie names, `sa_refresh` scoped to `/api/auth`.
+- Argon2id cho mật khẩu và PIN ký, tham số chi phí lấy từ env.
+- Luôn kiểm một băm Argon2id giả (tạo một lần lúc import) khi email không tồn tại, để "sai email" và "sai mật khẩu" tốn
+  cùng thời gian.
+- Refresh token là chuỗi `secrets.token_urlsafe`; chỉ băm SHA-256 của nó được lưu, token thô chỉ nằm trong cookie.
+- Cookie `sa_access` / `sa_refresh`, `sa_refresh` giới hạn ở `/api/auth`.
 """
 
 from __future__ import annotations
@@ -115,7 +109,6 @@ def decode_access_token(token: str) -> dict[str, Any]:
 
 
 def new_refresh_token() -> str:
-    # 48 random bytes, base64url — matches Nest's randomBytes(48).base64url().
     return secrets.token_urlsafe(48)
 
 

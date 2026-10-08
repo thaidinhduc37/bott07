@@ -36,6 +36,11 @@ class Settings(BaseSettings):
 
     # ------------------------------------------------------------------ api
     api_port: int = 5000
+    # Số tiến trình uvicorn. Mỗi tiến trình phục vụ ~120 yêu cầu/giây trên một lõi; chọn ≈ số lõi CPU trừ 1–2.
+    api_workers: int = 1
+    # Kết nối CSDL tối đa mỗi tiến trình = pool + overflow; nhân với `api_workers` phải nhỏ hơn `max_connections` của PostgreSQL.
+    db_pool_size: int = 10
+    db_max_overflow: int = 10
     api_prefix: str = "api"
     cors_origin: str | None = None
     web_port: int = 5173
@@ -52,19 +57,13 @@ class Settings(BaseSettings):
     max_upload_bytes: int = 26214400
     storage_root: str = "./server/storage"
 
+    # Đăng nhập: giới hạn theo email (chống dò mật khẩu một tài khoản) và theo IP (rộng hơn nhiều vì cả trường có thể chung một IP).
     rate_limit_login_per_min: int = 5
+    rate_limit_login_ip_per_min: int = 600
     rate_limit_chat_per_min: int = 12
-    rate_limit_default_per_min: int = 120
+    # Làm mới phiên: mỗi refresh token 20 lần/phút; mỗi IP rộng hơn nhiều (4.000 người làm mới mỗi 15 phút ≈ 270/phút).
     rate_limit_refresh_per_min: int = 20
-
-    # ------------------------------------------------------------- rag (legacy)
-    # No longer used to reach rag-service over HTTP (the pipeline now runs
-    # in-process — see app/pipeline/container.py). Kept only so
-    # server/rag-service's own standalone process (if someone still runs it)
-    # and any leftover references don't crash on a missing attribute.
-    rag_service_url: str = "http://localhost:8000"
-    rag_internal_token: str = "change_me_internal_token"
-    rag_request_timeout_s: int = 120
+    rate_limit_refresh_ip_per_min: int = 1200
 
     @property
     def storage_root_path(self) -> Path:

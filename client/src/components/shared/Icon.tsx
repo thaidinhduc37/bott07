@@ -1,25 +1,7 @@
 /**
- * Bộ biểu tượng — Material Symbols Outlined (webfont, nạp qua Google Fonts
- * trong `index.html`).
- *
- * Trước đây mỗi biểu tượng là một nét vẽ SVG 24×24 nội tuyến, dựng riêng vì ba
- * lý do: mạng nội bộ Học viện có thể chặn CDN ngoài, webfont icon đặt hình vào
- * ký tự riêng tư gây khó cho trình đọc màn hình, và cả bộ font quá nặng cho
- * mười hai icon thực dùng.
- *
- * Đổi sang Material Symbols vì mockup thiết kế mới dùng đúng bộ này làm ngôn
- * ngữ hình ảnh chủ đạo (cùng họ với Google Fonts đã nạp cho chữ), và ba lý do
- * trên vẫn được giữ nguyên ở đây:
- *
- * 1. Icon giờ tải qua CÙNG domain Google Fonts mà `Be Vietnam Pro` đã nạp —
- *    không thêm một CDN thứ hai.
- * 2. `aria-hidden` vẫn là mặc định: icon luôn đi kèm nhãn chữ trong ứng dụng
- *    này. Đứng một mình thì bắt buộc truyền `title`, lúc đó `role="img"` và
- *    tên biểu tượng không còn lọt vào cây trợ năng dưới dạng text vô nghĩa vì
- *    nó bị `aria-hidden` cùng span cha khi không có title, hoặc được thay bằng
- *    `aria-label` khi có.
- * 3. Bảng ánh xạ dưới đây giữ nguyên `IconName` — mọi nơi gọi `<Icon name="…">`
- *    trong 15 chỗ dùng của ứng dụng không phải sửa gì.
+ * Bộ biểu tượng Material Symbols Outlined (webfont nạp qua Google Fonts trong `index.html`, cùng domain với `Be Vietnam Pro`).
+ * `aria-hidden` là mặc định vì icon luôn đi kèm nhãn chữ; đứng một mình thì bắt buộc truyền `title` (thành `role="img"` + `aria-label`).
+ * Bảng ánh xạ giữ `IconName` nên nơi gọi `<Icon name="…">` không đổi.
  */
 
 export type IconName =

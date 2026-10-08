@@ -16,6 +16,7 @@ from app.models import (  # noqa: F401
     learning,
     notes,
     notifications,
+    rate_limit,
     users,
 )
 from app.models.enums import (  # noqa: F401

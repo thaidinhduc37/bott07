@@ -11,13 +11,8 @@ function computeIsDark(): boolean {
 }
 
 /**
- * Bật/tắt giao diện sáng-tối thủ công.
- *
- * Mặc định (chưa từng bấm) theo hệ điều hành — `data-theme` chỉ xuất hiện
- * trên `<html>` sau khi người dùng chọn tay, đúng cơ chế script trong
- * `index.html` đã thiết lập sẵn trước khi React mount (tránh nháy sai màu).
- * Bấm nút luôn chuyển thành lựa chọn tường minh, kể cả khi trước đó đang
- * theo OS — không có nút "quay lại theo hệ thống" vì chưa ai cần tới.
+ * Bật/tắt giao diện sáng-tối thủ công. Mặc định theo hệ điều hành: `data-theme` chỉ xuất hiện trên `<html>` sau khi người dùng chọn
+ * tay (script trong `index.html` đặt sẵn trước khi React mount để không nháy sai màu). Bấm nút luôn thành lựa chọn tường minh.
  */
 export function useTheme() {
   const [isDark, setIsDark] = useState(computeIsDark);

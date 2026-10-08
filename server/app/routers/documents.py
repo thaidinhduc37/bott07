@@ -1,8 +1,4 @@
-"""Port of `documents/documents.controller.ts`. Mounted at `/documents`.
-
-Students never appear here — student chat goes through `/chat`, never
-touching document-source management.
-"""
+"""Tài liệu nguồn (`/documents`). Học viên không dùng đường này: hỏi đáp của học viên đi qua `/chat`."""
 
 from __future__ import annotations
 
